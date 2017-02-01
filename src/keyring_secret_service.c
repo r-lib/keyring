@@ -35,7 +35,7 @@ void keyring_secret_service_handle_status(const char *func, gboolean status,
   }
 }
 
-SEXP keyring_secret_service_get(SEXP service, SEXP username) {
+SEXP keyring_secret_service_get(SEXP keyring, SEXP service, SEXP username) {
 
   const char* empty = "";
   const char* cservice = CHAR(STRING_ELT(service, 0));
@@ -69,7 +69,7 @@ SEXP keyring_secret_service_get(SEXP service, SEXP username) {
   }
 }
 
-SEXP keyring_secret_service_set(SEXP service, SEXP username,
+SEXP keyring_secret_service_set(SEXP keyring, SEXP service, SEXP username,
 				SEXP password) {
   const char* empty = "";
   const char* cservice = CHAR(STRING_ELT(service, 0));
@@ -95,7 +95,7 @@ SEXP keyring_secret_service_set(SEXP service, SEXP username,
   return R_NilValue;
 }
 
-SEXP keyring_secret_service_delete(SEXP service, SEXP username) {
+SEXP keyring_secret_service_delete(SEXP keyring, SEXP service, SEXP username) {
 
   const char* empty = "";
   const char* cservice = CHAR(STRING_ELT(service, 0));
@@ -117,10 +117,10 @@ SEXP keyring_secret_service_delete(SEXP service, SEXP username) {
   return R_NilValue;
 }
 
-SEXP keyring_secret_service_list(SEXP service) {
+SEXP keyring_secret_service_list(SEXP keyring, SEXP service) {
 
   const char *cservice = isNull(service) ? NULL : CHAR(STRING_ELT(service, 0));
-  const char *keyring = "default";
+  const char *ckeyring = "default";
 
   const char *errormsg = NULL;
 
@@ -147,7 +147,7 @@ SEXP keyring_secret_service_list(SEXP service) {
 
   collection = secret_collection_for_alias_sync(
     /* service = */ secretservice,
-    /* alias = */ keyring,
+    /* alias = */ ckeyring,
     /* flags = */ SECRET_COLLECTION_NONE,
     /* cancellable = */ NULL,
     &err);
