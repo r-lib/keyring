@@ -81,3 +81,23 @@ keyring_create <- function(backend = default_backend()) {
 
   backend$create_keyring(backend)
 }
+
+#' @export
+
+keyring_list <- function(backend = default_backend()) {
+  assert_that(is_keyring_backend(backend))
+
+  check_supported(backend, "list_keyring")
+
+  backend$list_keyring(backend)
+}
+
+#' @export
+
+keyring_delete <- function(backend = default_backend()) {
+  assert_that(is_keyring_backend(backend))
+
+  check_supported(backend, "delete_keyring")
+
+  backend$delete_keyring(backend)
+}

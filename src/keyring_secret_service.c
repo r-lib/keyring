@@ -122,21 +122,28 @@ SEXP keyring_secret_service_list(SEXP service) {
   const char *cservice = isNull(service) ? NULL : CHAR(STRING_ELT(service, 0));
   const char *keyring = "default";
 
-  SecretCollection *collection;
-  GList *secretlist, *iter;
+  const char *errormsg = NULL;
+
+  SecretCollection *collection = NULL;
+  GList *secretlist = NULL, *iter = NULL;
   guint listlength, i;
-  GHashTable *attributes;
+  GHashTable *attributes = NULL;
   GError *err = NULL;
 
-  SEXP result;
+  SEXP result = R_NilValue;
+
+  /* Need to set the LOAD_COLLECTIONS flag, otherwise we cannot access the
+     collections. */
 
   SecretService *secretservice = secret_service_get_sync(
     /* flags = */ SECRET_SERVICE_LOAD_COLLECTIONS,
     /* cancellable = */ NULL,
     &err);
 
-  keyring_secret_service_handle_status("list", TRUE, err);
-  if (!secretservice) error("Cannot connect to secret service");
+  if (err || !secretservice) {
+    errormsg = "Cannot connect to secret service";
+    goto cleanup;
+  }
 
   collection = secret_collection_for_alias_sync(
     /* service = */ secretservice,
@@ -145,12 +152,12 @@ SEXP keyring_secret_service_list(SEXP service) {
     /* cancellable = */ NULL,
     &err);
 
-  keyring_secret_service_handle_status("list", TRUE, err);
-  if (!collection) {
-    error("Cannot find keyring '%s'", keyring);
-    return R_NilValue;
+  if (err || !collection) {
+    errormsg = "Cannot find keyring";
+    goto cleanup;
   }
 
+  /* If service is not NULL, then we only look for the specified service. */
   attributes = g_hash_table_new(
     /* hash_func = */ (GHashFunc) g_str_hash,
     /* key_equal_func = */ (GEqualFunc) g_str_equal);
@@ -167,15 +174,13 @@ SEXP keyring_secret_service_list(SEXP service) {
     /* cancellable = */ NULL,
     &err);
 
-  keyring_secret_service_handle_status("list", TRUE, err);
+  if (err) goto cleanup;
 
   listlength = g_list_length(secretlist);
   result = PROTECT(allocVector(VECSXP, 2));
   SET_VECTOR_ELT(result, 0, allocVector(STRSXP, listlength));
   SET_VECTOR_ELT(result, 1, allocVector(STRSXP, listlength));
-  for (i = 0, iter = g_list_first(secretlist);
-       i < listlength;
-       i++, iter = g_list_next(iter)) {
+  for (i = 0, iter = g_list_first(secretlist); iter; i++, iter = g_list_next(iter)) {
     SecretItem *secret = iter->data;
     GHashTable *attr = secret_item_get_attributes(secret);
     char *service = g_hash_table_lookup(attr, "service");
@@ -185,6 +190,19 @@ SEXP keyring_secret_service_list(SEXP service) {
   }
 
   UNPROTECT(1);
+
+  /* If an error happened, then err is not NULL, and the handler longjumps.
+     Otherwise if errormsg is not NULL, then we error out with that. This
+     happens for example if the specified keyring is not found. */
+
+ cleanup:
+  if (secretservice) g_object_unref(secretservice);
+  if (collection) g_object_unref(collection);
+  if (secretlist) g_list_free(secretlist);
+  if (attributes) g_hash_table_unref(attributes);
+  keyring_secret_service_handle_status("list", TRUE, err);
+  if (errormsg) error(errormsg);
+
   return result;
 }
 
