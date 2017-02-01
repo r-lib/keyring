@@ -15,8 +15,7 @@ RoxygenNote: 6.0.0
 Roxygen: list(markdown = TRUE)
 Imports:
     assertthat,
-    getPass,
-    tools
+    getPass
 Suggests: 
     testthat
 Encoding: UTF-8
