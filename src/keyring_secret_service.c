@@ -35,6 +35,44 @@ void keyring_secret_service_handle_status(const char *func, gboolean status,
   }
 }
 
+SecretCollection* keyring_secret_service_get_collection(SEXP keyring) {
+
+  const char* ckeyring = isNull(keyring) ? "default" : CHAR(STRING_ELT(keyring, 0));
+  SecretCollection *collection = NULL;
+
+  const char *errormsg = NULL;
+  GError *err = NULL;
+  
+  SecretService *secretservice = secret_service_get_sync(
+    /* flags = */ SECRET_SERVICE_LOAD_COLLECTIONS,
+    /* cancellable = */ NULL,
+    &err);
+
+  if (err || !secretservice) {
+    errormsg = "Cannot connect to secret service";
+    goto cleanup;
+  }
+
+  collection = secret_collection_for_alias_sync(
+    /* service = */ secretservice,
+    /* alias = */ ckeyring,
+    /* flags = */ SECRET_COLLECTION_NONE,
+    /* cancellable = */ NULL,
+    &err);
+
+  if (err || !collection) {
+    errormsg = "Cannot find keyring";
+    goto cleanup;
+  }
+
+ cleanup:
+  if (secretservice) g_object_unref(secretservice);
+  keyring_secret_service_handle_status("get_keyring", TRUE, err);
+  if (errormsg) error(errormsg);
+
+  return collection;
+}
+
 SEXP keyring_secret_service_get(SEXP keyring, SEXP service, SEXP username) {
 
   const char* empty = "";
@@ -42,8 +80,12 @@ SEXP keyring_secret_service_get(SEXP keyring, SEXP service, SEXP username) {
   const char* cusername =
     isNull(username) ? empty : CHAR(STRING_ELT(username, 0));
 
+  const char *errormsg = NULL;
+  SecretCollection *collection = NULL;
   GError *err = NULL;
 
+  
+  
   gchar *password = secret_password_lookup_sync (
     keyring_secret_service_schema(),
     /* cancellable = */ NULL,
@@ -120,11 +162,9 @@ SEXP keyring_secret_service_delete(SEXP keyring, SEXP service, SEXP username) {
 SEXP keyring_secret_service_list(SEXP keyring, SEXP service) {
 
   const char *cservice = isNull(service) ? NULL : CHAR(STRING_ELT(service, 0));
-  const char *ckeyring = "default";
 
   const char *errormsg = NULL;
 
-  SecretCollection *collection = NULL;
   GList *secretlist = NULL, *iter = NULL;
   guint listlength, i;
   GHashTable *attributes = NULL;
@@ -132,30 +172,7 @@ SEXP keyring_secret_service_list(SEXP keyring, SEXP service) {
 
   SEXP result = R_NilValue;
 
-  /* Need to set the LOAD_COLLECTIONS flag, otherwise we cannot access the
-     collections. */
-
-  SecretService *secretservice = secret_service_get_sync(
-    /* flags = */ SECRET_SERVICE_LOAD_COLLECTIONS,
-    /* cancellable = */ NULL,
-    &err);
-
-  if (err || !secretservice) {
-    errormsg = "Cannot connect to secret service";
-    goto cleanup;
-  }
-
-  collection = secret_collection_for_alias_sync(
-    /* service = */ secretservice,
-    /* alias = */ ckeyring,
-    /* flags = */ SECRET_COLLECTION_NONE,
-    /* cancellable = */ NULL,
-    &err);
-
-  if (err || !collection) {
-    errormsg = "Cannot find keyring";
-    goto cleanup;
-  }
+  SecretCollection *collection = keyring_secret_service_get_collection(keyring);
 
   /* If service is not NULL, then we only look for the specified service. */
   attributes = g_hash_table_new(
@@ -196,7 +213,6 @@ SEXP keyring_secret_service_list(SEXP keyring, SEXP service) {
      happens for example if the specified keyring is not found. */
 
  cleanup:
-  if (secretservice) g_object_unref(secretservice);
   if (collection) g_object_unref(collection);
   if (secretlist) g_list_free(secretlist);
   if (attributes) g_hash_table_unref(attributes);
