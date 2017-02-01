@@ -1,0 +1,5 @@
+#! /bin/bash
+
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  echo "PKG_LIBS=-framework Security" > src/Makevars
+fi
