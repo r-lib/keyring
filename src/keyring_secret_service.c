@@ -118,7 +118,74 @@ SEXP keyring_secret_service_delete(SEXP service, SEXP username) {
 }
 
 SEXP keyring_secret_service_list(SEXP service) {
-  return R_NilValue;
+
+  const char *cservice = isNull(service) ? NULL : CHAR(STRING_ELT(service, 0));
+  const char *keyring = "default";
+
+  SecretCollection *collection;
+  GList *secretlist, *iter;
+  guint listlength, i;
+  GHashTable *attributes;
+  GError *err = NULL;
+
+  SEXP result;
+
+  SecretService *secretservice = secret_service_get_sync(
+    /* flags = */ SECRET_SERVICE_LOAD_COLLECTIONS,
+    /* cancellable = */ NULL,
+    &err);
+
+  keyring_secret_service_handle_status("list", TRUE, err);
+  if (!secretservice) error("Cannot connect to secret service");
+
+  collection = secret_collection_for_alias_sync(
+    /* service = */ secretservice,
+    /* alias = */ keyring,
+    /* flags = */ SECRET_COLLECTION_NONE,
+    /* cancellable = */ NULL,
+    &err);
+
+  keyring_secret_service_handle_status("list", TRUE, err);
+  if (!collection) {
+    error("Cannot find keyring '%s'", keyring);
+    return R_NilValue;
+  }
+
+  attributes = g_hash_table_new(
+    /* hash_func = */ (GHashFunc) g_str_hash,
+    /* key_equal_func = */ (GEqualFunc) g_str_equal);
+
+  if (cservice) {
+    g_hash_table_insert(attributes, g_strdup("service"), g_strdup(cservice));
+  }
+
+  secretlist = secret_collection_search_sync(
+    /* self = */ collection,
+    /* schema = */ keyring_secret_service_schema(),
+    /* attributes = */ attributes,
+    /* flags = */ SECRET_SEARCH_ALL,
+    /* cancellable = */ NULL,
+    &err);
+
+  keyring_secret_service_handle_status("list", TRUE, err);
+
+  listlength = g_list_length(secretlist);
+  result = PROTECT(allocVector(VECSXP, 2));
+  SET_VECTOR_ELT(result, 0, allocVector(STRSXP, listlength));
+  SET_VECTOR_ELT(result, 1, allocVector(STRSXP, listlength));
+  for (i = 0, iter = g_list_first(secretlist);
+       i < listlength;
+       i++, iter = g_list_next(iter)) {
+    SecretItem *secret = iter->data;
+    GHashTable *attr = secret_item_get_attributes(secret);
+    char *service = g_hash_table_lookup(attr, "service");
+    char *username = g_hash_table_lookup(attr, "username");
+    SET_STRING_ELT(VECTOR_ELT(result, 0), i, mkChar(service));
+    SET_STRING_ELT(VECTOR_ELT(result, 1), i, mkChar(username));
+  }
+
+  UNPROTECT(1);
+  return result;
 }
 
 #endif // __linux__
