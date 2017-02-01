@@ -1,5 +1,10 @@
 #! /bin/bash
 
+echo $OSTYPE
+
 if [[ "$OSTYPE" == "darwin"* ]]; then
-  echo "PKG_LIBS=-framework Security" > src/Makevars
+    echo "PKG_LIBS=-framework Security" > src/Makevars
+elif [[ "$OSTYPE" == "linux"* ]]; then
+    echo "PKG_CFLAGS=-pthread -I/usr/include/libsecret-1 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include" > src/Makevars
+    echo "PKG_LIBS=-lsecret-1 -lgio-2.0 -lgobject-2.0 -lglib-2.0" >> src/Makevars
 fi

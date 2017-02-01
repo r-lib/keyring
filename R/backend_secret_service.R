@@ -6,8 +6,7 @@ backend_secret_service <- function() {
     set = backend_secret_service_set,
     set_with_value = backend_secret_service_set_with_value,
     delete = backend_secret_service_delete,
-    list = backend_secret_service_list,
-    create_keyring = backend_secret_service_create
+    list = backend_secret_service_list
   )
 }
 

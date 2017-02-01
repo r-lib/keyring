@@ -11,6 +11,12 @@ skip_if_not_win <- function() {
   invisible(TRUE)
 }
 
+skip_if_not_linux <- function() {
+  sysname <- tolower(Sys.info()[["sysname"]])
+  if (sysname != "linux") skip("Not Linux")
+  invisible(TRUE)
+}
+
 random_string <- function(length = 10, use_letters = TRUE,
                           use_numbers = TRUE) {
   pool <- c(
