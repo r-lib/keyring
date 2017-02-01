@@ -34,9 +34,10 @@ backend_secret_service_delete <- function(backend, service, username) {
 }
 
 backend_secret_service_list <- function(backend, service) {
-  as.data.frame(
-    .Call("keyring_secret_service_list", service, PACKAGE = "keyring"),
-    col.names = c("service", "username"),
+  res <- .Call("keyring_secret_service_list", service, PACKAGE = "keyring")
+  data.frame(
+    service = res[[1]],
+    username = res[[2]],
     stringsAsFactors = FALSE
   )
 }
