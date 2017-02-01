@@ -5,6 +5,6 @@ echo $OSTYPE
 if [[ "$OSTYPE" == "darwin"* ]]; then
     echo "PKG_LIBS=-framework Security" > src/Makevars
 elif [[ "$OSTYPE" == "linux"* ]]; then
-    echo "PKG_CFLAGS=-pthread -I/usr/include/libsecret-1 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include" > src/Makevars
-    echo "PKG_LIBS=-lsecret-1 -lgio-2.0 -lgobject-2.0 -lglib-2.0" >> src/Makevars
+    echo "PKG_CFLAGS=-I/usr/include/dbus-1.0 -I/usr/lib/x86_64-linux-gnu/dbus-1.0/include" > src/Makevars
+    echo "PKG_LIBS=-ldbus-1" >> src/Makevars
 fi
