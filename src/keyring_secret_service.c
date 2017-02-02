@@ -402,6 +402,28 @@ SEXP keyring_secret_service_list_keyring() {
 }
 
 SEXP keyring_secret_service_delete_keyring(SEXP keyring) {
+  if (isNull(keyring)) error("Cannot delete the default keyring");
+
+  const char *ckeyring = CHAR(STRING_ELT(keyring, 0));
+  SecretCollection* collection =
+    keyring_secret_service_get_collection_other(ckeyring);
+
+  GError *err = NULL;
+
+  gboolean status = secret_collection_delete_sync(
+    collection,
+    /* cancellable = */ NULL,
+    &err);
+
+  g_object_unref(collection);
+  keyring_secret_service_handle_status("delete_keyring", status, err);
+
+  /* Need to disconnect here, otherwise the proxy is cached, and the deleted
+     collection will be still in the cache. If we disconnect here, a new proxy
+     will be created for the next operation, and this will not include the
+     deleted collection. */
+  secret_service_disconnect();
+
   return R_NilValue;
 }
 
