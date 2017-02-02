@@ -30,8 +30,10 @@ const SecretSchema *keyring_secret_service_schema() {
 void keyring_secret_service_handle_status(const char *func, gboolean status,
 					  GError *err) {
   if (!status || err) {
+    char *msg = R_alloc(1, strlen(err->message) + 1);
+    strcpy(msg, err->message);
     g_error_free (err);
-    error("Secret service keyring error in '%s': '%s'", func, "TODO");
+    error("Secret service keyring error in '%s': '%s'", func, msg);
   }
 }
 
