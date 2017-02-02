@@ -150,20 +150,33 @@ SEXP keyring_secret_service_set(SEXP keyring, SEXP service, SEXP username,
     isNull(username) ? empty : CHAR(STRING_ELT(username, 0));
   const char* cpassword = CHAR(STRING_ELT(password, 0));
 
+  SecretCollection *collection = NULL;
+  GHashTable *attributes = NULL;
   GError *err = NULL;
 
-  gboolean status = secret_password_store_sync(
-    keyring_secret_service_schema(),
-    SECRET_COLLECTION_DEFAULT,
-    /* label = */ "TODO",
-    cpassword,
-    /* cancellable = */ NULL,
-    &err,
-    "service", cservice,
-    "username", cusername,
-    NULL);
+  collection = keyring_secret_service_get_collection(keyring);
+  attributes = g_hash_table_new(
+    /* hash_func = */ (GHashFunc) g_str_hash,
+    /* key_equal_func = */ (GEqualFunc) g_str_equal);
 
-  keyring_secret_service_handle_status("set", status, err);
+  g_hash_table_insert(attributes, g_strdup("service"), g_strdup(cservice));
+  g_hash_table_insert(attributes, g_strdup("username"), g_strdup(cusername));
+
+  SecretValue *value = secret_value_new(cpassword, -1,
+					/* content_type = */ "text/plain");
+
+  SecretItem *item = secret_item_create_sync(
+    collection,
+    keyring_secret_service_schema(),
+    attributes,
+    /* label = */ cservice,
+    value,
+    /* flags = */ SECRET_ITEM_CREATE_REPLACE,
+    /* cancellable = */ NULL,
+    &err);
+
+  if (item) g_object_unref(item);
+  keyring_secret_service_handle_status("set", TRUE, err);
 
   return R_NilValue;
 }
