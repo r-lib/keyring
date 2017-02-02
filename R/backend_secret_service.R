@@ -8,7 +8,10 @@ backend_secret_service <- function(keyring = NULL) {
     set = backend_secret_service_set,
     set_with_value = backend_secret_service_set_with_value,
     delete = backend_secret_service_delete,
-    list = backend_secret_service_list
+    list = backend_secret_service_list,
+    create_keyring = backend_secret_service_create_keyring,
+    list_keyring = backend_secret_service_list_keyring,
+    delete_keyring = backend_secret_service_delete_keyring
   )
 }
 
@@ -43,4 +46,26 @@ backend_secret_service_list <- function(backend, service) {
     username = res[[2]],
     stringsAsFactors = FALSE
   )
+}
+
+backend_secret_service_create_keyring <- function(backend) {
+  .Call("keyring_secret_service_create_keyring", backend$keyring,
+        PACKAGE = "keyring")
+  invisible()
+}
+
+backend_secret_service_list_keyring <- function(backend) {
+  res <- .Call("keyring_secret_service_list_keyring", PACKAGE = "keyring")
+  data.frame(
+    keyring = res[[1]],
+    num_secrets = res[[2]],
+    locked = res[[3]],
+    stringsAsFactors = FALSE
+  )
+}
+
+backend_secret_service_delete_keyring <- function(backend) {
+  .Call("keyring_secret_service_delete_keyring", backend$keyring,
+        PACKAG = "keyring")
+  invisible()
 }

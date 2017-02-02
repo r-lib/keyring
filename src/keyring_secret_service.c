@@ -276,4 +276,72 @@ SEXP keyring_secret_service_list(SEXP keyring, SEXP service) {
   return result;
 }
 
+SEXP keyring_secret_service_create_keyring(SEXP keyring) {
+
+  const char *ckeyring = CHAR(STRING_ELT(keyring, 0));
+
+  GError *err = NULL;
+
+  SecretCollection *collection = secret_collection_create_sync(
+    /* service = */ NULL,
+    /* label = */ ckeyring,
+    /* alias = */ ckeyring,
+    /* flags = */ 0,
+    /* cancellable = */ NULL,
+    &err);
+
+  keyring_secret_service_handle_status("create_keyring", TRUE, err);
+
+  g_object_unref(collection);
+  return R_NilValue;
+}
+
+SEXP keyring_secret_service_list_keyring() {
+
+  GError *err = NULL;
+  SecretService *secretservice = secret_service_get_sync(
+    /* flags = */ SECRET_SERVICE_LOAD_COLLECTIONS,
+    /* cancellable = */ NULL,
+    &err);
+
+  if (err || !secretservice) {
+    keyring_secret_service_handle_status("create_keyring", TRUE, err);
+    error("Cannot connect to secret service");
+  }
+
+  GList *collections = secret_service_get_collections(secretservice);
+  if (!collections) {
+    g_object_unref(secretservice);
+    error("Cannot query keyrings");
+  }
+
+  guint num = g_list_length(collections);
+  SEXP result = PROTECT(allocVector(VECSXP, 3));
+  SET_VECTOR_ELT(result, 0, allocVector(STRSXP, num));
+  SET_VECTOR_ELT(result, 1, allocVector(INTSXP, num));
+  SET_VECTOR_ELT(result, 2, allocVector(LGLSXP, num));
+
+  GList *item;
+  int i = 0;
+  for (item = g_list_first(collections); item; item = g_list_next(item), i++) {
+    SecretCollection *coll = item->data;
+    gchar *label = secret_collection_get_label(coll);
+    gboolean locked = secret_collection_get_locked(coll);
+    GList *secrets = secret_collection_get_items(coll);
+    SET_STRING_ELT(VECTOR_ELT(result, 0), i, mkChar((char*) label));
+    INTEGER(VECTOR_ELT(result, 1))[i] = g_list_length(secrets);
+    LOGICAL(VECTOR_ELT(result, 2))[i] = locked;
+  }
+
+  g_object_unref(secretservice);
+  g_list_free(collections);
+
+  UNPROTECT(1);
+  return result;
+}
+
+SEXP keyring_secret_service_delete_keyring(SEXP keyring) {
+  return R_NilValue;
+}
+
 #endif // __linux__
