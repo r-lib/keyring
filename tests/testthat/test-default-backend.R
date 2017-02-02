@@ -1,6 +1,9 @@
 
 context("default backend")
 
+opts <- options(keyring_warn_for_env_fallback = FALSE)
+on.exit(options(opts), add = TRUE)
+
 test_that("use options", {
   withr::with_options(
     list(keyring_backend = backend_env),
@@ -61,7 +64,7 @@ test_that("auto macos", {
 
 test_that("auto linux", {
   mockery::stub(default_backend_auto, "Sys.info", c(sysname = "Linux"))
-  expect_equal(default_backend_auto(), backend_secret_service)
+  expect_true(default_backend_auto()()$name %in% c("secret service", "env"))
 })
 
 test_that("auto other", {
