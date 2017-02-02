@@ -185,22 +185,31 @@ SEXP keyring_secret_service_set(SEXP keyring, SEXP service, SEXP username,
 
 SEXP keyring_secret_service_delete(SEXP keyring, SEXP service, SEXP username) {
 
-  const char* empty = "";
-  const char* cservice = CHAR(STRING_ELT(service, 0));
-  const char* cusername =
-    isNull(username) ? empty : CHAR(STRING_ELT(username, 0));
+  GList *secretlist = keyring_secret_service_get_item(keyring, service, username);
+
+  guint listlength = g_list_length(secretlist);
+  if (listlength == 0) {
+    g_list_free(secretlist);
+    error("keyring item not found");
+
+  } else if (listlength > 1) {
+    warning("Multiple matching keyring items found, returning first");
+  }
+
+  SecretItem *secretitem = g_list_first(secretlist)->data;
 
   GError *err = NULL;
 
-  gboolean status = secret_password_clear_sync(
-    keyring_secret_service_schema(),
+  gboolean status = secret_item_delete_sync(
+    secretitem,
     /* cancellable = */ NULL,
-    &err,
-    "service", cservice,
-    "username", cusername,
-    NULL);
+    &err);
 
-  keyring_secret_service_handle_status("get", TRUE, err);
+  g_list_free(secretlist);
+
+  if (!status) error("Could not delete keyring item");
+
+  keyring_secret_service_handle_status("delete", status, err);
 
   return R_NilValue;
 }
