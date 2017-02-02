@@ -8,6 +8,23 @@
 
 #include <string.h>
 
+SEXP keyring_macos_error(const char *func, OSStatus status) {
+  CFStringRef str = SecCopyErrorMessageString(status, NULL);
+  CFIndex length = CFStringGetLength(str);
+  CFIndex maxSize =
+    CFStringGetMaximumSizeForEncoding(length, kCFStringEncodingUTF8) + 1;
+  char *buffer = R_alloc(1, maxSize);
+
+  if (CFStringGetCString(str, buffer, maxSize, kCFStringEncodingUTF8)) {
+    error("macOS Keychain error in '%s': %s", func, buffer);
+
+  } else {
+    error("macOS Keychain error in '%s': %s", func, "unknown error");
+  }
+
+  return R_NilValue;
+}
+
 /* TODO: set encoding to UTF-8? */
 
 SEXP keyring_macos_get(SEXP service, SEXP username) {
@@ -26,7 +43,7 @@ SEXP keyring_macos_get(SEXP service, SEXP username) {
     &length, &data,
     /* itemRef = */ NULL);
 
-  if (status != errSecSuccess) error("Cannot find macOS Keychain item");
+  if (status != errSecSuccess) keyring_macos_error("get", status);
 
   result = PROTECT(ScalarString(mkCharLen((const char*) data, length)));
   SecKeychainItemFreeContent(NULL, data);
@@ -50,7 +67,7 @@ SEXP keyring_macos_set(SEXP service, SEXP username, SEXP password) {
     (UInt32) strlen(cpassword), cpassword,
     /* itemRef = */ NULL);
 
-  if (status != errSecSuccess) error("Cannot set macOS Keychain item");
+  if (status != errSecSuccess) keyring_macos_error("set", status);
 
   return R_NilValue;
 }
@@ -69,10 +86,10 @@ SEXP keyring_macos_delete(SEXP service, SEXP username) {
     /* *passwordLength = */ NULL, /* *passwordData = */ NULL,
     &item);
 
-  if (status != errSecSuccess) error("Cannot find macOS Keychain item");
+  if (status != errSecSuccess) keyring_macos_error("delete", status);
 
   status = SecKeychainItemDelete(item);
-  if (status != errSecSuccess) error("Cannot delete macOS Keychain item");
+  if (status != errSecSuccess) keyring_macos_error("delete", status);
 
   CFRelease(item);
 
