@@ -45,13 +45,13 @@ SecretCollection* keyring_secret_service_get_collection_default() {
   GError *err = NULL;
 
   SecretService *secretservice = secret_service_get_sync(
-    /* flags = */ SECRET_SERVICE_LOAD_COLLECTIONS,
+    /* flags = */ SECRET_SERVICE_LOAD_COLLECTIONS | SECRET_SERVICE_OPEN_SESSION,
     /* cancellable = */ NULL,
     &err);
 
   if (err || !secretservice) {
-    errormsg = "Cannot connect to secret service";
-    goto cleanup;
+    keyring_secret_service_handle_status("get_keyring", TRUE, err);
+    error("Cannot connect to secret service");
   }
 
   collection = secret_collection_for_alias_sync(
@@ -61,15 +61,12 @@ SecretCollection* keyring_secret_service_get_collection_default() {
     /* cancellable = */ NULL,
     &err);
 
-  if (err || !collection) {
-    errormsg = "Cannot find keyring";
-    goto cleanup;
-  }
+  g_object_unref(secretservice);
 
- cleanup:
-  if (secretservice) g_object_unref(secretservice);
-  keyring_secret_service_handle_status("get_keyring", TRUE, err);
-  if (errormsg) error(errormsg);
+  if (err || !collection) {
+    keyring_secret_service_handle_status("get_keyring", TRUE, err);
+    error("Cannot find keyring");
+  }
 
   return collection;
 }
@@ -78,13 +75,22 @@ GList* keyring_secret_service_list_collections() {
 
   GError *err = NULL;
   SecretService *secretservice = secret_service_get_sync(
-    /* flags = */ SECRET_SERVICE_LOAD_COLLECTIONS,
+    /* flags = */ SECRET_SERVICE_LOAD_COLLECTIONS | SECRET_SERVICE_OPEN_SESSION,
     /* cancellable = */ NULL,
     &err);
 
   if (err || !secretservice) {
     keyring_secret_service_handle_status("create_keyring", TRUE, err);
     error("Cannot connect to secret service");
+  }
+
+  gboolean status = secret_service_load_collections_sync(
+    secretservice,
+    /* cancellable = */ NULL,
+    &err);
+
+  if (status || err) {
+    keyring_secret_service_handle_status("create_keyring", status, err);
   }
 
   GList *collections = secret_service_get_collections(secretservice);
@@ -106,7 +112,7 @@ SecretCollection* keyring_secret_service_get_collection_other(const char *name) 
   for (item = g_list_first(collections); item; item = g_list_next(item)) {
     SecretCollection *coll = item->data;
     gchar *label = secret_collection_get_label(coll);
-    if (g_str_equal(label, name)) {
+    if (! g_strcmp0(label, name)) {
       SecretCollection *copy = g_object_ref(coll);
       g_list_free(collections);
       return copy;
@@ -114,6 +120,7 @@ SecretCollection* keyring_secret_service_get_collection_other(const char *name) 
   }
 
   g_list_free(collections);
+  error("Did not find collection: '%s'", name);
   return NULL;
 }
 
@@ -157,8 +164,6 @@ GList* keyring_secret_service_get_item(SEXP keyring, SEXP service,
                   SECRET_SEARCH_LOAD_SECRETS,
     /* cancellable = */ NULL,
     &err);
-
-  if (err) goto cleanup;
 
  cleanup:
   if (collection) g_object_unref(collection);
@@ -336,17 +341,35 @@ SEXP keyring_secret_service_create_keyring(SEXP keyring) {
 
   GError *err = NULL;
 
+  SecretService *secretservice = secret_service_get_sync(
+    /* flags = */ SECRET_SERVICE_LOAD_COLLECTIONS | SECRET_SERVICE_OPEN_SESSION,
+    /* cancellable = */ NULL,
+    &err);
+
+  if (err || !secretservice) {
+    keyring_secret_service_handle_status("create_keyring", TRUE, err);
+    error("Cannot connect to secret service");
+  }
+
   SecretCollection *collection = secret_collection_create_sync(
-    /* service = */ NULL,
+    /* service = */ secretservice,
     /* label = */ ckeyring,
     /* alias = */ NULL,
     /* flags = */ 0,
     /* cancellable = */ NULL,
     &err);
 
+  g_object_unref(secretservice);
   keyring_secret_service_handle_status("create_keyring", TRUE, err);
 
-  g_object_unref(collection);
+  if (collection) g_object_unref(collection);
+
+  /* Need to disconnect here, otherwise the proxy is cached, and the new
+     collection is not in this cache. If we disconnect here, a new proxy
+     will be created for the next operation, and this will already include
+     the new collection. */
+  secret_service_disconnect();
+
   return R_NilValue;
 }
 
