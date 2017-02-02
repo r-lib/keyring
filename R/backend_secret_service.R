@@ -11,7 +11,9 @@ backend_secret_service <- function(keyring = NULL) {
     list = backend_secret_service_list,
     create_keyring = backend_secret_service_create_keyring,
     list_keyring = backend_secret_service_list_keyring,
-    delete_keyring = backend_secret_service_delete_keyring
+    delete_keyring = backend_secret_service_delete_keyring,
+    lock_keyring = backend_secret_service_lock_keyring,
+    unlock_keyring = backend_secret_service_unlock_keyring
   )
 }
 
@@ -49,7 +51,12 @@ backend_secret_service_list <- function(backend, service) {
 }
 
 backend_secret_service_create_keyring <- function(backend) {
-  .Call("keyring_secret_service_create_keyring", backend$keyring,
+  password <- get_pass()
+  backend_secret_service_create_keyring_direct(backend, password)
+}
+
+backend_secret_service_create_keyring_direct <- function(keyring, password) {
+  .Call("keyring_secret_service_create_keyring", keyring, password,
         PACKAGE = "keyring")
   invisible()
 }
@@ -66,6 +73,18 @@ backend_secret_service_list_keyring <- function(backend) {
 
 backend_secret_service_delete_keyring <- function(backend) {
   .Call("keyring_secret_service_delete_keyring", backend$keyring,
+        PACKAGE = "keyring")
+  invisible()
+}
+
+backend_secret_service_lock_keyring <- function(backend) {
+  .Call("keyring_secret_service_lock_keyring", backend$keyring, PACKAGE = "keyring")
+  invisible()
+}
+
+backend_secret_service_unlock_keyring <- function(backend, password = NULL) {
+  if (is.null(password)) password <- get_pass()
+  .Call("keyring_secret_service_unlock_keyring", backend$keyring, password,
         PACKAGE = "keyring")
   invisible()
 }

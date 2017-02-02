@@ -46,3 +46,33 @@ test_that("creating keychains", {
 
   expect_false(keyring %in% keyring_list(backend = backend)$keyring)
 })
+
+test_that("lock/unlock keyrings", {
+  skip("requires interaction")
+  skip_if_not_linux()
+
+  keyring <- random_keyring()
+  backend <- backend_secret_service(keyring = keyring)
+
+  ## This asks for a password interactively.
+  ## keyring_create(backend = backend)
+  backend_secret_service_create_keyring_direct(backend$keyring,
+                                               password = "secret123!")
+
+  ## It is unlocked by default
+  list <- keyring_list(backend = backend)
+  expect_true(keyring %in% list$keyring)
+  expect_false(list$locked[match(keyring, list$keyring)])
+
+  ## Lock it
+  keyring_lock(backend = backend)
+  list <- keyring_list(backend = backend)
+  expect_true(list$locked[match(keyring, list$keyring)])
+
+  ## Unlock it
+  keyring_unlock(backend = backend, password = "secret123!")
+  list <- keyring_list(backend = backend)
+  expect_false(list$locked[match(keyring, list$keyring)])
+
+  expect_silent(keyring_delete(backend = backend))
+})
