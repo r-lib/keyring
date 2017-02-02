@@ -1,6 +1,7 @@
 
 #ifdef __APPLE__
 
+#include <CoreFoundation/CoreFoundation.h>
 #include <Security/Security.h>
 
 #include <R.h>
@@ -8,7 +9,7 @@
 
 #include <string.h>
 
-SEXP keyring_macos_error(const char *func, OSStatus status) {
+void keyring_macos_error(const char *func, OSStatus status) {
   CFStringRef str = SecCopyErrorMessageString(status, NULL);
   CFIndex length = CFStringGetLength(str);
   CFIndex maxSize =
@@ -21,8 +22,10 @@ SEXP keyring_macos_error(const char *func, OSStatus status) {
   } else {
     error("macOS Keychain error in '%s': %s", func, "unknown error");
   }
+}
 
-  return R_NilValue;
+void keyring_macos_handle_status(const char *func, OSStatus status) {
+  if (status != errSecSuccess) keyring_macos_error(func, status);
 }
 
 /* TODO: set encoding to UTF-8? */
@@ -96,9 +99,82 @@ SEXP keyring_macos_delete(SEXP service, SEXP username) {
   return R_NilValue;
 }
 
+static void keyring_macos_list_item(SecKeychainItemRef item, SEXP result,
+				    int idx) {
+  SecItemClass class;
+  SecKeychainAttribute attrs[] = {
+    { kSecServiceItemAttr },
+    { kSecAccountItemAttr }
+  };
+  SecKeychainAttributeList attrList = { 2, attrs };
+
+  if (SecKeychainItemGetTypeID() != CFGetTypeID(item)) {
+    SET_STRING_ELT(VECTOR_ELT(result, 0), idx, mkChar(""));
+    SET_STRING_ELT(VECTOR_ELT(result, 1), idx, mkChar(""));
+    return;
+  }
+
+  OSStatus status = SecKeychainItemCopyContent(item, &class, &attrList,
+					       /* length = */ NULL,
+					       /* outData = */ NULL);
+  keyring_macos_handle_status("list", status);
+  SET_STRING_ELT(VECTOR_ELT(result, 0), idx,
+		 mkCharLen(attrs[0].data, attrs[0].length));
+  SET_STRING_ELT(VECTOR_ELT(result, 1), idx,
+		 mkCharLen(attrs[1].data, attrs[1].length));
+  SecKeychainItemFreeContent(&attrList, NULL);
+}
+
 SEXP keyring_macos_list(SEXP service) {
-  // TODO
-  return R_NilValue;
+
+  CFStringRef cfservice = NULL;
+
+  CFMutableDictionaryRef query = CFDictionaryCreateMutable(
+    kCFAllocatorDefault, 0,
+    &kCFTypeDictionaryKeyCallBacks,
+    &kCFTypeDictionaryValueCallBacks);
+
+  CFDictionarySetValue(query, kSecMatchLimit, kSecMatchLimitAll);
+  CFDictionarySetValue(query, kSecReturnData, kCFBooleanFalse);
+  CFDictionarySetValue(query, kSecReturnRef, kCFBooleanTrue);
+  CFDictionarySetValue(query, kSecClass, kSecClassGenericPassword);
+
+  if (!isNull(service)) {
+    const char *cservice = CHAR(STRING_ELT(service, 0));
+    cfservice = CFStringCreateWithBytes(
+      /* alloc = */ NULL,
+      (const UInt8*) cservice, strlen(cservice),
+      kCFStringEncodingUTF8,
+      /* isExternalRepresentation = */ 0);
+      CFDictionarySetValue(query, kSecAttrService, cfservice);
+  }
+
+  CFArrayRef resArray = NULL;
+  OSStatus status = SecItemCopyMatching(query, (CFTypeRef*) &resArray);
+  CFRelease(query);
+  if (cfservice != NULL) CFRelease(cfservice);
+
+  if (status != errSecSuccess) {
+    if (resArray != NULL) CFRelease(resArray);
+    if (status != errSecSuccess) keyring_macos_error("list", status);
+    return R_NilValue;
+
+  } else {
+    CFIndex i, num = CFArrayGetCount(resArray);
+    SEXP result;
+    PROTECT(result = allocVector(VECSXP, 2));
+    SET_VECTOR_ELT(result, 0, allocVector(STRSXP, num));
+    SET_VECTOR_ELT(result, 1, allocVector(STRSXP, num));
+    for (i = 0; i < num; i++) {
+      SecKeychainItemRef item =
+	(SecKeychainItemRef) CFArrayGetValueAtIndex(resArray, i);
+      keyring_macos_list_item(item, result, (int) i);
+    }
+
+    CFRelease(resArray);
+    UNPROTECT(1);
+    return result;
+  }
 }
 
 #endif // __APPLE__
