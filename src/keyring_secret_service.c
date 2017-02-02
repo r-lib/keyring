@@ -462,7 +462,7 @@ SEXP keyring_secret_service_unlock_keyring(SEXP keyring, SEXP password) {
     &err);
 
   g_list_free(list);
-  keyring_secret_service_handle_status("lock_keyring", TRUE, err);
+  keyring_secret_service_handle_status("unlock_keyring", TRUE, err);
 
   return R_NilValue;
 }
