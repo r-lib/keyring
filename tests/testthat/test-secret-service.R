@@ -98,6 +98,7 @@ test_that("specify keyring explicitly", {
 })
 
 test_that("creating keychains", {
+  skip("requires interaction")
   skip_if_not_linux()
 
   keyring <- random_keyring()
