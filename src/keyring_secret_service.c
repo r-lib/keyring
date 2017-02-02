@@ -37,9 +37,8 @@ void keyring_secret_service_handle_status(const char *func, gboolean status,
   }
 }
 
-SecretCollection* keyring_secret_service_get_collection(SEXP keyring) {
+SecretCollection* keyring_secret_service_get_collection_default() {
 
-  const char* ckeyring = isNull(keyring) ? "default" : CHAR(STRING_ELT(keyring, 0));
   SecretCollection *collection = NULL;
 
   const char *errormsg = NULL;
@@ -57,7 +56,7 @@ SecretCollection* keyring_secret_service_get_collection(SEXP keyring) {
 
   collection = secret_collection_for_alias_sync(
     /* service = */ secretservice,
-    /* alias = */ ckeyring,
+    /* alias = */ "default",
     /* flags = */ SECRET_COLLECTION_NONE,
     /* cancellable = */ NULL,
     &err);
@@ -73,6 +72,59 @@ SecretCollection* keyring_secret_service_get_collection(SEXP keyring) {
   if (errormsg) error(errormsg);
 
   return collection;
+}
+
+GList* keyring_secret_service_list_collections() {
+
+  GError *err = NULL;
+  SecretService *secretservice = secret_service_get_sync(
+    /* flags = */ SECRET_SERVICE_LOAD_COLLECTIONS,
+    /* cancellable = */ NULL,
+    &err);
+
+  if (err || !secretservice) {
+    keyring_secret_service_handle_status("create_keyring", TRUE, err);
+    error("Cannot connect to secret service");
+  }
+
+  GList *collections = secret_service_get_collections(secretservice);
+  if (!collections) {
+    g_object_unref(secretservice);
+    error("Cannot query keyrings");
+  }
+
+  g_object_unref(secretservice);
+
+  return collections;
+}
+
+SecretCollection* keyring_secret_service_get_collection_other(const char *name) {
+
+  GList *collections = keyring_secret_service_list_collections();
+
+  GList *item;
+  for (item = g_list_first(collections); item; item = g_list_next(item)) {
+    SecretCollection *coll = item->data;
+    gchar *label = secret_collection_get_label(coll);
+    if (g_str_equal(label, name)) {
+      SecretCollection *copy = g_object_ref(coll);
+      g_list_free(collections);
+      return copy;
+    }
+  }
+
+  g_list_free(collections);
+  return NULL;
+}
+
+SecretCollection* keyring_secret_service_get_collection(SEXP keyring) {
+
+  if (isNull(keyring)) {
+    return keyring_secret_service_get_collection_default();
+  } else {
+    const char *ckeyring = CHAR(STRING_ELT(keyring, 0));
+    return keyring_secret_service_get_collection_other(ckeyring);
+  }
 }
 
 GList* keyring_secret_service_get_item(SEXP keyring, SEXP service,
@@ -287,7 +339,7 @@ SEXP keyring_secret_service_create_keyring(SEXP keyring) {
   SecretCollection *collection = secret_collection_create_sync(
     /* service = */ NULL,
     /* label = */ ckeyring,
-    /* alias = */ ckeyring,
+    /* alias = */ NULL,
     /* flags = */ 0,
     /* cancellable = */ NULL,
     &err);
@@ -300,22 +352,7 @@ SEXP keyring_secret_service_create_keyring(SEXP keyring) {
 
 SEXP keyring_secret_service_list_keyring() {
 
-  GError *err = NULL;
-  SecretService *secretservice = secret_service_get_sync(
-    /* flags = */ SECRET_SERVICE_LOAD_COLLECTIONS,
-    /* cancellable = */ NULL,
-    &err);
-
-  if (err || !secretservice) {
-    keyring_secret_service_handle_status("create_keyring", TRUE, err);
-    error("Cannot connect to secret service");
-  }
-
-  GList *collections = secret_service_get_collections(secretservice);
-  if (!collections) {
-    g_object_unref(secretservice);
-    error("Cannot query keyrings");
-  }
+  GList *collections = keyring_secret_service_list_collections();
 
   guint num = g_list_length(collections);
   SEXP result = PROTECT(allocVector(VECSXP, 3));
@@ -335,7 +372,6 @@ SEXP keyring_secret_service_list_keyring() {
     LOGICAL(VECTOR_ELT(result, 2))[i] = locked;
   }
 
-  g_object_unref(secretservice);
   g_list_free(collections);
 
   UNPROTECT(1);
