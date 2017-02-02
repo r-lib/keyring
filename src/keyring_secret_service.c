@@ -73,7 +73,8 @@ SecretCollection* keyring_secret_service_get_collection(SEXP keyring) {
   return collection;
 }
 
-SEXP keyring_secret_service_get(SEXP keyring, SEXP service, SEXP username) {
+GList* keyring_secret_service_get_item(SEXP keyring, SEXP service,
+				       SEXP username) {
 
   const char* empty = "";
   const char* cservice = CHAR(STRING_ELT(service, 0));
@@ -83,10 +84,7 @@ SEXP keyring_secret_service_get(SEXP keyring, SEXP service, SEXP username) {
   const char *errormsg = NULL;
   SecretCollection *collection = NULL;
   GList *secretlist = NULL;
-  guint listlength;
   GHashTable *attributes = NULL;
-  SecretItem *secretitem = NULL;
-  SecretValue *secretvalue = NULL;
   GError *err = NULL;
 
   collection = keyring_secret_service_get_collection(keyring);
@@ -108,37 +106,41 @@ SEXP keyring_secret_service_get(SEXP keyring, SEXP service, SEXP username) {
 
   if (err) goto cleanup;
 
-  listlength = g_list_length(secretlist);
+ cleanup:
+  if (collection) g_object_unref(collection);
+  if (attributes) g_hash_table_unref(attributes);
+  keyring_secret_service_handle_status("get", TRUE, err);
+  if (errormsg) error(errormsg);
+
+  return secretlist;
+}
+
+SEXP keyring_secret_service_get(SEXP keyring, SEXP service, SEXP username) {
+
+  GList *secretlist = keyring_secret_service_get_item(keyring, service, username);
+
+  guint listlength = g_list_length(secretlist);
   if (listlength == 0) {
-    errormsg = "keyring item not found";
-    goto cleanup;
+    g_list_free(secretlist);
+    error("keyring item not found");
 
   } else if (listlength > 1) {
     warning("Multiple matching keyring items found, returning first");
   }
 
-  secretitem = g_list_first(secretlist)->data;
-  secretvalue = secret_item_get_secret(secretitem);
+  SecretItem *secretitem = g_list_first(secretlist)->data;
+  SecretValue *secretvalue = secret_item_get_secret(secretitem);
 
   if (!secretvalue) {
-    errormsg = "Cannot get password";
-    goto cleanup;
+    g_list_free(secretlist);
+    error("Cannot get password");
   }
 
   gsize passlength;
   const gchar *password = secret_value_get(secretvalue, &passlength);
-
-  SEXP result = PROTECT(ScalarString(mkCharLen((const char*) password,
-					       (size_t) passlength)));
-  UNPROTECT(1);
-
- cleanup:
-  if (collection) g_object_unref(collection);
-  if (secretlist) g_list_free(secretlist);
-  if (attributes) g_hash_table_unref(attributes);
-  keyring_secret_service_handle_status("list", TRUE, err);
-  if (errormsg) error(errormsg);
-
+  SEXP result = ScalarString(mkCharLen((const char*) password,
+				       (size_t) passlength));
+  g_list_free(secretlist);
   return result;
 }
 
