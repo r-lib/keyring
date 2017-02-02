@@ -4,3 +4,5 @@
 ^README.Rmd$
 ^.travis.yml$
 ^appveyor.yml$
+^src/keyring\.so$
+^src/*\.o$

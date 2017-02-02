@@ -1,3 +1,5 @@
 .Rproj.user
 .Rhistory
 .RData
+/src/keyring.so
+/src/*.o

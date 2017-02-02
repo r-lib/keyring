@@ -7,5 +7,6 @@
 #' 'Linux'.
 #'
 #' @docType package
+#' @useDynLib keyring
 #' @name keyring
 NULL
