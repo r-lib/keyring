@@ -1,0 +1,30 @@
+
+skip_if_not_macos <- function() {
+  sysname <- tolower(Sys.info()[["sysname"]])
+  if (sysname != "darwin") skip("Not macOS")
+  invisible(TRUE)
+}
+
+random_string <- function(length = 10, use_letters = TRUE,
+                          use_numbers = TRUE) {
+  pool <- c(
+    if (use_letters) c(letters, LETTERS),
+    if (use_numbers) 0:9
+  )
+  paste(
+    sample(pool, length, replace = TRUE),
+    collapse = ""
+  )
+}
+
+random_service <- function() {
+  random_string(15, use_numbers = FALSE)
+}
+
+random_username <- function() {
+  random_string(10, use_numbers = FALSE)
+}
+
+random_password <- function() {
+  random_string(16)
+}

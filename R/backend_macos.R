@@ -31,6 +31,9 @@ backend_macos_delete <- function(service, username) {
 }
 
 backend_macos_list <- function(service) {
-  res <- .Call("keyring_macos_list", service, PACKAGE = "keyring");
-  as.data.frame(res, col.names = c("service", "username"))
+  as.data.frame(
+    .Call("keyring_macos_list", service, PACKAGE = "keyring"),
+    col.names = c("service", "username"),
+    stringsAsFactors = FALSE
+  )
 }
