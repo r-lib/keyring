@@ -93,9 +93,54 @@ SEXP keyring_wincred_delete(SEXP service, SEXP username) {
   return R_NilValue;
 }
 
-SEXP keyring_wincred_list(SEXP keyring, SEXP service) {
+SEXP keyring_wincred_list(SEXP service) {
 
-  return R_NilValue;
+  const char *empty = "*";
+  const char *cservice =
+    isNull(service) ? empty : CHAR(STRING_ELT(service, 0));
+  char *filter =
+    isNull(service) ? (char*) empty : R_alloc(1, strlen(cservice) + 3);
+
+  DWORD count;
+  PCREDENTIAL *creds = NULL;
+
+  if (!cservice || !filter) error("Out of memory");
+
+  if (!isNull(service)) {
+    strcpy(filter, cservice);
+    strcat(filter, ":*");
+  }
+
+  BOOL status = CredEnumerate(filter, /* Flags = */ 0, &count,
+			      &creds);
+
+  if (status == FALSE) {
+    if (creds != NULL) CredFree(creds);
+    keyring_wincred_handle_status("list", status);
+    return R_NilValue;
+
+  } else {
+    SEXP result = PROTECT(allocVector(VECSXP, 2));
+    size_t i, num = (size_t) count;
+    SET_VECTOR_ELT(result, 0, allocVector(STRSXP, num));
+    SET_VECTOR_ELT(result, 1, allocVector(STRSXP, num));
+    for (i = 0; i < count; i++) {
+      char *target = creds[i]->TargetName;
+      char *sep = strchr(target, ':');
+      if (!sep) {
+	SET_STRING_ELT(VECTOR_ELT(result, 0), i, mkChar(target));
+	SET_STRING_ELT(VECTOR_ELT(result, 1), i, mkChar(""));
+      } else {
+	SET_STRING_ELT(VECTOR_ELT(result, 0), i,
+		       mkCharLen(target, sep - target));
+	SET_STRING_ELT(VECTOR_ELT(result, 1), i, mkChar(sep + 1));
+      }
+    }
+    CredFree(creds);
+
+    UNPROTECT(1);
+    return result;
+  }
 }
 
 #endif // _WIN32
