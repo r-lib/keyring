@@ -30,7 +30,7 @@ char* keyring_wincred_create_targetname(SEXP service, SEXP username) {
 
   strcpy(targetname, cservice);
   if (!isNull(username)) {
-    strcat(targetname, "/");
+    strcat(targetname, ":");
     strcat(targetname, cusername);
   }
 
