@@ -62,13 +62,31 @@ SEXP keyring_macos_set(SEXP service, SEXP username, SEXP password) {
   const char* cservice = CHAR(STRING_ELT(service, 0));
   const char* cusername = CHAR(STRING_ELT(username, 0));
   const char* cpassword = CHAR(STRING_ELT(password, 0));
+  SecKeychainItemRef item;
 
-  OSStatus status = SecKeychainAddGenericPassword(
-    /* keychain =  */ NULL,
+  /* Try to find it, and it is exists, update it */
+
+  OSStatus status = SecKeychainFindGenericPassword(
+    /* keychainOrArray = */ NULL,
     (UInt32) strlen(cservice), cservice,
     (UInt32) strlen(cusername), cusername,
-    (UInt32) strlen(cpassword), cpassword,
-    /* itemRef = */ NULL);
+    /* passwordLength = */ NULL, /* passwordData = */ NULL,
+    &item);
+
+  if (status == errSecItemNotFound) {
+    status = SecKeychainAddGenericPassword(
+      /* keychain =  */ NULL,
+      (UInt32) strlen(cservice), cservice,
+      (UInt32) strlen(cusername), cusername,
+      (UInt32) strlen(cpassword), cpassword,
+      /* itemRef = */ NULL);
+
+  } else {
+    status = SecKeychainItemModifyAttributesAndData(
+      item,
+      /* attrList= */ NULL,
+      (UInt32) strlen(cpassword), cpassword);
+  }
 
   if (status != errSecSuccess) keyring_macos_error("set", status);
 
