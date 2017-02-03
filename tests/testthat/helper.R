@@ -18,7 +18,10 @@ random_string <- function(length = 10, use_letters = TRUE,
 }
 
 random_service <- function() {
-  random_string(15, use_numbers = FALSE)
+  paste0(
+    "R-keyring-test-service-",
+    random_string(15, use_numbers = FALSE)
+  )
 }
 
 random_username <- function() {
