@@ -3,3 +3,4 @@
 .RData
 /src/keyring.so
 /src/*.o
+/src/keyring.dll

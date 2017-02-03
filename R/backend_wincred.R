@@ -6,8 +6,7 @@ backend_wincred <- function() {
     set = backend_wincred_set,
     set_with_value = backend_wincred_set_with_value,
     delete = backend_wincred_delete,
-    list = backend_wincred_list,
-    create_keyring = backend_wincred_create
+    list = backend_wincred_list
   )
 }
 
