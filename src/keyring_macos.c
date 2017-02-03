@@ -86,6 +86,7 @@ SEXP keyring_macos_set(SEXP service, SEXP username, SEXP password) {
       item,
       /* attrList= */ NULL,
       (UInt32) strlen(cpassword), cpassword);
+    CFRelease(item);
   }
 
   if (status != errSecSuccess) keyring_macos_error("set", status);
