@@ -51,6 +51,8 @@ test_that("set can update", {
   })
 
   expect_equal(key_get(service, username, backend = backend), password)
+
+  expect_silent(key_delete(service, username, backend = backend))
 })
 
 test_that("list", {
@@ -68,6 +70,8 @@ test_that("list", {
   })
 
   expect_equal(list$username[match(service, list$service)], username)
+
+  expect_silent(key_delete(service, username, backend = backend))
 })
 
 test_that("specify keyring explicitly", {
