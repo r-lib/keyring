@@ -30,7 +30,7 @@ void keyring_macos_handle_status(const char *func, OSStatus status) {
 
 /* TODO: set encoding to UTF-8? */
 
-SEXP keyring_macos_get(SEXP service, SEXP username) {
+SEXP keyring_macos_get(SEXP keyring, SEXP service, SEXP username) {
 
   const char* cservice = CHAR(STRING_ELT(service, 0));
   const char* cusername = CHAR(STRING_ELT(username, 0));
@@ -57,7 +57,8 @@ SEXP keyring_macos_get(SEXP service, SEXP username) {
 
 /* TODO: recode in UTF8 */
 
-SEXP keyring_macos_set(SEXP service, SEXP username, SEXP password) {
+SEXP keyring_macos_set(SEXP keyring, SEXP service, SEXP username,
+		       SEXP password) {
 
   const char* cservice = CHAR(STRING_ELT(service, 0));
   const char* cusername = CHAR(STRING_ELT(username, 0));
@@ -94,7 +95,7 @@ SEXP keyring_macos_set(SEXP service, SEXP username, SEXP password) {
   return R_NilValue;
 }
 
-SEXP keyring_macos_delete(SEXP service, SEXP username) {
+SEXP keyring_macos_delete(SEXP keyring, SEXP service, SEXP username) {
 
   const char* cservice = CHAR(STRING_ELT(service, 0));
   const char* cusername = CHAR(STRING_ELT(username, 0));
@@ -144,7 +145,7 @@ static void keyring_macos_list_item(SecKeychainItemRef item, SEXP result,
   SecKeychainItemFreeContent(&attrList, NULL);
 }
 
-SEXP keyring_macos_list(SEXP service) {
+SEXP keyring_macos_list(SEXP keyring, SEXP service) {
 
   CFStringRef cfservice = NULL;
 

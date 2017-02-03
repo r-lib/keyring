@@ -19,23 +19,23 @@ backend_env <- function() {
   )
 }
 
-backend_env_get <- function(service, username) {
+backend_env_get <- function(backend, service, username) {
   var <- backend_env_to_var(service, username)
   nachar_to_null(Sys.getenv(var, NA_character_))
 }
 
-backend_env_set <- function(service, username) {
+backend_env_set <- function(backend, service, username) {
   pw <- get_pass()
-  backend_env_set_with_value(service, username, pw)
+  backend_env_set_with_value(backend, service, username, pw)
 }
 
-backend_env_set_with_value <- function(service, username, password) {
+backend_env_set_with_value <- function(backend, service, username, password) {
   var <- backend_env_to_var(service, username)
   do.call(Sys.setenv, structure(list(password), names = var))
   invisible()
 }
 
-backend_env_delete <- function(service, username) {
+backend_env_delete <- function(backend, service, username) {
   var <- backend_env_to_var(service, username)
   Sys.unsetenv(var)
 }

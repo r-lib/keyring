@@ -22,7 +22,7 @@ key_get <- function(service, username = NULL, backend = default_backend()) {
   assert_that(is_string_or_null(username))
   assert_that(is_keyring_backend(backend))
 
-  backend$get(service, username)
+  backend$get(backend, service, username)
 }
 
 #' @export
@@ -33,7 +33,7 @@ key_set <- function(service, username = NULL, backend = default_backend()) {
   assert_that(is_string_or_null(username))
   assert_that(is_keyring_backend(backend))
 
-  backend$set(service, username)
+  backend$set(backend, service, username)
 }
 
 #' @export
@@ -45,7 +45,7 @@ key_set_with_value <- function(service, username = NULL, password = NULL,
   assert_that(is_keyring_backend(backend))
   assert_that(is_string(password))
 
-  backend$set_with_value(service, username, password)
+  backend$set_with_value(backend, service, username, password)
 }
 
 #' @export
@@ -57,7 +57,7 @@ key_delete <- function(service, username = NULL,
   assert_that(is_string_or_null(username))
   assert_that(is_keyring_backend(backend))
 
-  backend$delete(service, username)
+  backend$delete(backend, service, username)
 }
 
 #' @export
@@ -69,5 +69,5 @@ key_list <- function(service = NULL, backend = default_backend()) {
 
   check_supported(backend, "list")
 
-  backend$list(service)
+  backend$list(backend, service)
 }
