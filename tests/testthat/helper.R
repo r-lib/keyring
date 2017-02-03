@@ -31,3 +31,10 @@ random_username <- function() {
 random_password <- function() {
   random_string(16)
 }
+
+random_keyring <- function() {
+  paste0(
+    "Rkeyringtest",
+    random_string(8, use_numbers = FALSE)
+  )
+}

@@ -28,6 +28,14 @@ void keyring_macos_handle_status(const char *func, OSStatus status) {
   if (status != errSecSuccess) keyring_macos_error(func, status);
 }
 
+SecKeychainRef keyring_macos_open_keychain(SEXP keyring) {
+  SecKeychainRef keychain;
+  const char *pathName = CHAR(STRING_ELT(keyring, 0));
+  OSStatus status = SecKeychainOpen(pathName, &keychain);
+  if (status != errSecSuccess) keyring_macos_error("open", status);
+  return keychain;
+}
+
 /* TODO: set encoding to UTF-8? */
 
 SEXP keyring_macos_get(SEXP keyring, SEXP service, SEXP username) {
@@ -41,12 +49,17 @@ SEXP keyring_macos_get(SEXP keyring, SEXP service, SEXP username) {
   UInt32 length;
   SEXP result;
 
+  SecKeychainRef keychain =
+    isNull(keyring) ? NULL : keyring_macos_open_keychain(keyring);
+
   OSStatus status = SecKeychainFindGenericPassword(
-    /* keychainOrArray = */ NULL,
+    keychain,
     (UInt32) strlen(cservice), cservice,
     (UInt32) strlen(cusername), cusername,
     &length, &data,
     /* itemRef = */ NULL);
+
+  if (keychain != NULL) CFRelease(keychain);
 
   if (status != errSecSuccess) keyring_macos_error("get", status);
 
@@ -69,10 +82,13 @@ SEXP keyring_macos_set(SEXP keyring, SEXP service, SEXP username,
   const char* cpassword = CHAR(STRING_ELT(password, 0));
   SecKeychainItemRef item;
 
+  SecKeychainRef keychain =
+    isNull(keyring) ? NULL : keyring_macos_open_keychain(keyring);
+
   /* Try to find it, and it is exists, update it */
 
   OSStatus status = SecKeychainFindGenericPassword(
-    /* keychainOrArray = */ NULL,
+    keychain,
     (UInt32) strlen(cservice), cservice,
     (UInt32) strlen(cusername), cusername,
     /* passwordLength = */ NULL, /* passwordData = */ NULL,
@@ -80,7 +96,7 @@ SEXP keyring_macos_set(SEXP keyring, SEXP service, SEXP username,
 
   if (status == errSecItemNotFound) {
     status = SecKeychainAddGenericPassword(
-      /* keychain =  */ NULL,
+      keychain,
       (UInt32) strlen(cservice), cservice,
       (UInt32) strlen(cusername), cusername,
       (UInt32) strlen(cpassword), cpassword,
@@ -94,6 +110,8 @@ SEXP keyring_macos_set(SEXP keyring, SEXP service, SEXP username,
     CFRelease(item);
   }
 
+  if (keychain != NULL) CFRelease(keychain);
+
   if (status != errSecSuccess) keyring_macos_error("set", status);
 
   return R_NilValue;
@@ -106,20 +124,29 @@ SEXP keyring_macos_delete(SEXP keyring, SEXP service, SEXP username) {
   const char* cusername =
     isNull(username) ? empty : CHAR(STRING_ELT(username, 0));
 
+  SecKeychainRef keychain =
+    isNull(keyring) ? NULL : keyring_macos_open_keychain(keyring);
   SecKeychainItemRef item;
 
   OSStatus status = SecKeychainFindGenericPassword(
-    /* keychainOrArray = */ NULL,
+    keychain,
     (UInt32) strlen(cservice), cservice,
     (UInt32) strlen(cusername), cusername,
     /* *passwordLength = */ NULL, /* *passwordData = */ NULL,
     &item);
 
-  if (status != errSecSuccess) keyring_macos_error("delete", status);
+  if (status != errSecSuccess) {
+    if (keychain != NULL) CFRelease(keychain);
+    keyring_macos_error("delete", status);
+  }
 
   status = SecKeychainItemDelete(item);
-  if (status != errSecSuccess) keyring_macos_error("delete", status);
+  if (status != errSecSuccess) {
+    if (keychain != NULL) CFRelease(keychain);
+    keyring_macos_error("delete", status);
+  }
 
+  if (keychain != NULL) CFRelease(keychain);
   CFRelease(item);
 
   return R_NilValue;
@@ -165,6 +192,14 @@ SEXP keyring_macos_list(SEXP keyring, SEXP service) {
   CFDictionarySetValue(query, kSecReturnRef, kCFBooleanTrue);
   CFDictionarySetValue(query, kSecClass, kSecClassGenericPassword);
 
+  if (!isNull(keyring)) {
+    SecKeychainRef keychain = keyring_macos_open_keychain(keyring);
+    CFArrayRef searchList =
+      CFArrayCreate(NULL, (const void **) &keychain, 1,
+		    &kCFTypeArrayCallBacks);
+    CFRelease(searchList);
+  }
+
   if (!isNull(service)) {
     const char *cservice = CHAR(STRING_ELT(service, 0));
     cfservice = CFStringCreateWithBytes(
@@ -201,6 +236,25 @@ SEXP keyring_macos_list(SEXP keyring, SEXP service) {
     UNPROTECT(1);
     return result;
   }
+}
+
+SEXP keyring_macos_create(SEXP keyring, SEXP password) {
+  const char *ckeyring = CHAR(STRING_ELT(keyring, 0));
+  const char *cpassword = CHAR(STRING_ELT(password, 0));
+
+  SecKeychainRef result = NULL;
+
+  OSStatus status = SecKeychainCreate(
+    ckeyring,
+    (UInt32) strlen(cpassword), cpassword,
+    /* promptUser = */ 0, /* initialAccess = */ NULL,
+    &result);
+
+  if (result != NULL) CFRelease(result);
+
+  keyring_macos_handle_status("create", status);
+
+  return R_NilValue;
 }
 
 #endif // __APPLE__

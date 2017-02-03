@@ -71,3 +71,13 @@ key_list <- function(service = NULL, backend = default_backend()) {
 
   backend$list(backend, service)
 }
+
+#' @export
+
+keyring_create <- function(backend = default_backend()) {
+  assert_that(is_keyring_backend(backend))
+
+  check_supported(backend, "create_keyring")
+
+  backend$create_keyring(backend)
+}
