@@ -32,8 +32,10 @@ void keyring_macos_handle_status(const char *func, OSStatus status) {
 
 SEXP keyring_macos_get(SEXP keyring, SEXP service, SEXP username) {
 
+  const char* empty = "";
   const char* cservice = CHAR(STRING_ELT(service, 0));
-  const char* cusername = CHAR(STRING_ELT(username, 0));
+  const char* cusername =
+    isNull(username) ? empty :CHAR(STRING_ELT(username, 0));
 
   void *data;
   UInt32 length;
@@ -60,8 +62,10 @@ SEXP keyring_macos_get(SEXP keyring, SEXP service, SEXP username) {
 SEXP keyring_macos_set(SEXP keyring, SEXP service, SEXP username,
 		       SEXP password) {
 
+  const char* empty = "";
   const char* cservice = CHAR(STRING_ELT(service, 0));
-  const char* cusername = CHAR(STRING_ELT(username, 0));
+  const char* cusername =
+    isNull(username) ? empty : CHAR(STRING_ELT(username, 0));
   const char* cpassword = CHAR(STRING_ELT(password, 0));
   SecKeychainItemRef item;
 
@@ -97,8 +101,10 @@ SEXP keyring_macos_set(SEXP keyring, SEXP service, SEXP username,
 
 SEXP keyring_macos_delete(SEXP keyring, SEXP service, SEXP username) {
 
+  const char* empty = "";
   const char* cservice = CHAR(STRING_ELT(service, 0));
-  const char* cusername = CHAR(STRING_ELT(username, 0));
+  const char* cusername =
+    isNull(username) ? empty : CHAR(STRING_ELT(username, 0));
 
   SecKeychainItemRef item;
 

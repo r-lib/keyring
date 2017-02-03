@@ -19,6 +19,23 @@ test_that("set, get, delete", {
   expect_silent(key_delete(service, username, backend = backend))
 })
 
+test_that("set, get, delete without username", {
+  skip_if_not_macos()
+
+  service <- random_service()
+  password <- random_password()
+
+  backend <- backend_macos()
+
+  expect_silent(
+    key_set_with_value(service, password = password, backend = backend)
+  )
+
+  expect_equal(key_get(service, backend = backend), password)
+
+  expect_silent(key_delete(service, backend = backend))
+})
+
 test_that("set can update", {
   skip_if_not_macos()
 
