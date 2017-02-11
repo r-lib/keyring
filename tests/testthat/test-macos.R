@@ -93,14 +93,14 @@ test_that("specify keyring explicitly", {
 })
 
 test_that("creating keychains", {
-
-  skip("No create/delete tests for now")
   skip_if_not_macos()
 
   keyring <- random_keyring()
   backend <- backend_macos(keyring = keyring)
 
-  keyring_create(backend = backend)
+  ## This asks for a password interactively.
+  ## keyring_create(backend = backend)
+  backend_macos_create_keyring_direct(backend$keyring, pw = "secret123!")
 
   service <- random_service()
   username <- random_username()

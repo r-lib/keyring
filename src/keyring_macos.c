@@ -354,11 +354,54 @@ SEXP keyring_macos_list_keyring() {
 SEXP keyring_macos_delete_keyring(SEXP keyring) {
 
   const char *ckeyring = CHAR(STRING_ELT(keyring, 0));
-  SecKeychainRef keychain = keyring_macos_open_keychain(ckeyring);
 
-  OSStatus status = SecKeychainDelete(keychain);
+  /* Need to remove it from the search list as well */
+
+  CFArrayRef keyrings = NULL;
+  OSStatus status = SecKeychainCopyDomainSearchList(
+    kSecPreferencesDomainUser,
+    &keyrings);
+  keyring_macos_handle_status("delete_keyring", status);
+
+  CFIndex i, count = CFArrayGetCount(keyrings);
+  CFMutableArrayRef newkeyrings =
+    CFArrayCreateMutableCopy(NULL, count, keyrings);
+  for (i = 0; i < count; i++) {
+    SecKeychainItemRef item =
+      (SecKeychainItemRef) CFArrayGetValueAtIndex(keyrings, i);
+    UInt32 pathLength = MAXPATHLEN;
+    char pathName[MAXPATHLEN + 1];
+    status = SecKeychainGetPath(item, &pathLength, pathName);
+    pathName[pathLength] = '\0';
+    if (status) {
+      CFRelease(keyrings);
+      CFRelease(newkeyrings);
+      keyring_macos_handle_status("delete_keyring", status);
+    }
+    if (!strcmp(pathName, ckeyring)) {
+      CFArrayRemoveValueAtIndex(newkeyrings, (CFIndex) i);
+      status = SecKeychainSetDomainSearchList(
+        kSecPreferencesDomainUser,
+	newkeyrings);
+      if (status) {
+	CFRelease(keyrings);
+	CFRelease(newkeyrings);
+	keyring_macos_handle_status("delete_keyring", status);
+      }
+    }
+  }
+
+  /* If we haven't found it on the search list,
+     then we just keep silent about it ... */
+
+  CFRelease(keyrings);
+  CFRelease(newkeyrings);
+
+  /* And now remove the file as well... */
+  SecKeychainRef keychain = keyring_macos_open_keychain(ckeyring);
+  status = SecKeychainDelete(keychain);
   CFRelease(keychain);
-  keyring_macos_handle_status("delete", status);
+  keyring_macos_handle_status("delete_keyring", status);
 
   return R_NilValue;
 }

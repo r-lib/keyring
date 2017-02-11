@@ -65,7 +65,11 @@ backend_macos_list <- function(backend, service) {
 backend_macos_create_keyring <- function(backend, pw = NULL) {
   assert_that(is_string_or_null(pw))
   if (is.null(pw)) pw <- get_pass()
-  .Call("keyring_macos_create", backend$keyring, pw, PACKAGE = "keyring")
+  backend_macos_create_keyring_direct(backend$keyring, pw)
+}
+
+backend_macos_create_keyring_direct <- function(keyring, pw = NULL) {
+  .Call("keyring_macos_create", keyring, pw, PACKAGE = "keyring")
   invisible()
 }
 
