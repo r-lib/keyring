@@ -9,7 +9,8 @@ backend_macos <- function(keyring = NULL) {
     set_with_value = backend_macos_set_with_value,
     delete = backend_macos_delete,
     list = backend_macos_list,
-    create_keyring = backend_macos_create
+    create_keyring = backend_macos_create_keyring,
+    list_keyring = backend_macos_list_keyring
   )
 }
 
@@ -60,9 +61,19 @@ backend_macos_list <- function(backend, service) {
   )
 }
 
-backend_macos_create <- function(backend, pw = NULL) {
+backend_macos_create_keyring <- function(backend, pw = NULL) {
   assert_that(is_string_or_null(pw))
   if (is.null(pw)) pw <- get_pass()
   .Call("keyring_macos_create", backend$keyring, pw, PACKAGE = "keyring")
   invisible()
+}
+
+backend_macos_list_keyring <- function(backend) {
+  res <- .Call("keyring_macos_list_keyring", PACKAGE = "keyring")
+  data.frame(
+    keyring = sub("\\.keychain$", "", basename(res[[1]])),
+    num_secrets = res[[2]],
+    locked = res[[3]],
+    stringsAsFactors = FALSE
+  )
 }
