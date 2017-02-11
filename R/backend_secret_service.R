@@ -66,6 +66,6 @@ backend_secret_service_list_keyring <- function(backend) {
 
 backend_secret_service_delete_keyring <- function(backend) {
   .Call("keyring_secret_service_delete_keyring", backend$keyring,
-        PACKAG = "keyring")
+        PACKAGE = "keyring")
   invisible()
 }
