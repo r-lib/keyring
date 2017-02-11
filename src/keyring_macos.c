@@ -310,7 +310,6 @@ SEXP keyring_macos_list_keyring() {
   keyring_macos_handle_status("list_keyrings", status);
 
   CFIndex i, num = CFArrayGetCount(keyrings);
-  CFRange range = { 0, num };
 
   SEXP result = PROTECT(allocVector(VECSXP, 3));
   SET_VECTOR_ELT(result, 0, allocVector(STRSXP, num));
@@ -350,6 +349,18 @@ SEXP keyring_macos_list_keyring() {
 
   UNPROTECT(1);
   return result;
+}
+
+SEXP keyring_macos_delete_keyring(SEXP keyring) {
+
+  const char *ckeyring = CHAR(STRING_ELT(keyring, 0));
+  SecKeychainRef keychain = keyring_macos_open_keychain(ckeyring);
+
+  OSStatus status = SecKeychainDelete(keychain);
+  CFRelease(keychain);
+  keyring_macos_handle_status("delete", status);
+
+  return R_NilValue;
 }
 
 #endif // __APPLE__

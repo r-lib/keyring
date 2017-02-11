@@ -113,4 +113,8 @@ test_that("creating keychains", {
   expect_equal(key_get(service, username, backend = backend), password)
 
   expect_silent(key_delete(service, username, backend = backend))
+
+  expect_silent(keyring_delete(backend = backend))
+
+  expect_false(keyring %in% keyring_list(backend = backend)$keyring)
 })

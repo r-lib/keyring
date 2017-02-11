@@ -10,7 +10,8 @@ backend_macos <- function(keyring = NULL) {
     delete = backend_macos_delete,
     list = backend_macos_list,
     create_keyring = backend_macos_create_keyring,
-    list_keyring = backend_macos_list_keyring
+    list_keyring = backend_macos_list_keyring,
+    delete_keyring = backend_macos_delete_keyring
   )
 }
 
@@ -76,4 +77,10 @@ backend_macos_list_keyring <- function(backend) {
     locked = res[[3]],
     stringsAsFactors = FALSE
   )
+}
+
+backend_macos_delete_keyring <- function(backend) {
+  .Call("keyring_macos_delete_keyring", backend$keyring,
+        PACKAGE = "keyring")
+  invisible()
 }
