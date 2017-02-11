@@ -118,3 +118,51 @@ test_that("creating keychains", {
 
   expect_false(keyring %in% keyring_list(backend = backend)$keyring)
 })
+
+test_that("creating keychains, interactive", {
+  skip_if_not_macos()
+
+  keyring <- random_keyring()
+  backend <- backend_macos(keyring = keyring)
+  backend$create_keyring <- function(backend, pw) {
+    backend_macos_create_keyring_direct(backend$keyring, "secret")
+  }
+
+  keyring_create(backend = backend)
+
+  service <- random_service()
+  username <- random_username()
+  password <- random_password()
+
+  expect_silent(
+    key_set_with_value(service, username, password, backend = backend)
+  )
+
+  expect_equal(key_get(service, username, backend = backend), password)
+  expect_silent(key_delete(service, username, backend = backend))
+  expect_silent(keyring_delete(backend = backend))
+  expect_false(keyring %in% keyring_list(backend = backend)$keyring)
+})
+
+test_that("keyring file at special location", {
+
+  skip_if_not_macos()
+
+  keyring <- tempfile(fileext = ".keychain")
+  backend <- backend_macos(keyring = keyring)
+
+  backend_macos_create_keyring_direct(backend$keyring, pw = "secret123!")
+
+  service <- random_service()
+  username <- random_username()
+  password <- random_password()
+
+  expect_silent(
+    key_set_with_value(service, username, password, backend = backend)
+  )
+  expect_equal(key_get(service, username, backend = backend), password)
+  expect_silent(key_delete(service, username, backend = backend))
+  expect_silent(keyring_delete(backend = backend))
+  expect_false(keyring %in% keyring_list(backend = backend)$keyring)
+  expect_false(file.exists(keyring))
+})

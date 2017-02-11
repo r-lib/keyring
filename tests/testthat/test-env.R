@@ -21,6 +21,21 @@ test_that("set, get, delete", {
   expect_equal(Sys.getenv(var, "foo"), "foo")
 })
 
+test_that("interactive set", {
+
+  backend <- backend_env()
+  backend$set <- function(backend, service, username) {
+    backend$set_with_value(backend, service, username, "secret")
+  }
+
+  service <- random_service()
+  username <- random_username()
+
+  expect_silent(key_set(service, username, backend = backend))
+  expect_equal(key_get(service, username, backend = backend), "secret")
+  expect_silent(key_delete(service, username, backend = backend))
+})
+
 test_that("set, get, delete, without username", {
   service <- random_service()
   password <- random_password()
