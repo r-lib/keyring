@@ -203,12 +203,12 @@ CFArrayRef keyring_macos_list_get(const char *ckeyring,
   CFDictionarySetValue(query, kSecReturnRef, kCFBooleanTrue);
   CFDictionarySetValue(query, kSecClass, kSecClassGenericPassword);
 
+  CFArrayRef searchList = NULL;
   if (ckeyring) {
     SecKeychainRef keychain = keyring_macos_open_keychain(ckeyring);
-    CFArrayRef searchList =
-      CFArrayCreate(NULL, (const void **) &keychain, 1,
-		    &kCFTypeArrayCallBacks);
-    CFRelease(searchList);
+    searchList = CFArrayCreate(NULL, (const void **) &keychain, 1,
+			       &kCFTypeArrayCallBacks);
+    CFDictionaryAddValue(query, kSecMatchSearchList, searchList);
   }
 
   if (cservice) {
@@ -217,13 +217,14 @@ CFArrayRef keyring_macos_list_get(const char *ckeyring,
       (const UInt8*) cservice, strlen(cservice),
       kCFStringEncodingUTF8,
       /* isExternalRepresentation = */ 0);
-      CFDictionarySetValue(query, kSecAttrService, cfservice);
+    CFDictionaryAddValue(query, kSecAttrService, cfservice);
   }
 
   CFArrayRef resArray = NULL;
   OSStatus status = SecItemCopyMatching(query, (CFTypeRef*) &resArray);
   CFRelease(query);
   if (cfservice != NULL) CFRelease(cfservice);
+  if (searchList != NULL) CFRelease(searchList);
 
   if (status != errSecSuccess) {
     if (resArray != NULL) CFRelease(resArray);
