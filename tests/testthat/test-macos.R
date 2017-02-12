@@ -106,6 +106,9 @@ test_that("creating keychains", {
   ## keyring_create(backend = backend)
   backend_macos_create_keyring_direct(backend$keyring, pw = "secret123!")
 
+  list <- key_list(backend = backend)
+  expect_equal(nrow(list), 0)
+
   service <- random_service()
   username <- random_username()
   password <- random_password()
