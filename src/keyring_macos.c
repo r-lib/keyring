@@ -288,6 +288,7 @@ SEXP keyring_macos_create(SEXP keyring, SEXP password) {
     &keyrings);
 
   if (status) {
+    SecKeychainItemDelete(result);
     if (result != NULL) CFRelease(result);
     keyring_macos_handle_status("cannot create keychain", status);
   }
@@ -307,6 +308,7 @@ SEXP keyring_macos_create(SEXP keyring, SEXP password) {
     newkeyrings);
 
   if (status) {
+    SecKeychainItemDelete(result);
     if (result) CFRelease(result);
     if (keyrings) CFRelease(keyrings);
     if (newkeyrings) CFRelease(newkeyrings);
