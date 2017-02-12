@@ -226,7 +226,15 @@ CFArrayRef keyring_macos_list_get(const char *ckeyring,
   if (cfservice != NULL) CFRelease(cfservice);
   if (searchList != NULL) CFRelease(searchList);
 
-  if (status != errSecSuccess) {
+  /* If there are no elements in the keychain, then SecItemCopyMatching
+     returns with an error, so we need work around that and return an
+     empty list instead. */
+
+  if (status == errSecItemNotFound) {
+    resArray = CFArrayCreate(NULL, NULL, 0, NULL);
+    return resArray;
+
+  } else if (status != errSecSuccess) {
     if (resArray != NULL) CFRelease(resArray);
     keyring_macos_handle_status("cannot list passwords", status);
     return NULL;
