@@ -18,10 +18,10 @@ void keyring_macos_error(const char *func, OSStatus status) {
   char *buffer = R_alloc(1, maxSize);
 
   if (CFStringGetCString(str, buffer, maxSize, kCFStringEncodingUTF8)) {
-    error("macOS Keychain error in '%s': %s", func, buffer);
+    error("keyring error (macOS Keychain), %s: %s", func, buffer);
 
   } else {
-    error("macOS Keychain error in '%s': %s", func, "unknown error");
+    error("keyring error (macOS Keychain), %s", func);
   }
 }
 
@@ -62,7 +62,7 @@ SEXP keyring_macos_get(SEXP keyring, SEXP service, SEXP username) {
 
   if (keychain != NULL) CFRelease(keychain);
 
-  if (status != errSecSuccess) keyring_macos_error("get", status);
+  keyring_macos_handle_status("cannot get password", status);
 
   result = PROTECT(ScalarString(mkCharLen((const char*) data, length)));
   SecKeychainItemFreeContent(NULL, data);
@@ -114,7 +114,7 @@ SEXP keyring_macos_set(SEXP keyring, SEXP service, SEXP username,
 
   if (keychain != NULL) CFRelease(keychain);
 
-  if (status != errSecSuccess) keyring_macos_error("set", status);
+  keyring_macos_handle_status("cannot set password", status);
 
   return R_NilValue;
 }
@@ -139,13 +139,13 @@ SEXP keyring_macos_delete(SEXP keyring, SEXP service, SEXP username) {
 
   if (status != errSecSuccess) {
     if (keychain != NULL) CFRelease(keychain);
-    keyring_macos_error("delete", status);
+    keyring_macos_error("cannot delete password", status);
   }
 
   status = SecKeychainItemDelete(item);
   if (status != errSecSuccess) {
     if (keychain != NULL) CFRelease(keychain);
-    keyring_macos_error("delete", status);
+    keyring_macos_error("cannot delete password", status);
   }
 
   if (keychain != NULL) CFRelease(keychain);
@@ -163,6 +163,7 @@ static void keyring_macos_list_item(SecKeychainItemRef item, SEXP result,
   };
   SecKeychainAttributeList attrList = { 2, attrs };
 
+  /* This should not happen, not a keychain... */
   if (SecKeychainItemGetTypeID() != CFGetTypeID(item)) {
     SET_STRING_ELT(VECTOR_ELT(result, 0), idx, mkChar(""));
     SET_STRING_ELT(VECTOR_ELT(result, 1), idx, mkChar(""));
@@ -172,7 +173,7 @@ static void keyring_macos_list_item(SecKeychainItemRef item, SEXP result,
   OSStatus status = SecKeychainItemCopyContent(item, &class, &attrList,
 					       /* length = */ NULL,
 					       /* outData = */ NULL);
-  keyring_macos_handle_status("list", status);
+  keyring_macos_handle_status("cannot list passwords", status);
   SET_STRING_ELT(VECTOR_ELT(result, 0), idx,
 		 mkCharLen(attrs[0].data, attrs[0].length));
   SET_STRING_ELT(VECTOR_ELT(result, 1), idx,
@@ -219,7 +220,7 @@ CFArrayRef keyring_macos_list_get(const char *ckeyring,
 
   if (status != errSecSuccess) {
     if (resArray != NULL) CFRelease(resArray);
-    if (status != errSecSuccess) keyring_macos_error("list", status);
+    keyring_macos_handle_status("cannot list passwords", status);
     return NULL;
 
   } else {
@@ -263,7 +264,7 @@ SEXP keyring_macos_create(SEXP keyring, SEXP password) {
     /* promptUser = */ 0, /* initialAccess = */ NULL,
     &result);
 
-  keyring_macos_handle_status("create", status);
+  keyring_macos_handle_status("cannot create keychain", status);
 
   CFArrayRef keyrings = NULL;
   status = SecKeychainCopyDomainSearchList(
@@ -272,7 +273,7 @@ SEXP keyring_macos_create(SEXP keyring, SEXP password) {
 
   if (status) {
     if (result != NULL) CFRelease(result);
-    keyring_macos_handle_status("create", status);
+    keyring_macos_handle_status("cannot create keychain", status);
   }
 
   /* We need to add the new keychain to the keychain search list,
@@ -293,7 +294,7 @@ SEXP keyring_macos_create(SEXP keyring, SEXP password) {
     if (result) CFRelease(result);
     if (keyrings) CFRelease(keyrings);
     if (newkeyrings) CFRelease(newkeyrings);
-    keyring_macos_handle_status("create", status);
+    keyring_macos_handle_status("cannot create keychain", status);
   }
 
   CFRelease(result);
@@ -307,7 +308,7 @@ SEXP keyring_macos_list_keyring() {
   CFArrayRef keyrings = NULL;
   OSStatus status =
     SecKeychainCopyDomainSearchList(kSecPreferencesDomainUser, &keyrings);
-  keyring_macos_handle_status("list_keyrings", status);
+  keyring_macos_handle_status("cannot list keyrings", status);
 
   CFIndex i, num = CFArrayGetCount(keyrings);
 
@@ -325,7 +326,7 @@ SEXP keyring_macos_list_keyring() {
     pathName[pathLength] = '\0';
     if (status) {
       CFRelease(keyrings);
-      keyring_macos_handle_status("list_keyrings", status);
+      keyring_macos_handle_status("cannot list keyrings", status);
     }
     SET_STRING_ELT(VECTOR_ELT(result, 0), i, mkCharLen(pathName, pathLength));
 
@@ -361,7 +362,7 @@ SEXP keyring_macos_delete_keyring(SEXP keyring) {
   OSStatus status = SecKeychainCopyDomainSearchList(
     kSecPreferencesDomainUser,
     &keyrings);
-  keyring_macos_handle_status("delete_keyring", status);
+  keyring_macos_handle_status("cannot delete keyring", status);
 
   CFIndex i, count = CFArrayGetCount(keyrings);
   CFMutableArrayRef newkeyrings =
@@ -376,7 +377,7 @@ SEXP keyring_macos_delete_keyring(SEXP keyring) {
     if (status) {
       CFRelease(keyrings);
       CFRelease(newkeyrings);
-      keyring_macos_handle_status("delete_keyring", status);
+      keyring_macos_handle_status("cannot delete keyring", status);
     }
     if (!strcmp(pathName, ckeyring)) {
       CFArrayRemoveValueAtIndex(newkeyrings, (CFIndex) i);
@@ -386,7 +387,7 @@ SEXP keyring_macos_delete_keyring(SEXP keyring) {
       if (status) {
 	CFRelease(keyrings);
 	CFRelease(newkeyrings);
-	keyring_macos_handle_status("delete_keyring", status);
+	keyring_macos_handle_status("cannot delete keyring", status);
       }
     }
   }
@@ -401,7 +402,7 @@ SEXP keyring_macos_delete_keyring(SEXP keyring) {
   SecKeychainRef keychain = keyring_macos_open_keychain(ckeyring);
   status = SecKeychainDelete(keychain);
   CFRelease(keychain);
-  keyring_macos_handle_status("delete_keyring", status);
+  keyring_macos_handle_status("cannot delete keyring", status);
 
   return R_NilValue;
 }
