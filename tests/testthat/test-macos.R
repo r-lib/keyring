@@ -173,3 +173,33 @@ test_that("keyring file at special location", {
   expect_false(keyring %in% keyring_list(backend = backend)$keyring)
   expect_false(file.exists(keyring))
 })
+
+test_that("errors", {
+
+  skip_if_not_macos()
+
+  ## Non-existing keychain
+  expect_error(
+    key_list(backend = backend_macos(tempfile())),
+    "cannot open keychain"
+  )
+
+  ## Getting non-existing password
+  expect_error(
+    key_get(random_service(), random_username(), backend = backend_macos()),
+    "cannot get password"
+  )
+
+  ## Deleting non-existing password
+  expect_error(
+    key_delete(random_service(), random_username(),
+               backend = backend_macos()),
+    "cannot delete password"
+  )
+
+  ## Create keychain without access to file
+  expect_error(
+    backend_macos_create_keyring_direct("/xxx", pw = "secret123!"),
+    "cannot create keychain"
+  )
+})
