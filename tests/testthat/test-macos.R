@@ -71,6 +71,10 @@ test_that("list", {
 
   expect_equal(list$username[match(service, list$service)], username)
 
+  list2 <- key_list(service = service, backend = backend)
+  expect_equal(nrow(list2), 1)
+  expect_equal(list2$username, username)
+
   expect_silent(key_delete(service, username, backend = backend))
 })
 
