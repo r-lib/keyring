@@ -9,7 +9,6 @@
 #'
 #' @export
 #' @name keyring backends
-#' @examples
 
 default_backend <- function() {
   sysname <- tolower(Sys.info()[["sysname"]])
