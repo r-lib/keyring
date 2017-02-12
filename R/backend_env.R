@@ -21,7 +21,9 @@ backend_env <- function() {
 
 backend_env_get <- function(backend, service, username) {
   var <- backend_env_to_var(service, username)
-  nachar_to_null(Sys.getenv(var, NA_character_))
+  res <- Sys.getenv(var, NA_character_)
+  if (is.na(res)) stop("Cannot find password")
+  res
 }
 
 backend_env_set <- function(backend, service, username) {
