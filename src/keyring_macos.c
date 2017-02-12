@@ -32,7 +32,14 @@ void keyring_macos_handle_status(const char *func, OSStatus status) {
 SecKeychainRef keyring_macos_open_keychain(const char *pathName) {
   SecKeychainRef keychain;
   OSStatus status = SecKeychainOpen(pathName, &keychain);
-  if (status != errSecSuccess) keyring_macos_error("open", status);
+  keyring_macos_handle_status("cannot open keychain", status);
+
+  /* We need to query the status, because SecKeychainOpen succeeds,
+     even if the keychain file does not exists. (!) */
+  SecKeychainStatus keychainStatus = 0;
+  status = SecKeychainGetStatus(keychain, &keychainStatus);
+  keyring_macos_handle_status("cannot open keychain", status);
+
   return keychain;
 }
 
