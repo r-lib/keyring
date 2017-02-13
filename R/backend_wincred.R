@@ -96,7 +96,9 @@ backend_wincred <- function(keyring = NULL) {
     list = backend_wincred_list,
     create_keyring = backend_wincred_create_keyring,
     list_keyring = backend_wincred_list_keyring,
-    delete_keyring = backend_wincred_delete_keyring
+    delete_keyring = backend_wincred_delete_keyring,
+    lock_keyring = backend_wincred_lock_keyring,
+    unlock_keyring = backend_wincred_unlock_keyring
   )
 }
 
@@ -130,16 +132,18 @@ extract_pubkey <- function(txt) {
 
 #' @importFrom openssl read_key
 
-backend_wincred_unlock_keyring <- function(keyring, pw = NULL) {
+backend_wincred_unlock_keyring_internal <- function(keyring, password = NULL) {
   target_lock <- backend_wincred_target_lock(keyring)
   if (backend_wincred_i_exists(target_lock)) {
     backend_wincred_i_get(target_lock)
   } else {
     target_keyring <- backend_wincred_target_keyring(keyring)
     en_key <- extract_privkey(backend_wincred_i_get(target_keyring))
-    message("keyring ", sQuote(keyring), " is locked, enter password to unlock")
-    if (is.null(pw)) pw <- get_pass()
-    key <- read_key(en_key, password = pw)
+    if (is.null(password)) {
+      message("keyring ", sQuote(keyring), " is locked, enter password to unlock")
+      password <- get_pass()
+    }
+    key <- write_pem(read_key(en_key, password = password))
     backend_wincred_i_set(target_lock, key, session = TRUE)
     key
   }
@@ -153,7 +157,7 @@ backend_wincred_get <- function(backend, service, username) {
   if (is.null(backend$keyring)) return(password)
 
   ## If it is encrypted, we need to decrypt it
-  key <- backend_wincred_unlock_keyring(backend$keyring)
+  key <- backend_wincred_unlock_keyring_internal(backend$keyring)
   rawToChar(rsa_decrypt(base64_decode(password), key = key))
 }
 
@@ -261,12 +265,12 @@ backend_wincred_list_keyring <- function(backend) {
   locked <- if (!length(keyring)) {
     logical()
   } else {
-    ! paste0(keyring, "::unlocked") %in% list
+    ! paste0(keyring, "unlocked") %in% list
   }
   data.frame(
-    keyring = sub("::$", "", keyring),
-    num_secrets = num,
-    locked = locked,
+    keyring = unname(sub("::$", "", keyring)),
+    num_secrets = unname(num),
+    locked = unname(locked),
     stringsAsFactors = FALSE
   )
 }
@@ -278,5 +282,23 @@ backend_wincred_delete_keyring <- function(backend) {
   backend_wincred_i_delete(target_keyring)
   target_lock <- backend_wincred_target_lock(backend$keyring)
   try(backend_wincred_i_delete(target_lock), silent = TRUE)
+  invisible()
+}
+
+backend_wincred_lock_keyring <- function(backend) {
+  if (is.null(backend$keyring)) {
+    warning("Cannot lock the default windows credential store keyring")
+  } else {
+    target_lock <- backend_wincred_target_lock(backend$keyring)
+    try(backend_wincred_i_delete(target_lock), silent = TRUE)
+    invisible()
+  }
+}
+
+backend_wincred_unlock_keyring <- function(backend, password = NULL) {
+  if (is.null(password)) password <- get_pass()
+  if (!is.null(backend$keyring)) {
+    backend_wincred_unlock_keyring_internal(backend$keyring, password)
+  }
   invisible()
 }

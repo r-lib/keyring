@@ -101,3 +101,23 @@ keyring_delete <- function(backend = default_backend()) {
 
   backend$delete_keyring(backend)
 }
+
+#' @export
+
+keyring_lock <- function(backend = default_backend()) {
+  assert_that(is_keyring_backend(backend))
+
+  check_supported(backend, "lock_keyring")
+
+  backend$lock_keyring(backend)
+}
+
+#' @export
+
+keyring_unlock <- function(backend = default_backend(), password = NULL) {
+  assert_that(is_keyring_backend(backend))
+
+  check_supported(backend, "unlock_keyring")
+
+  backend$unlock_keyring(backend, password)
+}

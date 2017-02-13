@@ -31,8 +31,8 @@ test_that("creating keychains", {
   ## This asks for a password interactively.
   ## keyring_create(backend = backend)
   backend_wincred_create_keyring_direct(backend$keyring, pw = "secret123!")
-
   expect_true(keyring %in% keyring_list(backend = backend)$keyring)
+
 
   list <- key_list(backend = backend)
   expect_equal(nrow(list), 0)
@@ -77,4 +77,32 @@ test_that("creating keychains, interactive", {
   expect_silent(key_delete(service, username, backend = backend))
   expect_silent(keyring_delete(backend = backend))
   expect_false(keyring %in% keyring_list(backend = backend)$keyring)
+})
+
+test_that("lock/unlock keyrings", {
+  skip_if_not_win()
+
+  keyring <- random_keyring()
+  backend <- backend_wincred(keyring = keyring)
+
+  ## This asks for a password interactively.
+  ## keyring_create(backend = backend)
+  backend_wincred_create_keyring_direct(backend$keyring, pw = "secret123!")
+
+  ## It is unlocked by default
+  list <- keyring_list(backend = backend)
+  expect_true(keyring %in% list$keyring)
+  expect_false(list$locked[match(keyring, list$keyring)])
+
+  ## Lock it
+  keyring_lock(backend = backend)
+  list <- keyring_list(backend = backend)
+  expect_true(list$locked[match(keyring, list$keyring)])
+
+  ## Unlock it
+  keyring_unlock(backend = backend, password = "secret123!")
+  list <- keyring_list(backend = backend)
+  expect_false(list$locked[match(keyring, list$keyring)])
+
+  expect_silent(keyring_delete(backend = backend))
 })
