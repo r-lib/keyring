@@ -32,6 +32,8 @@ test_that("creating keychains", {
   ## keyring_create(backend = backend)
   backend_wincred_create_keyring_direct(backend$keyring, pw = "secret123!")
 
+  expect_true(keyring %in% keyring_list(backend = backend)$keyring)
+
   list <- key_list(backend = backend)
   expect_equal(nrow(list), 0)
 

@@ -250,9 +250,33 @@ backend_wincred_create_keyring_direct <- function(keyring, pw) {
 }
 
 backend_wincred_list_keyring <- function(backend) {
-  # TODO
+  list <- backend_wincred_i_enumerate("*")
+  list <- grep("::", list, value = TRUE)
+  keyring <- grep("::$", list, value = TRUE)
+  num <- vapply(keyring, FUN.VALUE = 1L, function(x) {
+    mykeys <- list[substr(list, 1, nchar(x)) == x]
+    mykeys <- grep("(::|::unlocked)$", mykeys, value = TRUE, invert = TRUE)
+    length(mykeys)
+  })
+  locked <- if (!length(keyring)) {
+    logical()
+  } else {
+    ! paste0(keyring, "::unlocked") %in% list
+  }
+  data.frame(
+    keyring = sub("::$", "", keyring),
+    num_secrets = num,
+    locked = locked,
+    stringsAsFactors = FALSE
+  )
 }
 
 backend_wincred_delete_keyring <- function(backend) {
-  # TODO
+  if (is.null(backend$keyring)) stop("Cannot delete the default keyring")
+  ## TODO: confirmation
+  target_keyring <- backend_wincred_target_keyring(backend$keyring)
+  backend_wincred_i_delete(target_keyring)
+  target_lock <- backend_wincred_target_lock(backend$keyring)
+  try(backend_wincred_i_delete(target_lock), silent = TRUE)
+  invisible()
 }
