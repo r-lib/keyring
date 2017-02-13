@@ -17,6 +17,25 @@ on_failure(is_string_or_null) <- function(call, env) {
   paste0(deparse(call$x), " must be a string (length 1 character) or NULL")
 }
 
+is_non_empty_string <- function(x) {
+  is_string(x) && x != ""
+}
+
+on_failure(is_non_empty_string) <- function(call, env) {
+  paste0(deparse(call$x), " must be a non-empty string (length 1 character)")
+}
+
+is_non_empty_string_or_null <- function(x) {
+  is.null(x) || is_non_empty_string(x)
+}
+
+on_failure(is_non_empty_string_or_null) <- function(call, env) {
+  paste0(
+    deparse(call$x),
+    " must be a non-empty string (length 1 character) or NULL"
+  )
+}
+
 is_keyring_backend <- function(x) {
   inherits(x, "keyring_backend")
 }

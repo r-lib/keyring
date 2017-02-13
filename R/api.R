@@ -18,7 +18,7 @@
 #' # TODO
 
 key_get <- function(service, username = NULL, backend = default_backend()) {
-  assert_that(is_string(service))
+  assert_that(is_non_empty_string(service))
   assert_that(is_string_or_null(username))
   assert_that(is_keyring_backend(backend))
 
@@ -29,7 +29,7 @@ key_get <- function(service, username = NULL, backend = default_backend()) {
 #' @rdname key_get
 
 key_set <- function(service, username = NULL, backend = default_backend()) {
-  assert_that(is_string(service))
+  assert_that(is_non_empty_string(service))
   assert_that(is_string_or_null(username))
   assert_that(is_keyring_backend(backend))
 
@@ -41,7 +41,7 @@ key_set <- function(service, username = NULL, backend = default_backend()) {
 
 key_set_with_value <- function(service, username = NULL, password = NULL,
                                backend = default_backend()) {
-  assert_that(is_string(service))
+  assert_that(is_non_empty_string(service))
   assert_that(is_keyring_backend(backend))
   assert_that(is_string(password))
 
@@ -53,7 +53,7 @@ key_set_with_value <- function(service, username = NULL, password = NULL,
 
 key_delete <- function(service, username = NULL,
                        backend = default_backend()) {
-  assert_that(is_string(service))
+  assert_that(is_non_empty_string(service))
   assert_that(is_string_or_null(username))
   assert_that(is_keyring_backend(backend))
 
@@ -64,7 +64,7 @@ key_delete <- function(service, username = NULL,
 #' @rdname key_get
 
 key_list <- function(service = NULL, backend = default_backend()) {
-  assert_that(is_string_or_null(service))
+  assert_that(is_non_empty_string_or_null(service))
   assert_that(is_keyring_backend(backend))
 
   check_supported(backend, "list")

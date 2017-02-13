@@ -11,67 +11,60 @@
 
 void keyring_wincred_handle_status(const char *func, BOOL status) {
   if (status == FALSE) {
-    DWORD errorcode = GetLastError();
+    /* DWORD errorcode = GetLastError(); */
     /* TODO: proper error message */
     error("Windows credential store error in '%s': %s", func, "TODO");
   }
 }
 
-char* keyring_wincred_create_targetname(SEXP service, SEXP username) {
+SEXP keyring_wincred_get(SEXP target) {
 
-  const char* empty = "";
-  const char* cservice = CHAR(STRING_ELT(service, 0));
-  const char* cusername =
-    isNull(username) ? empty : CHAR(STRING_ELT(username, 0));
-  char* targetname =
-    R_alloc(1, strlen(cservice) + strlen(cusername) + 2);
-
-  if (!targetname) error("Out of memory");
-
-  strcpy(targetname, cservice);
-  if (!isNull(username)) {
-    strcat(targetname, ":");
-    strcat(targetname, cusername);
-  }
-
-  return targetname;
-}
-
-SEXP keyring_wincred_get(SEXP service, SEXP username) {
-
-  const char* targetname =
-    keyring_wincred_create_targetname(service, username);
-  CREDENTIAL* cred;
-  SEXP result;
-
-  BOOL status = CredRead(targetname, CRED_TYPE_GENERIC,
-			 /* Flags = */ 0, &cred);
-
+  const char *ctarget = CHAR(STRING_ELT(target, 0));
+  CREDENTIAL *cred;
+  BOOL status = CredRead(ctarget, CRED_TYPE_GENERIC, /* Flags = */ 0, &cred);
   keyring_wincred_handle_status("get", status);
 
-  result = PROTECT(ScalarString(mkCharLen(
+  SEXP result = PROTECT(ScalarString(mkCharLen(
     (const char*) cred->CredentialBlob,
     cred->CredentialBlobSize)));
 
   CredFree(cred);
-
   UNPROTECT(1);
   return result;
 }
 
-SEXP keyring_wincred_set(SEXP service, SEXP username, SEXP password) {
+SEXP keyring_wincred_exists(SEXP target) {
 
-  char* targetname =
-    keyring_wincred_create_targetname(service, username);
-  const char* cpassword = CHAR(STRING_ELT(password, 0));
+  const char *ctarget = CHAR(STRING_ELT(target, 0));
+  CREDENTIAL *cred = NULL;
+  BOOL status = CredRead(ctarget, CRED_TYPE_GENERIC, /* Flags = */ 0, &cred);
+  DWORD errorcode = status ? 0 : GetLastError();
+  if (errorcode != 0 && errorcode != ERROR_NOT_FOUND) {
+    keyring_wincred_handle_status("exists", status);
+  }
+
+  if (cred) CredFree(cred);
+  return ScalarLogical(errorcode == 0);
+}
+
+SEXP keyring_wincred_set(SEXP target, SEXP password, SEXP username,
+			 SEXP session) {
+
+  const char *ctarget = CHAR(STRING_ELT(target, 0));
+  const char *cusername =
+    isNull(username) ? NULL : CHAR(STRING_ELT(username, 0));
+  const char *cpassword = CHAR(STRING_ELT(password, 0));
+  int csession = LOGICAL(session)[0];
+
   CREDENTIAL cred = { 0 };
   BOOL status;
 
   cred.Type = CRED_TYPE_GENERIC;
-  cred.TargetName = targetname;
+  cred.TargetName = (char*) ctarget;
   cred.CredentialBlobSize = strlen(cpassword);
   cred.CredentialBlob = (LPBYTE) cpassword;
-  cred.Persist = CRED_PERSIST_LOCAL_MACHINE;
+  cred.Persist = csession ? CRED_PERSIST_SESSION : CRED_PERSIST_LOCAL_MACHINE;
+  cred.UserName = (char*) cusername;
 
   status = CredWrite(&cred, /* Flags = */ 0);
 
@@ -80,61 +73,41 @@ SEXP keyring_wincred_set(SEXP service, SEXP username, SEXP password) {
   return R_NilValue;
 }
 
-SEXP keyring_wincred_delete(SEXP service, SEXP username) {
+SEXP keyring_wincred_delete(SEXP target) {
 
-  const char* targetname =
-    keyring_wincred_create_targetname(service, username);
-
-  BOOL status = CredDelete(targetname, CRED_TYPE_GENERIC,
-			   /* Flags = */ 0);
-
+  const char* ctarget = CHAR(STRING_ELT(target, 0));
+  BOOL status = CredDelete(ctarget, CRED_TYPE_GENERIC, /* Flags = */ 0);
   keyring_wincred_handle_status("delete", status);
 
   return R_NilValue;
 }
 
-SEXP keyring_wincred_list(SEXP service) {
-
-  const char *empty = "*";
-  const char *cservice =
-    isNull(service) ? empty : CHAR(STRING_ELT(service, 0));
-  char *filter =
-    isNull(service) ? (char*) empty : R_alloc(1, strlen(cservice) + 3);
+SEXP keyring_wincred_enumerate(SEXP filter) {
+  const char *cfilter = CHAR(STRING_ELT(filter, 0));
 
   DWORD count;
   PCREDENTIAL *creds = NULL;
 
-  if (!cservice || !filter) error("Out of memory");
+  BOOL status = CredEnumerate(cfilter, /* Flags = */ 0, &count, &creds);
+  DWORD errorcode = status ? 0 : GetLastError();
 
-  if (!isNull(service)) {
-    strcpy(filter, cservice);
-    strcat(filter, ":*");
-  }
+  /* If there are no keys, then an error is thrown. But for us this is
+     a normal result, and we just return an empty table. */
+  if (status == FALSE && errorcode == ERROR_NOT_FOUND) {
+    SEXP result = PROTECT(allocVector(STRSXP, 0));
+    UNPROTECT(1);
+    return result;
 
-  BOOL status = CredEnumerate(filter, /* Flags = */ 0, &count,
-			      &creds);
-
-  if (status == FALSE) {
+  } else if (status == FALSE) {
     if (creds != NULL) CredFree(creds);
     keyring_wincred_handle_status("list", status);
     return R_NilValue;
 
   } else {
-    SEXP result = PROTECT(allocVector(VECSXP, 2));
     size_t i, num = (size_t) count;
-    SET_VECTOR_ELT(result, 0, allocVector(STRSXP, num));
-    SET_VECTOR_ELT(result, 1, allocVector(STRSXP, num));
+    SEXP result = PROTECT(allocVector(STRSXP, num));
     for (i = 0; i < count; i++) {
-      char *target = creds[i]->TargetName;
-      char *sep = strchr(target, ':');
-      if (!sep) {
-	SET_STRING_ELT(VECTOR_ELT(result, 0), i, mkChar(target));
-	SET_STRING_ELT(VECTOR_ELT(result, 1), i, mkChar(""));
-      } else {
-	SET_STRING_ELT(VECTOR_ELT(result, 0), i,
-		       mkCharLen(target, sep - target));
-	SET_STRING_ELT(VECTOR_ELT(result, 1), i, mkChar(sep + 1));
-      }
+      SET_STRING_ELT(result, i, mkChar(creds[i]->TargetName));
     }
     CredFree(creds);
 
