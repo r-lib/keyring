@@ -11,7 +11,9 @@ backend_macos <- function(keyring = NULL) {
     list = backend_macos_list,
     create_keyring = backend_macos_create_keyring,
     list_keyring = backend_macos_list_keyring,
-    delete_keyring = backend_macos_delete_keyring
+    delete_keyring = backend_macos_delete_keyring,
+    lock_keyring = backend_macos_lock_keyring,
+    unlock_keyring = backend_macos_unlock_keyring
   )
 }
 
@@ -84,6 +86,18 @@ backend_macos_list_keyring <- function(backend) {
 
 backend_macos_delete_keyring <- function(backend) {
   .Call("keyring_macos_delete_keyring", backend$keyring,
+        PACKAGE = "keyring")
+  invisible()
+}
+
+backend_macos_lock_keyring <- function(backend) {
+  .Call("keyring_macos_lock_keyring", backend$keyring, PACKAGE = "keyring")
+  invisible()
+}
+
+backend_macos_unlock_keyring <- function(backend, password = NULL) {
+  if (is.null(password)) password <- get_pass()
+  .Call("keyring_macos_unlock_keyring", backend$keyring, password,
         PACKAGE = "keyring")
   invisible()
 }

@@ -276,7 +276,8 @@ SEXP keyring_macos_create(SEXP keyring, SEXP password) {
 
   OSStatus status = SecKeychainCreate(
     ckeyring,
-    /* passwordLength = */ 0, cpassword,
+    /* passwordLength = */ (UInt32) strlen(cpassword),
+    (const void*) cpassword,
     /* promptUser = */ 0, /* initialAccess = */ NULL,
     &result);
 
@@ -422,6 +423,30 @@ SEXP keyring_macos_delete_keyring(SEXP keyring) {
   CFRelease(keychain);
   keyring_macos_handle_status("cannot delete keyring", status);
 
+  return R_NilValue;
+}
+
+SEXP keyring_macos_lock_keyring(SEXP keyring) {
+  const char *ckeyring = CHAR(STRING_ELT(keyring, 0));
+  SecKeychainRef keychain = keyring_macos_open_keychain(ckeyring);
+  OSStatus status = SecKeychainLock(keychain);
+  CFRelease(keychain);
+  keyring_macos_handle_status("cannot lock keychain", status);
+  return R_NilValue;
+}
+
+SEXP keyring_macos_unlock_keyring(SEXP keyring, SEXP password) {
+  const char *ckeyring = CHAR(STRING_ELT(keyring, 0));
+  const char *cpassword = CHAR(STRING_ELT(password, 0));
+  SecKeychainRef keychain = keyring_macos_open_keychain(ckeyring);
+  OSStatus status = SecKeychainUnlock(
+    keychain,
+    (UInt32) strlen(cpassword),
+     (const void*) cpassword,
+    /* usePassword = */ TRUE);
+
+  CFRelease(keychain);
+  keyring_macos_handle_status("cannot unlock keychain", status);
   return R_NilValue;
 }
 
