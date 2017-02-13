@@ -7,14 +7,15 @@
 ## format. The private key PEM also has a password, this is the
 ## keyring password. This is how it looks:
 ##
-## -----BEGIN PUBLIC KEY-----
-## MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA+ditW7cKwYn/lBr7PjVH
-## ...
-## -----END PUBLIC KEY-----
 ## -----BEGIN ENCRYPTED PRIVATE KEY-----
 ## MIIFHDBOBgkqhkiG9w0BBQ0wQTApBgkqhkiG9w0BBQwwHAQIlHZxySV0zOACAggA
 ## ...
 ## -----END ENCRYPTED PRIVATE KEY-----
+##
+## -----BEGIN PUBLIC KEY-----
+## MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA+ditW7cKwYn/lBr7PjVH
+## ...
+## -----END PUBLIC KEY-----
 ##
 ## When a keyring is unlocked, we store another credential, with target
 ## name "keyring::unlocked". This is a session credential, i.e. it is
@@ -100,15 +101,23 @@ backend_wincred <- function(keyring = NULL) {
 }
 
 backend_wincred_target <- function(keyring, service, username) {
-  paste0(":", service, ":", username)
+  paste0(keyring, ":", service, ":", username)
 }
 
 backend_wincred_target_keyring <- function(keyring) {
-  paste0(keyring, "::")
+  backend_wincred_target(keyring, "", "")
 }
 
 backend_wincred_target_lock <- function(keyring) {
-  paste0(keyring, "::unlocked")
+  backend_wincred_target(keyring, "", "unlocked")
+}
+
+extract_privkey <- function(txt) {
+  paste0(strsplit(txt, "\n\n")[[1]][1], "\n")
+}
+
+extract_pubkey <- function(txt) {
+  strsplit(txt, "\n\n")[[1]][2]
 }
 
 ## 1. Try to get the unlock credential
@@ -121,20 +130,22 @@ backend_wincred_target_lock <- function(keyring) {
 
 #' @importFrom openssl read_key
 
-backend_wincred_unlock_keyring <- function(keyring) {
+backend_wincred_unlock_keyring <- function(keyring, pw = NULL) {
   target_lock <- backend_wincred_target_lock(keyring)
   if (backend_wincred_i_exists(target_lock)) {
     backend_wincred_i_get(target_lock)
   } else {
     target_keyring <- backend_wincred_target_keyring(keyring)
-    en_key <- backend_wincred_i_get(target_keyring)
+    en_key <- extract_privkey(backend_wincred_i_get(target_keyring))
     message("keyring ", sQuote(keyring), " is locked, enter password to unlock")
-    pw <- get_pass()
+    if (is.null(pw)) pw <- get_pass()
     key <- read_key(en_key, password = pw)
     backend_wincred_i_set(target_lock, key, session = TRUE)
     key
   }
 }
+
+#' @importFrom openssl base64_decode
 
 backend_wincred_get <- function(backend, service, username) {
   target <- backend_wincred_target(backend$keyring, service, username)
@@ -142,8 +153,8 @@ backend_wincred_get <- function(backend, service, username) {
   if (is.null(backend$keyring)) return(password)
 
   ## If it is encrypted, we need to decrypt it
-  key <- backend_wincred_unlock_keyrinf(backend$keyring)
-  rsa_decrypt(password, key = key)
+  key <- backend_wincred_unlock_keyring(backend$keyring)
+  rawToChar(rsa_decrypt(base64_decode(password), key = key))
 }
 
 backend_wincred_set <- function(backend, service, username) {
@@ -151,7 +162,7 @@ backend_wincred_set <- function(backend, service, username) {
   backend_wincred_set_with_value(backend, service, username, pw)
 }
 
-#' @importFrom openssl rsa_encrypt
+#' @importFrom openssl rsa_encrypt base64_encode
 
 backend_wincred_set_with_value <- function(backend, service,
                                            username, password) {
@@ -163,9 +174,10 @@ backend_wincred_set_with_value <- function(backend, service,
 
   ## Not the default keyring, we need to encrypt it
   target_keyring <- backend_wincred_target_keyring(backend$keyring)
-  key <- backend_wincred_i_get(target_keyring)
-  cipher <- rsa_encrypt(password, key = key)
-  backend_wincred_i_set(target, password = cipher, username = username)
+  pubkey <- extract_pubkey(backend_wincred_i_get(target_keyring))
+  cipher <- rsa_encrypt(charToRaw(password), pubkey = pubkey)
+  backend_wincred_i_set(target, password = base64_encode(cipher),
+                        username = username)
   invisible()
 }
 
@@ -196,6 +208,10 @@ backend_wincred_list <- function(backend, service) {
   }
 
   list <- backend_wincred_i_enumerate(filter)
+
+  ## Filter out the credentials that belong to the keyring or its lock
+  list <- grep("(::|::unlocked)$", list, value = TRUE, invert = TRUE)
+
   data.frame(
     service = backend_wincred_target_service(list),
     username = backend_wincred_target_username(list),
@@ -208,8 +224,28 @@ backend_wincred_create_keyring <- function(backend) {
   backend_wincred_create_keyring_direct(backend$keyring, pw)
 }
 
-backend_wincred_create_keyring_direct <- function(keyring, pw = NULL) {
-  # TODO
+## 1. Check that the keyring does not exist, error if it does
+## 2. Create an RSA keypair
+## 3. Write it to a keyring credential
+## 4. Unlock the keyring immediately, create a keyring lock credential
+
+#' @importFrom openssl rsa_keygen write_pem
+
+backend_wincred_create_keyring_direct <- function(keyring, pw) {
+  target_keyring <- backend_wincred_target_keyring(keyring)
+  if (backend_wincred_i_exists(target_keyring)) {
+    error("keyring ", sQuote(keyring), " already exists")
+  }
+  key <- rsa_keygen()
+  pem <- paste(
+    write_pem(key, password = pw),
+    sep = "\n",
+    write_pem(key$pubkey)
+  )
+  backend_wincred_i_set(target_keyring, password = pem)
+  plainpem <- write_pem(key)
+  target_lock <- backend_wincred_target_lock(keyring)
+  backend_wincred_i_set(target_lock, password = plainpem, session = TRUE)
   invisible()
 }
 
