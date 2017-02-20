@@ -102,8 +102,36 @@ backend_wincred <- function(keyring = NULL) {
   )
 }
 
+#' @importFrom utils URLencode
+
+backend_wincred_i_escape <- function(x) {
+  URLencode(x, reserved = TRUE, repeated = TRUE)
+}
+
+#' @importFrom utils URLdecode
+
+backend_wincred_i_unescape <- function(x) {
+  URLdecode(x)
+}
+
 backend_wincred_target <- function(keyring, service, username) {
+  keyring <- if (is.null(keyring)) "" else backend_wincred_i_escape(keyring)
+  service <- backend_wincred_i_escape(service)
+  username <- if (is.null(username)) "" else backend_wincred_i_escape(username)
   paste0(keyring, ":", service, ":", username)
+}
+
+## For the username we need a workaround, because
+## strsplit("foo::")[[1]] gives c("foo", ""), i.e. the third empty element
+## is cut off.
+
+backend_wincred_i_parse_target <- function(target) {
+  parts <- lapply(strsplit(target, ":"), lapply, backend_wincred_i_unescape)
+  list(
+    keyring = vapply(parts, "[[", "", 1),
+    service = vapply(parts, "[[", "", 2),
+    username = vapply(parts, function(x) x[3][[1]] %||% "", "")
+  )
 }
 
 backend_wincred_target_keyring <- function(keyring) {
@@ -191,18 +219,6 @@ backend_wincred_delete <- function(backend, service, username) {
   invisible()
 }
 
-backend_wincred_target_service <- function(x) {
-  pc <- strsplit(x, ":")
-  vapply(pc, FUN.VALUE = "", function(xx) {
-    paste(xx[2:(length(xx)-1)], collapse = "")
-  })
-}
-
-backend_wincred_target_username <- function(x) {
-  pc <- strsplit(x, ":")
-  vapply(pc, tail, 1, FUN.VALUE = "")
-}
-
 backend_wincred_list <- function(backend, service) {
 
   filter <- if (is.null(service)) {
@@ -216,9 +232,10 @@ backend_wincred_list <- function(backend, service) {
   ## Filter out the credentials that belong to the keyring or its lock
   list <- grep("(::|::unlocked)$", list, value = TRUE, invert = TRUE)
 
+  parts <- backend_wincred_i_parse_target(list)
   data.frame(
-    service = backend_wincred_target_service(list),
-    username = backend_wincred_target_username(list),
+    service = parts$service,
+    username = parts$username,
     stringsAsFactors = FALSE
   )
 }
@@ -268,7 +285,7 @@ backend_wincred_list_keyring <- function(backend) {
     ! paste0(keyring, "unlocked") %in% list
   }
   data.frame(
-    keyring = unname(sub("::$", "", keyring)),
+    keyring = backend_wincred_i_parse_target(keyring)$keyring,
     num_secrets = unname(num),
     locked = unname(locked),
     stringsAsFactors = FALSE
