@@ -127,7 +127,8 @@ backend_wincred_target <- function(keyring, service, username) {
 
 backend_wincred_i_parse_target <- function(target) {
   parts <- lapply(strsplit(target, ":"), lapply, backend_wincred_i_unescape)
-  list(
+  res <- data.frame(
+    stringsAsFactors = FALSE,
     keyring = vapply(parts, "[[", "", 1),
     service = vapply(parts, "[[", "", 2),
     username = vapply(parts, function(x) x[3][[1]] %||% "", "")
@@ -272,24 +273,37 @@ backend_wincred_create_keyring_direct <- function(keyring, pw) {
 
 backend_wincred_list_keyring <- function(backend) {
   list <- backend_wincred_i_enumerate("*")
-  list <- grep("::", list, value = TRUE)
-  keyring <- grep("::$", list, value = TRUE)
-  num <- vapply(keyring, FUN.VALUE = 1L, function(x) {
-    mykeys <- list[substr(list, 1, nchar(x)) == x]
-    mykeys <- grep("(::|::unlocked)$", mykeys, value = TRUE, invert = TRUE)
-    length(mykeys)
-  })
-  locked <- if (!length(keyring)) {
-    logical()
-  } else {
-    ! paste0(keyring, "unlocked") %in% list
+  parts <- backend_wincred_i_parse_target(list)
+
+  ## if keyring:: does not exist, then keyring is not a real keyring, assign it
+  ## to the default
+  default <- ! paste0(parts$keyring, "::") %in% list
+  if (any(default)) {
+    parts$username[default] <-
+      paste0(parts$service[default], ":", parts$username[default])
+    parts$service[default] <- parts$keyring[default]
+    parts$keyring[default] <- ""
   }
-  data.frame(
-    keyring = backend_wincred_i_parse_target(keyring)$keyring,
-    num_secrets = unname(num),
-    locked = unname(locked),
-    stringsAsFactors = FALSE
+
+  res <- data.frame(
+    stringsAsFactors = FALSE,
+    keyring = unname(unique(parts$keyring)),
+    num_secrets = as.integer(unlist(tapply(parts$keyring, parts$keyring,
+      length, simplify = FALSE))),
+    locked = vapply(unique(parts$keyring), FUN.VALUE = TRUE, USE.NAMES = FALSE,
+      function(x) {
+        ! any(parts$username[parts$keyring == x] == "unlocked")
+      }
+    )
   )
+
+  ## Subtract keyring::unlocked and also keyring:: for the non-default keyring
+  res$num_secrets <- res$num_secrets - (! res$locked) - (res$keyring != "")
+
+  ## The default keyring cannot be locked
+  if ("" %in% res$keyring) res$locked[res$keyring == ""] <- FALSE
+
+  res
 }
 
 backend_wincred_delete_keyring <- function(backend) {
