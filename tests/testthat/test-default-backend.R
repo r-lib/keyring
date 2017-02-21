@@ -1,0 +1,70 @@
+
+context("default backend")
+
+test_that("use options", {
+  withr::with_options(
+    list(keyring_backend = backend_env),
+    expect_equal(default_backend(), backend_env())
+  )
+  withr::with_options(
+    list(keyring_backend = "env"),
+    expect_equal(default_backend(), backend_env())
+  )
+  ## This should run on all OSes currently, as we are not actually
+  ## calling the Keychain API here.
+  withr::with_options(
+    list(keyring_backend = "macos", keyring_keyring = "foobar"),
+    expect_equal(default_backend(), backend_macos(keyring = "foobar"))
+  )
+})
+
+test_that("use env var", {
+  ## Remove the options
+  withr::with_options(
+    list(keyring_backend = NULL, keyring_keyring = NULL),
+    withr::with_envvar(
+      c(R_KEYRING_BACKEND = "env"),
+      expect_equal(default_backend(), backend_env())
+    )
+  )
+})
+
+test_that("mixing options and env vars", {
+  ## Backend option, keyring env var
+  withr::with_options(
+    list(keyring_backend = "macos", keyring_keyring = NULL),
+    withr::with_envvar(
+      c(R_KEYRING_KEYRING = "foobar"),
+      expect_equal(default_backend(), backend_macos(keyring = "foobar"))
+    )
+  )
+
+  ## Backend env var, keyring option
+  withr::with_options(
+    list(keyring_backend = NULL, keyring_keyring = "foobar"),
+    withr::with_envvar(
+      c(R_KEYRING_BACKEND = "macos"),
+      expect_equal(default_backend(), backend_macos(keyring = "foobar"))
+    )
+  )
+})
+
+test_that("auto windows", {
+  mockery::stub(default_backend_auto, "Sys.info", c(sysname = "Windows"))
+  expect_equal(default_backend_auto(), backend_wincred)
+})
+
+test_that("auto macos", {
+  mockery::stub(default_backend_auto, "Sys.info", c(sysname = "Darwin"))
+  expect_equal(default_backend_auto(), backend_macos)
+})
+
+test_that("auto linux", {
+  mockery::stub(default_backend_auto, "Sys.info", c(sysname = "Linux"))
+  expect_equal(default_backend_auto(), backend_secret_service)
+})
+
+test_that("auto other", {
+  mockery::stub(default_backend_auto, "Sys.info", c(sysname = "Solaris"))
+  expect_equal(suppressWarnings(default_backend_auto()), backend_env)
+})

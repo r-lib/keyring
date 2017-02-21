@@ -18,5 +18,7 @@ Imports:
     getPass,
     openssl
 Suggests: 
-    testthat
+    mockery,
+    testthat,
+    withr
 Encoding: UTF-8

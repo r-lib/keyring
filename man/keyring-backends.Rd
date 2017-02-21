@@ -3,16 +3,36 @@
 \name{keyring backends}
 \alias{keyring backends}
 \alias{default_backend}
-\title{Select the default backend for a platform}
+\title{Select the default backend and default keyring}
 \usage{
 default_backend()
 }
 \description{
+The default backend is selected
 \enumerate{
-\item On Windows, the Windows Credential Store is used.
-\item On macOS, Keychain services are selected.
-\item Linux uses the Secret Service API.
+\item based on the \code{keyring_backend} option. See \code{\link[base:options]{base::options()}}.
+This can be set currently to \code{"env"}, \code{"macos"}, \code{"wincred"} or
+\code{"secret_service"}.
+\item If this is not set, then the \code{R_KEYRING_BACKEND} environment variable
+is checked.
+\item If this is not set, either, then the backend is selected
+automatically, based on the OS:
+\enumerate{
+\item On Windows, the Windows Credential Store (\code{"wincred"}) is used.
+\item On macOS, Keychain services are selected (\code{"macos"}).
+\item Linux uses the Secret Service API (\code{"secret_service"}).
 \item On other operating systems, secrets are stored in environment
-variables.
+variables (\code{"env"}).
+}
+}
+}
+\details{
+Most backends support multiple keyrings. For these the keyring is
+selected from
+\enumerate{
+\item the \code{keyring_keyring} option.
+\item If this is not set, the \code{R_KEYRING_KEYRING} environment variable.
+\item If this is not set, then the OS default keyring is selected.
+Usually this keyring is automatically unlocked when the user logs in.
 }
 }
