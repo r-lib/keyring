@@ -43,8 +43,6 @@ SecKeychainRef keyring_macos_open_keychain(const char *pathName) {
   return keychain;
 }
 
-/* TODO: set encoding to UTF-8? */
-
 SEXP keyring_macos_get(SEXP keyring, SEXP service, SEXP username) {
 
   const char* empty = "";
@@ -77,8 +75,6 @@ SEXP keyring_macos_get(SEXP keyring, SEXP service, SEXP username) {
   UNPROTECT(1);
   return result;
 }
-
-/* TODO: recode in UTF8 */
 
 SEXP keyring_macos_set(SEXP keyring, SEXP service, SEXP username,
 		       SEXP password) {
