@@ -285,7 +285,7 @@ SEXP keyring_macos_create(SEXP keyring, SEXP password) {
     &keyrings);
 
   if (status) {
-    SecKeychainItemDelete(result);
+    SecKeychainDelete(result);
     if (result != NULL) CFRelease(result);
     keyring_macos_handle_status("cannot create keychain", status);
   }
@@ -305,7 +305,7 @@ SEXP keyring_macos_create(SEXP keyring, SEXP password) {
     newkeyrings);
 
   if (status) {
-    SecKeychainItemDelete(result);
+    SecKeychainDelete(result);
     if (result) CFRelease(result);
     if (keyrings) CFRelease(keyrings);
     if (newkeyrings) CFRelease(newkeyrings);
@@ -383,8 +383,8 @@ SEXP keyring_macos_delete_keyring(SEXP keyring) {
   CFMutableArrayRef newkeyrings =
     CFArrayCreateMutableCopy(NULL, count, keyrings);
   for (i = 0; i < count; i++) {
-    SecKeychainItemRef item =
-      (SecKeychainItemRef) CFArrayGetValueAtIndex(keyrings, i);
+    SecKeychainRef item =
+      (SecKeychainRef) CFArrayGetValueAtIndex(keyrings, i);
     UInt32 pathLength = MAXPATHLEN;
     char pathName[MAXPATHLEN + 1];
     status = SecKeychainGetPath(item, &pathLength, pathName);
