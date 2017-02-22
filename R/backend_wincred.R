@@ -180,7 +180,7 @@ backend_wincred_unlock_keyring_internal <- function(keyring, password = NULL) {
   }
 }
 
-#' @importFrom openssl base64_decode
+#' @importFrom openssl base64_decode rsa_decrypt
 
 backend_wincred_get <- function(backend, service, username) {
   target <- backend_wincred_target(backend$keyring, service, username)
