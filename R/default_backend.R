@@ -17,15 +17,22 @@
 #'
 #' Most backends support multiple keyrings. For these the keyring is
 #' selected from
+#' 1. the supplied `keyring` argument (if not `NULL`), or
 #' 1. the `keyring_keyring` option.
 #' 1. If this is not set, the `R_KEYRING_KEYRING` environment variable.
 #' 1. If this is not set, then the OS default keyring is selected.
 #'    Usually this keyring is automatically unlocked when the user logs in.
 #'
+#' @param keyring Character string, the name of the keyring to use,
+#'   or `NULL` for the default keyring.
+#' @return The backend object itself.
+#'
 #' @export
-#' @name keyring backends
+#' @name backends
 
-default_backend <- function() {
+default_backend <- function(keyring = NULL) {
+  assert_that(is_string_or_null(keyring))
+
   backend <- getOption("keyring_backend", "")
   if (identical(backend, "")) backend <- default_backend_env_or_auto()
 
@@ -34,11 +41,14 @@ default_backend <- function() {
 
   ## At this point 'backend' is a backend constructor
   ## Check if a specific keyring is requested
-  keyring <- getOption(
-    "keyring_keyring",
-    Sys.getenv("R_KEYRING_KEYRING", "")
-  )
-  if (nzchar(keyring)) {
+  if (is.null(keyring)) {
+    keyring <- getOption(
+      "keyring_keyring",
+      Sys.getenv("R_KEYRING_KEYRING", "")
+    )
+  }
+
+  if (! is.null(keyring) && nzchar(keyring)) {
     backend(keyring = keyring)
   } else {
     backend()
