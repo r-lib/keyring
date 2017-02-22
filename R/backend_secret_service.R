@@ -25,7 +25,7 @@ backend_secret_service_get <- function(backend, service, username) {
 }
 
 backend_secret_service_set <- function(backend, service, username) {
-  ps <- get_pass()
+  pw <- get_pass()
   backend_secret_service_set_with_value(backend, service, username, pw)
 }
 
