@@ -258,7 +258,7 @@ backend_wincred_create_keyring <- function(backend) {
 backend_wincred_create_keyring_direct <- function(keyring, pw) {
   target_keyring <- backend_wincred_target_keyring(keyring)
   if (backend_wincred_i_exists(target_keyring)) {
-    error("keyring ", sQuote(keyring), " already exists")
+    stop("keyring ", sQuote(keyring), " already exists")
   }
   key <- rsa_keygen()
   pem <- paste(
