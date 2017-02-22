@@ -1,4 +1,6 @@
 
+#' @export
+
 backend_macos <- function(keyring = NULL) {
   assert_that(is_string_or_null(keyring))
   make_backend(

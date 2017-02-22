@@ -1,7 +1,8 @@
 
 make_backend <- function(name, ...) {
+  members <- list(...)
   structure(
-    c(list(name = name), ...),
+    c(list(name = name), members),
     class = "keyring_backend"
   )
 }

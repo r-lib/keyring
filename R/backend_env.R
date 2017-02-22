@@ -4,6 +4,7 @@
 #' TODO
 #'
 #' @family keyring backends
+#' @export
 #' @examples
 #' # TODO
 
