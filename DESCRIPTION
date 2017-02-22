@@ -16,7 +16,8 @@ Roxygen: list(markdown = TRUE)
 Imports:
     assertthat,
     getPass,
-    openssl
+    openssl,
+    utils
 Suggests: 
     mockery,
     testthat,

@@ -427,4 +427,44 @@ SEXP keyring_secret_service_delete_keyring(SEXP keyring) {
   return R_NilValue;
 }
 
+SEXP keyring_secret_service_lock_keyring(SEXP keyring) {
+
+  SecretCollection *collection =
+    keyring_secret_service_get_collection(keyring);
+  GList *list = g_list_append(NULL, collection);
+  GError *err = NULL;
+
+  gint num_locked = secret_service_lock_sync(
+    /* service = */ NULL,
+    list,
+    /* cancellable = */ NULL,
+    /* locked = */ NULL,
+    &err);
+
+  g_list_free(list);
+  keyring_secret_service_handle_status("lock_keyring", TRUE, err);
+
+  return R_NilValue;
+}
+
+SEXP keyring_secret_service_unlock_keyring(SEXP keyring, SEXP password) {
+
+  SecretCollection *collection =
+    keyring_secret_service_get_collection(keyring);
+  GList *list = g_list_append(NULL, collection);
+  GError *err = NULL;
+
+  gint num_unlocked = secret_service_unlock_sync(
+    /* service = */ NULL,
+    list,
+    /* cancellable = */ NULL,
+    /* unlcoked = */ NULL,
+    &err);
+
+  g_list_free(list);
+  keyring_secret_service_handle_status("lock_keyring", TRUE, err);
+
+  return R_NilValue;
+}
+
 #endif // __linux__
