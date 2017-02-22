@@ -16,7 +16,7 @@ print.keyring_backend <- function(x, ...) {
   other_ops <- setdiff(all_ops, c(key_ops, keyring_ops))
 
   cat("* Operations:", paste(key_ops, collapse = ", "), "\n")
-  if ("keyring" %in% names(x)) {
+  if (keyring_support(x)) {
     s <- paste0(
       "* Supports multiple keyrings: ",
       paste(keyring_ops, collapse = ", ")
