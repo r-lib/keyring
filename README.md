@@ -30,4 +30,4 @@ library(keyring)
 
 ## License
 
-MIT © Gábor Csárdi
+MIT © RStudio

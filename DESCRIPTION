@@ -1,12 +1,14 @@
 Package: keyring
 Title: Access the System Credential Store from R
 Version: 0.0.0.9000
-Author: Gábor Csárdi
-Maintainer: Gábor Csárdi <csardi.gabor@gmail.com>
-Description: Platform independent API to many system credential store
+Authors@R:
+    c(person(given = "Gábor", family = "Csárdi", role = c("aut", "cre"),
+             email = "csardi.gabor@gmail.com"),
+      person("RStudio", role = "cph"))
+Description: Platform independent 'API' to many system credential store
     implementations. Currently supported: Keychain on 'macOS', Credential
-    Store on 'Windows', the Secret Service API and the Gnome keyring API on
-    'Linux'.
+    Store on 'Windows', the Secret Service 'API' on 'Linux', and a simple,
+    platform independent store implemented with environment variables.
 License: MIT + file LICENSE
 LazyData: true
 URL: https://github.com/gaborcsardi/keyring#readme
