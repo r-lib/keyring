@@ -34,12 +34,43 @@ in non-interactive mode.}
 \value{
 \code{key_get} returns a character scalar, the password or other
 confidential information that was stored in the key.
+
 \code{key_list} returns a list of keys, i.e. service names and usernames,
 in a data frame.
 }
 \description{
-Query, set, delete list keys in a keyring
+These functions manipulate keys in a keyring. You can think of a keyring
+as a secure key-value store.
+}
+\details{
+\code{key_get} queries a key from the keyring.
+
+\code{key_set} sets a key in the keyring. The contents of the key is read
+interactively from the terminal.
+
+\code{key_set_with_value} is the non-interactive pair of \code{key_set}, to set
+a key in the keyring.
+
+\code{key_delete} deletes a key.
+
+\code{key_list} lists all keys of a keyring, or the keys for a certain
+service (if \code{service} is not \code{NULL}).
 }
 \examples{
-# TODO
+# These examples use the default keyring, and they are interactive,
+# so, we don't run them by default
+\dontrun{
+key_set("R-keyring-test-service", "donaldduck")
+key_get("R-keyring-test-service", "donaldduck")
+key_list(service = "R-keyring-test-service")
+key_delete("R-keyring-test-service", "donaldduck")
+}
+
+## This is non-interactive, assuming that that default keyring
+## is unlocked
+key_set_with_value("R-keyring-test-service", "donaldduck",
+                   password = "secret")
+key_get("R-keyring-test-service", "donaldduck")
+key_list(service = "R-keyring-test-service")
+key_delete("R-keyring-test-service", "donaldduck")
 }

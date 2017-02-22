@@ -1,12 +1,31 @@
 
 #' Store secrets in environment variables
 #'
-#' TODO
+#' This is a simple keyring backend, that stores/uses secrets in
+#' environment variables of the R session.
+#'
+#' It does not support multiple keyrings. It also does not support listing
+#' all keys, since there is no way to distinguish between keys and regular
+#' environment variables.
+#'
+#' It does support service names and usernames: they will be separated
+#' with a `:` character in the name of the environment variable.
 #'
 #' @family keyring backends
 #' @export
 #' @examples
-#' # TODO
+#' \dontrun{
+#' env <- backend_env()
+#' key_set("r-keyring-test", username = "donaldduck", backend = env)
+#' key_get("r-keyring-test", username = "donaldduck", backend = env)
+#' Sys.getenv("r-keyring-test:donaldduck")
+#'
+#' # This is an error
+#' key_list(backend = env)
+#'
+#' # Clean up
+#' key_delete("r-keyring-test", username = "donaldduck", backend = env)
+#' }
 
 backend_env <- function() {
   make_backend(

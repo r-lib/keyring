@@ -84,6 +84,20 @@ backend_wincred_i_enumerate <- function(filter) {
   .Call("keyring_wincred_enumerate", filter, PACKAGE = "keyring")
 }
 
+#' Create a Windows Credential Store keyring backend
+#'
+#' This backend is the default on Windows. It uses the native Windows
+#' Credential API, and needs at least Windows XP to run.
+#'
+#' This backend supports multiple keyrings. Note that multiple keyrings
+#' are implemented in the `keyring` R package, using some dummy keyring
+#' keys that represent keyrings and their locked/unlocked state.
+#'
+#' @param keyring Name of the keyring to use. `NULL` specifies the
+#'   default keyring.
+#' @return A backend object that can be used in `keyring` functions.
+#'
+#' @family keyring backends
 #' @export
 
 backend_wincred <- function(keyring = NULL) {

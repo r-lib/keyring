@@ -1,4 +1,15 @@
 
+#' Create a macOS Keychain backend
+#'
+#' This backend is the default on macOS. It uses the macOS native Keychain
+#' Service API.
+#'
+#' It supports multiple keyrings.
+#' @param keyring Name of the keyring to use. `NULL` specifies the
+#'   default keyring.
+#' @return A backend object that can be used in `keyring` functions.
+#'
+#' @family keyring backends
 #' @export
 
 backend_macos <- function(keyring = NULL) {

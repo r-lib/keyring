@@ -1,6 +1,22 @@
 
 #' Query, set, delete list keys in a keyring
 #'
+#' These functions manipulate keys in a keyring. You can think of a keyring
+#' as a secure key-value store.
+#'
+#' `key_get` queries a key from the keyring.
+#'
+#' `key_set` sets a key in the keyring. The contents of the key is read
+#' interactively from the terminal.
+#'
+#' `key_set_with_value` is the non-interactive pair of `key_set`, to set
+#' a key in the keyring.
+#'
+#' `key_delete` deletes a key.
+#'
+#' `key_list` lists all keys of a keyring, or the keys for a certain
+#' service (if `service` is not `NULL`).
+#'
 #' @param service Service name, a character scalar.
 #' @param username Username, a character scalar, or `NULL` if the key
 #'   is not associated with a username.
@@ -10,12 +26,28 @@
 #' @param backend Backend to use. See [backends].
 #' @return `key_get` returns a character scalar, the password or other
 #'   confidential information that was stored in the key.
+#'
 #'   `key_list` returns a list of keys, i.e. service names and usernames,
 #'   in a data frame.
 #'
 #' @export
 #' @examples
-#' # TODO
+#' # These examples use the default keyring, and they are interactive,
+#' # so, we don't run them by default
+#' \dontrun{
+#' key_set("R-keyring-test-service", "donaldduck")
+#' key_get("R-keyring-test-service", "donaldduck")
+#' key_list(service = "R-keyring-test-service")
+#' key_delete("R-keyring-test-service", "donaldduck")
+#' }
+#'
+#' ## This is non-interactive, assuming that that default keyring
+#' ## is unlocked
+#' key_set_with_value("R-keyring-test-service", "donaldduck",
+#'                    password = "secret")
+#' key_get("R-keyring-test-service", "donaldduck")
+#' key_list(service = "R-keyring-test-service")
+#' key_delete("R-keyring-test-service", "donaldduck")
 
 key_get <- function(service, username = NULL, backend = default_backend()) {
   assert_that(is_non_empty_string(service))

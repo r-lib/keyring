@@ -1,4 +1,17 @@
 
+#' Create a Secret Service keyring backend
+#'
+#' This backend is the default on Linux. It uses the libsecret library,
+#' and needs a secret service daemon running (e.g. Gnome Keyring, or
+#' KWallet). It uses DBUS to communicate with the secret service daemon.
+#'
+#' This backend supports multiple keyrings
+#'
+#' @param keyring Name of the keyring to use. `NULL` specifies the
+#'   default keyring.
+#' @return A backend object that can be used in `keyring` functions.
+#'
+#' @family keyring backends
 #' @export
 
 backend_secret_service <- function(keyring = NULL) {
