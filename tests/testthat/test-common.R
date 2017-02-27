@@ -1,6 +1,9 @@
 
 context("Common API")
 
+opts <- options(keyring_warn_for_env_fallback = FALSE)
+on.exit(options(opts), add = TRUE)
+
 test_that("set, get, delete", {
 
   service <- random_service()
@@ -40,6 +43,8 @@ test_that("set can update", {
 })
 
 test_that("list", {
+
+  if (default_backend()$name == "env") skip("'env' backend has no 'list' support")
 
   service <- random_service()
   username <- random_username()

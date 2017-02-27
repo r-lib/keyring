@@ -1,8 +1,11 @@
 
 context("Secret Service API")
 
+opts <- options(keyring_warn_for_env_fallback = FALSE)
+on.exit(options(opts), add = TRUE)
+
 test_that("specify keyring explicitly", {
-  skip_if_not_linux()
+  skip_if_not_secret_service()
 
   service <- random_service()
   username <- random_username()
@@ -21,7 +24,7 @@ test_that("specify keyring explicitly", {
 
 test_that("creating keychains", {
   skip("requires interaction")
-  skip_if_not_linux()
+  skip_if_not_secret_service()
 
   keyring <- random_keyring()
   backend <- backend_secret_service(keyring = keyring)
@@ -49,7 +52,7 @@ test_that("creating keychains", {
 
 test_that("lock/unlock keyrings", {
   skip("requires interaction")
-  skip_if_not_linux()
+  skip_if_not_secret_service()
 
   keyring <- random_keyring()
   backend <- backend_secret_service(keyring = keyring)

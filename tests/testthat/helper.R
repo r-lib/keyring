@@ -17,6 +17,11 @@ skip_if_not_linux <- function() {
   invisible(TRUE)
 }
 
+skip_if_not_secret_service <- function() {
+  if (default_backend()$name != "secret service") skip("Not secret service")
+  invisible(TRUE)
+}
+
 random_string <- function(length = 10, use_letters = TRUE,
                           use_numbers = TRUE) {
   pool <- c(

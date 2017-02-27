@@ -64,18 +64,21 @@ default_backend_env_or_auto <- function() {
 default_backend_auto <- function() {
   sysname <- tolower(Sys.info()[["sysname"]])
 
-  if (sysname == "windows") {
+  if (sysname == "windows" && "wincred" %in% names(known_backends)) {
     backend_wincred
 
-  } else if (sysname == "darwin") {
+  } else if (sysname == "darwin" && "macos" %in% names(known_backends)) {
     backend_macos
 
-  } else if (sysname == "linux") {
+  } else if (sysname == "linux" && "secret_service" %in% names(known_backends) &&
+             backend_secret_service()$is_available()) {
     backend_secret_service
 
   } else {
-    warning("Selecting ", sQuote("env"), " backend. ",
-            "Secrets are stored in environment variables")
+    if (getOption("keyring_warn_for_env_fallback", TRUE)) {
+      warning("Selecting ", sQuote("env"), " backend. ",
+              "Secrets are stored in environment variables")
+    }
     backend_env
   }
 }

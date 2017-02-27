@@ -37,6 +37,28 @@ void keyring_secret_service_handle_status(const char *func, gboolean status,
   }
 }
 
+SEXP keyring_secret_service_is_available(SEXP report_error) {
+
+  GError *err = NULL;
+
+  SecretService *secretservice = secret_service_get_sync(
+    /* flags = */ SECRET_SERVICE_LOAD_COLLECTIONS | SECRET_SERVICE_OPEN_SESSION,
+    /* cancellable = */ NULL,
+    &err);
+
+  if (err || !secretservice) {
+    if (LOGICAL(report_error)[0]) {
+      keyring_secret_service_handle_status("is_available", TRUE, err);
+      error("Cannot connect to secret service");
+
+    } else {
+      return ScalarLogical(0);
+    }
+  }
+
+  return ScalarLogical(1);
+}
+
 SecretCollection* keyring_secret_service_get_collection_default() {
 
   SecretCollection *collection = NULL;
@@ -462,7 +484,7 @@ SEXP keyring_secret_service_unlock_keyring(SEXP keyring, SEXP password) {
     &err);
 
   g_list_free(list);
-  keyring_secret_service_handle_status("lock_keyring", TRUE, err);
+  keyring_secret_service_handle_status("unlock_keyring", TRUE, err);
 
   return R_NilValue;
 }
