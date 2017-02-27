@@ -28,7 +28,8 @@ backend_secret_service <- function(keyring = NULL) {
     list_keyring = backend_secret_service_list_keyring,
     delete_keyring = backend_secret_service_delete_keyring,
     lock_keyring = backend_secret_service_lock_keyring,
-    unlock_keyring = backend_secret_service_unlock_keyring
+    unlock_keyring = backend_secret_service_unlock_keyring,
+    is_available = backend_secret_service_is_available
   )
 }
 
@@ -102,4 +103,8 @@ backend_secret_service_unlock_keyring <- function(backend, password = NULL) {
   .Call("keyring_secret_service_unlock_keyring", backend$keyring, password,
         PACKAGE = "keyring")
   invisible()
+}
+
+backend_secret_service_is_available <- function(report_error = FALSE) {
+  .Call("keyring_secret_service_is_available", report_error, PACKAGE = "keyring")
 }
