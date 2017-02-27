@@ -3,49 +3,53 @@
 ## so we emulate them.
 ##
 ## For every (non-default) keyring, we create a credential, with target name
-## "keyring::". This credential contains an RSA keypair, in PEM
-## format. The private key PEM also has a password, this is the
-## keyring password. This is how it looks:
+## "keyring::". This credential contains metadata about the keyring. It currently
+## has the following (DCF) format:
 ##
-## -----BEGIN ENCRYPTED PRIVATE KEY-----
-## MIIFHDBOBgkqhkiG9w0BBQ0wQTApBgkqhkiG9w0BBQwwHAQIlHZxySV0zOACAggA
-## ...
-## -----END ENCRYPTED PRIVATE KEY-----
+## Version: 1.0.0
+## Verify: NgF+vkkNsOoSnXVXt249u6xknskhDasMIhE8Uuzpl/w=
+## Salt: some random salt
 ##
-## -----BEGIN PUBLIC KEY-----
-## MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA+ditW7cKwYn/lBr7PjVH
-## ...
-## -----END PUBLIC KEY-----
+## The verify tag is used to check if the keyring password that was specified to
+## unlock the keyring, was correct.
 ##
-## When a keyring is unlocked, we store another credential, with target
-## name "keyring::unlocked". This is a session credential, i.e. it is
-## only for a single login session. This credential has the decrypted
-## private key:
-## -----BEGIN PRIVATE KEY-----
-## MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQD52K1btwrBif+U
-## ...
-## -----END PRIVATE KEY-----
+## The Salt tag is used to salt the SHA256 hash, to make it more secure.
+## It is generated randomly when the keyring is created.
+##
+## When a keyring is unlocked, the user specifies the pass phrase of the
+## keyring. We create the SHA256 hash of this pass phrase, and this will be the
+## AES key to encrypt/decrypt the items (keys) in the keyring. When unlocking a
+## keyring, we use the 'Verify' field, to see if the supplied password indeed
+## hashes to the correct AES key. If it can decrypt the verify string, then it
+## is correct.
+##
+## We also store the AES key in the keyring, in a session credential with
+## target name "keyring::unlocked". A session credential's life time is the
+## life time of a single login session. The AES key is stored in a base64
+## encoded form, e.g.:
+##
+## JvL7srqc0X1vVnqbSayFnIkJZoe2xMOWoDh+aBR9DJc=
 ##
 ## The credentials of the keyring itself have target names as
 ## "keyring:service:username", where the username may be empty.
 ## If keyring is empty, then the credential is considered to be
 ## on the default keyring, and it is not encrypted. Credentials on
-## other keyrings are encrypted using the public key of the keyring.
+## other keyrings are encrypted using the AES key of the keyring.
+## The random initialization vector of the encryption is stored as the
+## first 16 bytes of the keyring item.
 ##
 ## When we 'set' a key, we need to:
 ## 1. Check if the key is on the default keyring.
 ## 2. If 1. is TRUE, then just set the key, using target name
 ##    ":service:username" (username might be empty, servicename not),
-##    and fininsh.
+##    and finish.
 ## 3. Check if the keyring exists.
-## 4. If 3. is FALSE, then error and finished.
-## 5. Get the public key of the keyring.
-## 6. Encrypt the key with the public key, and store the encrypted
+## 4. If 3. is FALSE, then error and finish.
+## 5. Check that the keyring is unlocked.
+## 6. If 5. is FALSE, then prompt the user and unlock the keyring.
+## 7. Encrypt the key with the AES key, and store the encrypted
 ##    key using target name "keyring:service:username" (again, username
 ##    might be empty, service name not).
-##
-## Note that, since the public key is always available, the stored
-## key can be overwritten without unlocking the keyring.
 ##
 ## When we 'get' a key, we need to:
 ## 1. Check if the key is on the default keyring.
@@ -53,12 +57,20 @@
 ##    ":service:username".
 ## 3. Check if the keyring is locked.
 ## 4. If 3. is TRUE, then prompt the user and unlock the keyring.
-## 5. Get the private key from the unlocked keyring.
-## 6. Get the key and use the private key to decrypt it.
+## 5. Get the AES key from the unlocked keyring.
+## 6. Get the key and use the AES key to decrypt it.
+##
+## To unlock a keyring we need to:
+## 1. Get the keyring password and SHA256 hash it.
+## 2. Store the
+## 2. Read the private RSA key, and decrypt the encrypted AES key with it.
+## 3. Store the AES key under target name keyring::unlocked.
 ##
 ## The C functions for the wincred backend do not know about multiple
 ## keyrings at all, we just use them to get/set/delete/list "regular"
 ## credentials in the credential store.
+
+backend_wincred_protocol_version <- "1.0.0"
 
 ## This is a low level API
 
@@ -159,42 +171,78 @@ backend_wincred_target_lock <- function(keyring) {
   backend_wincred_target(keyring, "", "unlocked")
 }
 
-extract_privkey <- function(txt) {
-  paste0(strsplit(txt, "\n\n")[[1]][1], "\n")
+backend_wincred_parse_keyring_credential <- function(target) {
+  value <- backend_wincred_i_get(target)
+  con <- textConnection(value)
+  on.exit(close(con), add = TRUE)
+  as.list(read.dcf(con)[1,])
 }
 
-extract_pubkey <- function(txt) {
-  strsplit(txt, "\n\n")[[1]][2]
+backend_wincred_write_keyring_credential <- function(target, data) {
+  con <- textConnection(NULL, open = "w")
+  mat <- matrix(unlist(data), nrow = 1)
+  colnames(mat) <- names(data)
+  write.dcf(mat, con)
+  value <- paste0(paste(textConnectionValue(con), collapse = "\n"), "\n")
+  close(con)
+  backend_wincred_i_set(target, password = value)
+}
+
+#' @importFrom openssl base64_decode
+
+backend_wincred_get_encrypted_aes <- function(str) {
+  r <- base64_decode(str)
+  structure(tail(r, -16), iv = head(r, 16))
 }
 
 ## 1. Try to get the unlock credential
-## 2. If it exists, return the unencrypted key
+## 2. If it exists, return AES key
 ## 3. If not, then get the credential of the keyring
-## 4. Ask for its password
-## 5. Decrypt the key with the password
-## 6. Create a SESSION credential, with the decrypted key
-## 7. Return the decrypted key
+## 4. Ask for the keyring password
+## 5. Hash the password to get the AES key
+## 6. Verify that the AES key is correct, using the Verify field of
+##    the keyring credential
+## 7. Create a SESSION credential, with the decrypted AES key
+## 8. Return the decrypted AES key
 
-#' @importFrom openssl read_key
+#' @importFrom openssl sha256 aes_cbc_decrypt
 
 backend_wincred_unlock_keyring_internal <- function(keyring, password = NULL) {
   target_lock <- backend_wincred_target_lock(keyring)
   if (backend_wincred_i_exists(target_lock)) {
-    backend_wincred_i_get(target_lock)
+    base64_decode(backend_wincred_i_get(target_lock))
   } else {
     target_keyring <- backend_wincred_target_keyring(keyring)
-    en_key <- extract_privkey(backend_wincred_i_get(target_keyring))
+    keyring_data <- backend_wincred_parse_keyring_credential(target_keyring)
     if (is.null(password)) {
       message("keyring ", sQuote(keyring), " is locked, enter password to unlock")
       password <- get_pass()
     }
-    key <- write_pem(read_key(en_key, password = password))
-    backend_wincred_i_set(target_lock, key, session = TRUE)
-    key
+    aes <- sha256(charToRaw(password), key = keyring_data$Salt)
+    verify <- backend_wincred_get_encrypted_aes(keyring_data$Verify)
+    tryCatch(
+      aes_cbc_decrypt(verify, key = aes),
+      error = function(e) stop("Invalid password, cannot unlock keyring")
+    )
+    backend_wincred_i_set(target_lock, base64_encode(aes), session = TRUE)
+    aes
   }
 }
 
-#' @importFrom openssl base64_decode rsa_decrypt
+#' Get a key from a Wincred keyring
+#'
+#' @param backend Backend object.
+#' @param service Service name. Must not be empty.
+#' @param username Username. Might be empty.
+#'
+#' 1. We check if the key is on the default keyring.
+#' 2. If yes, we just return it.
+#' 3. Otherwise check if the keyring is locked.
+#' 4. If locked, then unlock it.
+#' 5. Get the AES key from the keyring.
+#' 6. Decrypt the key with the AES key.
+#'
+#' @keywords internal
 
 backend_wincred_get <- function(backend, service, username) {
   target <- backend_wincred_target(backend$keyring, service, username)
@@ -202,8 +250,9 @@ backend_wincred_get <- function(backend, service, username) {
   if (is.null(backend$keyring)) return(password)
 
   ## If it is encrypted, we need to decrypt it
-  key <- backend_wincred_unlock_keyring_internal(backend$keyring)
-  rawToChar(rsa_decrypt(base64_decode(password), key = key))
+  aes <- backend_wincred_unlock_keyring_internal(backend$keyring)
+  enc <- backend_wincred_get_encrypted_aes(password)
+  rawToChar(aes_cbc_decrypt(enc, key = aes))
 }
 
 backend_wincred_set <- function(backend, service, username) {
@@ -211,7 +260,22 @@ backend_wincred_set <- function(backend, service, username) {
   backend_wincred_set_with_value(backend, service, username, pw)
 }
 
-#' @importFrom openssl rsa_encrypt base64_encode
+#' Set a key on a Wincred keyring
+#'
+#' @param backend The backend object.
+#' @param service Service name. Must not be empty.
+#' @param username Username. Might be empty.
+#' @param password The key text to store.
+#'
+#' 1. Check if we are using the default keyring.
+#' 2. If yes, then just store the key and we are done.
+#' 3. Otherwise check if keyring exists.
+#' 4. If not, error and finish.
+#' 5. If yes, check if it is locked.
+#' 6. If yes, unlock it.
+#' 7. Encrypt the key with the AES key, and store it.
+#'
+#' @keywords internal
 
 backend_wincred_set_with_value <- function(backend, service,
                                            username, password) {
@@ -223,9 +287,9 @@ backend_wincred_set_with_value <- function(backend, service,
 
   ## Not the default keyring, we need to encrypt it
   target_keyring <- backend_wincred_target_keyring(backend$keyring)
-  pubkey <- extract_pubkey(backend_wincred_i_get(target_keyring))
-  cipher <- rsa_encrypt(charToRaw(password), pubkey = pubkey)
-  backend_wincred_i_set(target, password = base64_encode(cipher),
+  aes <- backend_wincred_unlock_keyring_internal(backend$keyring)
+  enc <- aes_cbc_encrypt(charToRaw(password), key = aes)
+  backend_wincred_i_set(target, password = base64_encode(c(attr(enc, "iv"), enc)),
                         username = username)
   invisible()
 }
@@ -263,27 +327,30 @@ backend_wincred_create_keyring <- function(backend) {
 }
 
 ## 1. Check that the keyring does not exist, error if it does
-## 2. Create an RSA keypair
-## 3. Write it to a keyring credential
-## 4. Unlock the keyring immediately, create a keyring lock credential
+## 2. Create salt.
+## 3. SHA256 hash the password, with the salt, to get the AES key.
+## 4. Generate 15 random bytes, encrypt it with the AES key, base64 encode it.
+## 5. Write metadata to the keyring credential
+## 6. Unlock the keyring immediately, create a keyring unlock credential
 
-#' @importFrom openssl rsa_keygen write_pem
+#' @importFrom openssl base64_encode rand_bytes aes_cbc_encrypt
 
 backend_wincred_create_keyring_direct <- function(keyring, pw) {
   target_keyring <- backend_wincred_target_keyring(keyring)
   if (backend_wincred_i_exists(target_keyring)) {
     stop("keyring ", sQuote(keyring), " already exists")
   }
-  key <- rsa_keygen()
-  pem <- paste(
-    write_pem(key, password = pw),
-    sep = "\n",
-    write_pem(key$pubkey)
+  salt <- base64_encode(rand_bytes(32))
+  aes <- sha256(charToRaw(pw), key = salt)
+  verify <- aes_cbc_encrypt(rand_bytes(15), key = aes)
+  verify <- base64_encode(c(attr(verify, "iv"), verify))
+  dcf <- list(
+    Version = backend_wincred_protocol_version,
+    Verify = verify,
+    Salt = salt
   )
-  backend_wincred_i_set(target_keyring, password = pem)
-  plainpem <- write_pem(key)
-  target_lock <- backend_wincred_target_lock(keyring)
-  backend_wincred_i_set(target_lock, password = plainpem, session = TRUE)
+  backend_wincred_write_keyring_credential(target_keyring, dcf)
+  backend_wincred_unlock_keyring_internal(keyring, pw)
   invisible()
 }
 
