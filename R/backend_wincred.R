@@ -122,11 +122,11 @@ backend_wincred <- function(keyring = NULL) {
     set_with_value = backend_wincred_set_with_value,
     delete = backend_wincred_delete,
     list = backend_wincred_list,
-    create_keyring = backend_wincred_create_keyring,
-    list_keyring = backend_wincred_list_keyring,
-    delete_keyring = backend_wincred_delete_keyring,
-    lock_keyring = backend_wincred_lock_keyring,
-    unlock_keyring = backend_wincred_unlock_keyring
+    keyring_create = backend_wincred_create_keyring,
+    keyring_list = backend_wincred_list_keyring,
+    keyring_delete = backend_wincred_delete_keyring,
+    keyring_lock = backend_wincred_lock_keyring,
+    keyring_unlock = backend_wincred_unlock_keyring
   )
 }
 

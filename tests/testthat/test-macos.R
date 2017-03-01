@@ -54,7 +54,7 @@ test_that("creating keychains, interactive", {
 
   keyring <- random_keyring()
   backend <- backend_macos(keyring = keyring)
-  backend$create_keyring <- function(backend, pw) {
+  backend$keyring_create <- function(backend, pw) {
     backend_macos_create_keyring_direct(backend$keyring, "secret")
   }
 

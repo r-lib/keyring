@@ -24,11 +24,11 @@ backend_secret_service <- function(keyring = NULL) {
     set_with_value = backend_secret_service_set_with_value,
     delete = backend_secret_service_delete,
     list = backend_secret_service_list,
-    create_keyring = backend_secret_service_create_keyring,
-    list_keyring = backend_secret_service_list_keyring,
-    delete_keyring = backend_secret_service_delete_keyring,
-    lock_keyring = backend_secret_service_lock_keyring,
-    unlock_keyring = backend_secret_service_unlock_keyring,
+    keyring_create = backend_secret_service_create_keyring,
+    keyring_list = backend_secret_service_list_keyring,
+    keyring_delete = backend_secret_service_delete_keyring,
+    keyring_lock = backend_secret_service_lock_keyring,
+    keyring_unlock = backend_secret_service_unlock_keyring,
     is_available = backend_secret_service_is_available
   )
 }

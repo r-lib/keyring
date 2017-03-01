@@ -173,9 +173,9 @@ keyring_support <- function(backend = default_backend()) {
 keyring_create <- function(backend = default_backend()) {
   assert_that(is_keyring_backend(backend))
 
-  check_supported(backend, "create_keyring")
+  check_supported(backend, "keyring_create")
 
-  backend$create_keyring(backend)
+  backend$keyring_create(backend)
 }
 
 #' @export
@@ -184,9 +184,9 @@ keyring_create <- function(backend = default_backend()) {
 keyring_list <- function(backend = default_backend()) {
   assert_that(is_keyring_backend(backend))
 
-  check_supported(backend, "list_keyring")
+  check_supported(backend, "keyring_list")
 
-  backend$list_keyring(backend)
+  backend$keyring_list(backend)
 }
 
 #' @export
@@ -195,9 +195,9 @@ keyring_list <- function(backend = default_backend()) {
 keyring_delete <- function(backend = default_backend()) {
   assert_that(is_keyring_backend(backend))
 
-  check_supported(backend, "delete_keyring")
+  check_supported(backend, "keyring_delete")
 
-   backend$delete_keyring(backend)
+   backend$keyring_delete(backend)
 }
 
 #' @export
@@ -206,9 +206,9 @@ keyring_delete <- function(backend = default_backend()) {
 keyring_lock <- function(backend = default_backend()) {
   assert_that(is_keyring_backend(backend))
 
-  check_supported(backend, "lock_keyring")
+  check_supported(backend, "keyring_lock")
 
-  backend$lock_keyring(backend)
+  backend$keyring_lock(backend)
 }
 
 #' @export
@@ -217,7 +217,7 @@ keyring_lock <- function(backend = default_backend()) {
 keyring_unlock <- function(backend = default_backend(), password = NULL) {
   assert_that(is_keyring_backend(backend))
 
-  check_supported(backend, "unlock_keyring")
+  check_supported(backend, "keyring_unlock")
 
-  backend$unlock_keyring(backend, password)
+  backend$keyring_unlock(backend, password)
 }

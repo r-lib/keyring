@@ -22,11 +22,11 @@ backend_macos <- function(keyring = NULL) {
     set_with_value = backend_macos_set_with_value,
     delete = backend_macos_delete,
     list = backend_macos_list,
-    create_keyring = backend_macos_create_keyring,
-    list_keyring = backend_macos_list_keyring,
-    delete_keyring = backend_macos_delete_keyring,
-    lock_keyring = backend_macos_lock_keyring,
-    unlock_keyring = backend_macos_unlock_keyring
+    keyring_create = backend_macos_create_keyring,
+    keyring_list = backend_macos_list_keyring,
+    keyring_delete = backend_macos_delete_keyring,
+    keyring_lock = backend_macos_lock_keyring,
+    keyring_unlock = backend_macos_unlock_keyring
   )
 }
 

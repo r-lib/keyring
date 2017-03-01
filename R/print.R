@@ -10,8 +10,8 @@ print.keyring_backend <- function(x, ...) {
   )
   keyring_ops <- intersect(
     all_ops,
-    c("create_keyring", "list_keyring", "delete_keyring", "lock_keyring",
-      "unlock_keyring")
+    c("keyring_create", "keyring_list", "keyring_delete", "keyring_lock",
+      "keyring_unlock")
   )
   other_ops <- setdiff(all_ops, c(key_ops, keyring_ops))
 
