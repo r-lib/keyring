@@ -115,7 +115,7 @@ backend_wincred_i_enumerate <- function(filter) {
 backend_wincred <- function(keyring = NULL) {
   assert_that(is_string_or_null(keyring))
   make_backend(
-    name = "secret service",
+    name = "windows credential store",
     keyring = keyring,
     get = backend_wincred_get,
     set = backend_wincred_set,
