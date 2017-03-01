@@ -25,3 +25,4 @@ Suggests:
     testthat,
     withr
 Encoding: UTF-8
+SystemRequirements: libsecret on Linux
