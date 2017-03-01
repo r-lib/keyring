@@ -189,6 +189,7 @@ backend_wincred_write_keyring_credential <- function(target, data) {
 }
 
 #' @importFrom openssl base64_decode
+#' @importFrom utils head tail
 
 backend_wincred_get_encrypted_aes <- function(str) {
   r <- base64_decode(str)
