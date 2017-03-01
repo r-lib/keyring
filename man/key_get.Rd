@@ -62,7 +62,7 @@ service (if \code{service} is not \code{NULL}).
 \dontrun{
 key_set("R-keyring-test-service", "donaldduck")
 key_get("R-keyring-test-service", "donaldduck")
-key_list(service = "R-keyring-test-service")
+if (keyring_support()) key_list(service = "R-keyring-test-service")
 key_delete("R-keyring-test-service", "donaldduck")
 }
 
@@ -71,6 +71,6 @@ key_delete("R-keyring-test-service", "donaldduck")
 key_set_with_value("R-keyring-test-service", "donaldduck",
                    password = "secret")
 key_get("R-keyring-test-service", "donaldduck")
-key_list(service = "R-keyring-test-service")
+if (keyring_support()) key_list(service = "R-keyring-test-service")
 key_delete("R-keyring-test-service", "donaldduck")
 }
