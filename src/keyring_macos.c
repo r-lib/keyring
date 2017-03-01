@@ -1,4 +1,7 @@
 
+/* Avoid warning about empty compilation unit. */
+void keyring_macos_dummy() { }
+
 #ifdef __APPLE__
 
 #include <CoreFoundation/CoreFoundation.h>

@@ -1,4 +1,7 @@
 
+/* Avoid warning about empty compilation unit. */
+void keyring_wincred_dummy() { }
+
 #ifdef _WIN32
 
 #include <R.h>
