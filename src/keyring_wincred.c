@@ -27,9 +27,8 @@ SEXP keyring_wincred_get(SEXP target) {
   BOOL status = CredRead(ctarget, CRED_TYPE_GENERIC, /* Flags = */ 0, &cred);
   keyring_wincred_handle_status("get", status);
 
-  SEXP result = PROTECT(ScalarString(mkCharLen(
-    (const char*) cred->CredentialBlob,
-    cred->CredentialBlobSize)));
+  SEXP result = PROTECT(allocVector(RAWSXP, cred->CredentialBlobSize));
+  memcpy(RAW(result), cred->CredentialBlob, cred->CredentialBlobSize);
 
   CredFree(cred);
   UNPROTECT(1);
@@ -56,7 +55,6 @@ SEXP keyring_wincred_set(SEXP target, SEXP password, SEXP username,
   const char *ctarget = CHAR(STRING_ELT(target, 0));
   const char *cusername =
     isNull(username) ? NULL : CHAR(STRING_ELT(username, 0));
-  const char *cpassword = CHAR(STRING_ELT(password, 0));
   int csession = LOGICAL(session)[0];
 
   CREDENTIAL cred = { 0 };
@@ -64,8 +62,8 @@ SEXP keyring_wincred_set(SEXP target, SEXP password, SEXP username,
 
   cred.Type = CRED_TYPE_GENERIC;
   cred.TargetName = (char*) ctarget;
-  cred.CredentialBlobSize = strlen(cpassword);
-  cred.CredentialBlob = (LPBYTE) cpassword;
+  cred.CredentialBlobSize = LENGTH(password);
+  cred.CredentialBlob = (LPBYTE) RAW(password);
   cred.Persist = csession ? CRED_PERSIST_SESSION : CRED_PERSIST_LOCAL_MACHINE;
   cred.UserName = (char*) cusername;
 

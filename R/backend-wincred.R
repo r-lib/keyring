@@ -138,7 +138,7 @@ b_wincred_target_lock <- function(keyring) {
 }
 
 b_wincred_parse_keyring_credential <- function(target) {
-  value <- b_wincred_i_get(target)
+  value <- rawToChar(b_wincred_i_get(target))
   con <- textConnection(value)
   on.exit(close(con), add = TRUE)
   as.list(read.dcf(con)[1,])
@@ -151,7 +151,7 @@ b_wincred_write_keyring_credential <- function(target, data) {
   write.dcf(mat, con)
   value <- paste0(paste(textConnectionValue(con), collapse = "\n"), "\n")
   close(con)
-  b_wincred_i_set(target, password = value)
+  b_wincred_i_set(target, password = charToRaw(value))
 }
 
 #' @importFrom openssl base64_decode
@@ -177,7 +177,7 @@ b_wincred_get_encrypted_aes <- function(str) {
 b_wincred_unlock_keyring_internal <- function(keyring, password = NULL) {
   target_lock <- b_wincred_target_lock(keyring)
   if (b_wincred_i_exists(target_lock)) {
-    base64_decode(b_wincred_i_get(target_lock))
+    base64_decode(rawToChar(b_wincred_i_get(target_lock)))
   } else {
     target_keyring <- b_wincred_target_keyring(keyring)
     keyring_data <- b_wincred_parse_keyring_credential(target_keyring)
@@ -191,7 +191,7 @@ b_wincred_unlock_keyring_internal <- function(keyring, password = NULL) {
       aes_cbc_decrypt(verify, key = aes),
       error = function(e) stop("Invalid password, cannot unlock keyring")
     )
-    b_wincred_i_set(target_lock, base64_encode(aes), session = TRUE)
+    b_wincred_i_set(target_lock, charToRaw(base64_encode(aes)), session = TRUE)
     aes
   }
 }
@@ -233,9 +233,15 @@ backend_wincred <- R6Class(
 
     get = function(service, username = NULL, keyring = NULL)
       b_wincred_get(self, private, service, username, keyring),
+    get_raw = function(service, username = NULL, keyring = NULL)
+      b_wincred_get_raw(self, private, service, username = NULL, keyring = NULL),
     set = function(service, username = NULL, keyring = NULL)
       b_wincred_set(self, private, service, username, keyring),
     set_with_value = function(service, username = NULL, password = NULL,
+      keyring = NULL)
+      b_wincred_set_with_value(self, private, service, username, password,
+                             keyring),
+    set_with_raw_value = function(service, username = NULL, password = NULL,
       keyring = NULL)
       b_wincred_set_with_value(self, private, service, username, password,
                              keyring),
@@ -297,12 +303,16 @@ b_wincred_get <- function(self, private, service, username, keyring) {
   keyring <- keyring %||% private$keyring
   target <- b_wincred_target(keyring, service, username)
   password <- b_wincred_i_get(target)
-  if (is.null(keyring)) return(password)
-
-  ## If it is encrypted, we need to decrypt it
-  aes <- b_wincred_unlock_keyring_internal(keyring)
-  enc <- b_wincred_get_encrypted_aes(password)
-  rawToChar(aes_cbc_decrypt(enc, key = aes))
+  if (! is.null(keyring)) {
+    ## If it is encrypted, we need to decrypt it
+    aes <- b_wincred_unlock_keyring_internal(keyring)
+    enc <- b_wincred_get_encrypted_aes(rawToChar(password))
+    password <- aes_cbc_decrypt(enc, key = aes)
+  }
+  if (any(password == 0)) {
+    stop("Key contains embedded null bytes, use get_raw()")
+  }
+  rawToChar(password)
 }
 
 b_wincred_set <- function(self, private, service, username, keyring) {
@@ -310,6 +320,12 @@ b_wincred_set <- function(self, private, service, username, keyring) {
   b_wincred_set_with_value(self, private, service, username, password,
                            keyring)
   invisible(self)
+}
+
+b_wincred_set_with_value <- function(self, private, service,
+                                     username, password, keyring) {
+  b_wincred_set_with_raw_value(self, private, service, username,
+                               charToRaw(password), keyring)
 }
 
 #' Set a key on a Wincred keyring
@@ -328,8 +344,8 @@ b_wincred_set <- function(self, private, service, username, keyring) {
 #'
 #' @keywords internal
 
-b_wincred_set_with_value <- function(self, private, service,
-                                     username, password, keyring) {
+b_wincred_set_with_raw_value <- function(self, private, service,
+                                         username, password, keyring) {
   keyring <- keyring %||% private$keyring
   target <- b_wincred_target(keyring, service, username)
   if (is.null(keyring)) {
@@ -340,9 +356,9 @@ b_wincred_set_with_value <- function(self, private, service,
   ## Not the default keyring, we need to encrypt it
   target_keyring <- b_wincred_target_keyring(keyring)
   aes <- b_wincred_unlock_keyring_internal(keyring)
-  enc <- aes_cbc_encrypt(charToRaw(password), key = aes)
-  b_wincred_i_set(target, password = base64_encode(c(attr(enc, "iv"), enc)),
-                        username = username)
+  enc <- aes_cbc_encrypt(password, key = aes)
+  password <- charToRaw(base64_encode(c(attr(enc, "iv"), enc)))
+  b_wincred_i_set(target, password = password, username = username)
   invisible(self)
 }
 
