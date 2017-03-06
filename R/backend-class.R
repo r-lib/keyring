@@ -11,6 +11,8 @@ abstract_method <- function() {
 backend <- R6Class(
   "backend",
   public = list(
+    name = "Unknown keyring backend",
+
     has_keyring_support = function() FALSE,
 
     get = function(service, username = NULL)
@@ -19,8 +21,10 @@ backend <- R6Class(
       abstract_method(),
     set_with_value = function(service, username = NULL, password = NULL)
       abstract_method(),
-    delete = function(service, username)
-      abstract_method()
+    delete = function(service, username = NULL)
+      abstract_method(),
+    list = function(service = NULL)
+      stop("Backend does not implement 'list'")
   )
 )
 
@@ -39,20 +43,18 @@ backend_keyrings <- R6Class(
     set_with_value = function(service, username = NULL, password = NULL,
       keyring = NULL)
       abstract_method(),
-    delete = function(service, username)
+    delete = function(service, username = NULL)
       abstract_method(),
-    list = function(service, keyring = NULL)
+    list = function(service = NULL, keyring = NULL)
       abstract_method(),
 
     keyring_create = function(keyring) abstract_method(),
     keyring_list = function() abstract_method(),
     keyring_delete = function(keyring = NULL) abstract_method(),
     keyring_lock = function(keyring = NULL) abstract_method(),
-    keyring_unlock = function(keyring = NULL) abstract_method(),
+    keyring_unlock = function(keyring = NULL, password = NULL)
+      abstract_method(),
     keyring_default = function() abstract_method(),
-    keyring_set_default = function() abstract_method()
-  ),
-  private = list(
-    default_keyring = NULL
+    keyring_set_default = function(keyring = NULL) abstract_method()
   )
 )
