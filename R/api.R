@@ -23,7 +23,6 @@
 #' @param password The secret to store. For `key_set`, it is read from
 #'   the console, interactively. `key_set_with_value` can be also used
 #'   in non-interactive mode.
-#' @param backend Backend to use. See [backends].
 #' @return `key_get` returns a character scalar, the password or other
 #'   confidential information that was stored in the key.
 #'
@@ -37,7 +36,7 @@
 #' \dontrun{
 #' key_set("R-keyring-test-service", "donaldduck")
 #' key_get("R-keyring-test-service", "donaldduck")
-#' if (keyring_support()) key_list(service = "R-keyring-test-service")
+#' if (has_keyring_support()) key_list(service = "R-keyring-test-service")
 #' key_delete("R-keyring-test-service", "donaldduck")
 #' }
 #'
@@ -46,62 +45,50 @@
 #' key_set_with_value("R-keyring-test-service", "donaldduck",
 #'                    password = "secret")
 #' key_get("R-keyring-test-service", "donaldduck")
-#' if (keyring_support()) key_list(service = "R-keyring-test-service")
+#' if (has_keyring_support()) key_list(service = "R-keyring-test-service")
 #' key_delete("R-keyring-test-service", "donaldduck")
 
-key_get <- function(service, username = NULL, backend = default_backend()) {
+key_get <- function(service, username = NULL, keyring = NULL) {
   assert_that(is_non_empty_string(service))
   assert_that(is_string_or_null(username))
-  assert_that(is_keyring_backend(backend))
-
-  backend$get(backend, service, username)
+  default_backend()$get(service, username, keyring = keyring)
 }
 
 #' @export
 #' @rdname key_get
 
-key_set <- function(service, username = NULL, backend = default_backend()) {
+key_set <- function(service, username = NULL, keyring = NULL) {
   assert_that(is_non_empty_string(service))
   assert_that(is_string_or_null(username))
-  assert_that(is_keyring_backend(backend))
-
-  backend$set(backend, service, username)
+  default_backend()$set(service, username, keyring = keyring)
 }
 
 #' @export
 #' @rdname key_get
 
 key_set_with_value <- function(service, username = NULL, password = NULL,
-                               backend = default_backend()) {
+                               keyring = NULL) {
   assert_that(is_non_empty_string(service))
-  assert_that(is_keyring_backend(backend))
   assert_that(is_string(password))
-
-  backend$set_with_value(backend, service, username, password)
+  default_backend()$set_with_value(service, username, password,
+                                         keyring = keyring)
 }
 
 #' @export
 #' @rdname key_get
 
-key_delete <- function(service, username = NULL,
-                       backend = default_backend()) {
+key_delete <- function(service, username = NULL, keyring = NULL) {
   assert_that(is_non_empty_string(service))
   assert_that(is_string_or_null(username))
-  assert_that(is_keyring_backend(backend))
-
-  backend$delete(backend, service, username)
+  default_backend()$delete(service, username, keyring = keyring)
 }
 
 #' @export
 #' @rdname key_get
 
-key_list <- function(service = NULL, backend = default_backend()) {
+key_list <- function(service = NULL, keyring = NULL) {
   assert_that(is_non_empty_string_or_null(service))
-  assert_that(is_keyring_backend(backend))
-
-  check_supported(backend, "list")
-
-  backend$list(backend, service)
+  default_backend()$list(service, keyring = keyring)
 }
 
 #' Manage keyrings
@@ -120,7 +107,7 @@ key_list <- function(service = NULL, backend = default_backend()) {
 #' variables (see [default_backend()]), or you can also specify it
 #' directly in the backend calls or in the call to [default_backend().
 #'
-#' `keyring_support` checks if a backend supports multiple keyrings.
+#' `has_keyring_support` checks if a backend supports multiple keyrings.
 #'
 #' `keyring_create` creates a new keyring. It asks for a password if no
 #' password is specified.
@@ -138,86 +125,65 @@ key_list <- function(service = NULL, backend = default_backend()) {
 #' `keyring_unlock` unlocks a keyring. If a password is not specified,
 #' it will be read in interactively.
 #'
-#' @param backend The backend to use. You will also need to specify the
-#'   keyring to this backend, if a non-default keyring is desired.
-#'   See examples below.
 #' @param password The password to unlock the keyring. If not specified
 #'   or `NULL`, it will be read from the console.
 #'
 #' @export
 #' @examples
 #' default_backend()
-#' keyring_support()
-#' keyring_support(backend = backend_env())
+#' has_keyring_support()
+#' backend_env$has_keyring_support()
 #'
 #' ## This might ask for a password, so we do not run it by default
+#' ## It only works if the default backend supports multiple keyrings
 #' \dontrun{
-#' keyring_create(default_backend(keyring = "foobar"))
+#' keyring_create("foobar")
 #' key_set_with_value("R-test-service", "donaldduck", password = "secret",
-#'                    backend = default_backend(keyring = "foobar"))
-#' key_get("R-test-service", "donaldduck",
-#'         backend = default_backend(keyring = "foobar"))
-#' key_list(backend = default_backend(keyring = "foobar"))
-#' key_delete(backend = default_backend(keyring = "foobar"))
+#'                    keyring = "foobar")
+#' key_get("R-test-service", "donaldduck", keyring = "foobar")
+#' key_list(keyring = "foobar")
+#' key_delete(keyring = "foobar")
 #' }
 
-keyring_support <- function(backend = default_backend()) {
-  assert_that(is_keyring_backend(backend))
-
-  "keyring" %in% names(backend)
+has_keyring_support <- function() {
+  default_backend()$has_keyring_support()
 }
 
 #' @export
-#' @rdname keyring_support
+#' @rdname has_keyring_support
 
-keyring_create <- function(backend = default_backend()) {
-  assert_that(is_keyring_backend(backend))
-
-  check_supported(backend, "keyring_create")
-
-  backend$keyring_create(backend)
+keyring_create <- function(keyring) {
+  assert_that(is_string(keyring))
+  default_backend()$keyring_create(keyring)
 }
 
 #' @export
-#' @rdname keyring_support
+#' @rdname has_keyring_support
 
-keyring_list <- function(backend = default_backend()) {
-  assert_that(is_keyring_backend(backend))
-
-  check_supported(backend, "keyring_list")
-
-  backend$keyring_list(backend)
+keyring_list <- function() {
+  default_backend()$keyring_list()
 }
 
 #' @export
-#' @rdname keyring_support
+#' @rdname has_keyring_support
 
-keyring_delete <- function(backend = default_backend()) {
-  assert_that(is_keyring_backend(backend))
-
-  check_supported(backend, "keyring_delete")
-
-   backend$keyring_delete(backend)
+keyring_delete <- function(keyring) {
+  assert_that(is_string(keyring))
+  default_backend()$keyring_delete(keyring)
 }
 
 #' @export
-#' @rdname keyring_support
+#' @rdname has_keyring_support
 
-keyring_lock <- function(backend = default_backend()) {
+keyring_lock <- function(keyring) {
   assert_that(is_keyring_backend(backend))
-
-  check_supported(backend, "keyring_lock")
-
-  backend$keyring_lock(backend)
+  default_backend()$keyring_lock(keyring)
 }
 
 #' @export
-#' @rdname keyring_support
+#' @rdname has_keyring_support
 
-keyring_unlock <- function(backend = default_backend(), password = NULL) {
-  assert_that(is_keyring_backend(backend))
-
-  check_supported(backend, "keyring_unlock")
-
-  backend$keyring_unlock(backend, password)
+keyring_unlock <- function(keyring, password = NULL) {
+  assert_that(is_string(keyring))
+  default_backend()$keyring_unlock(keyring, password)
 }

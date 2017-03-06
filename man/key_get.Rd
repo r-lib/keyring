@@ -8,24 +8,22 @@
 \alias{key_list}
 \title{Query, set, delete list keys in a keyring}
 \usage{
-key_get(service, username = NULL, backend = default_backend())
+key_get(service, username = NULL, keyring = NULL)
 
-key_set(service, username = NULL, backend = default_backend())
+key_set(service, username = NULL, keyring = NULL)
 
 key_set_with_value(service, username = NULL, password = NULL,
-  backend = default_backend())
+  keyring = NULL)
 
-key_delete(service, username = NULL, backend = default_backend())
+key_delete(service, username = NULL, keyring = NULL)
 
-key_list(service = NULL, backend = default_backend())
+key_list(service = NULL, keyring = NULL)
 }
 \arguments{
 \item{service}{Service name, a character scalar.}
 
 \item{username}{Username, a character scalar, or \code{NULL} if the key
 is not associated with a username.}
-
-\item{backend}{Backend to use. See \link{backends}.}
 
 \item{password}{The secret to store. For \code{key_set}, it is read from
 the console, interactively. \code{key_set_with_value} can be also used
@@ -62,7 +60,7 @@ service (if \code{service} is not \code{NULL}).
 \dontrun{
 key_set("R-keyring-test-service", "donaldduck")
 key_get("R-keyring-test-service", "donaldduck")
-if (keyring_support()) key_list(service = "R-keyring-test-service")
+if (has_keyring_support()) key_list(service = "R-keyring-test-service")
 key_delete("R-keyring-test-service", "donaldduck")
 }
 
@@ -71,6 +69,6 @@ key_delete("R-keyring-test-service", "donaldduck")
 key_set_with_value("R-keyring-test-service", "donaldduck",
                    password = "secret")
 key_get("R-keyring-test-service", "donaldduck")
-if (keyring_support()) key_list(service = "R-keyring-test-service")
+if (has_keyring_support()) key_list(service = "R-keyring-test-service")
 key_delete("R-keyring-test-service", "donaldduck")
 }

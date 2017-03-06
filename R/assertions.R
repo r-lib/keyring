@@ -35,14 +35,3 @@ on_failure(is_non_empty_string_or_null) <- function(call, env) {
     " must be a non-empty string (length 1 character) or NULL"
   )
 }
-
-is_keyring_backend <- function(x) {
-  inherits(x, "keyring_backend")
-}
-
-on_failure(is_keyring_backend) <- function(call, env) {
-  paste0(
-    deparse(call$x),
-    " must be a keyring backend (see ?default_backend)"
-  )
-}

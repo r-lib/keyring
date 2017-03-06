@@ -33,14 +33,16 @@ backend_env <- R6Class(
   inherit = backend,
   public = list(
     name = "env",
-    get = function(service, username = NULL)
-      b_env_get(self, private, service, username),
-    set = function(service, username = NULL)
-      b_env_set(self, private, service, username),
-    set_with_value = function(service, username = NULL, password = NULL)
-      b_env_set_with_value(self, private, service, username, password),
-    delete = function(service, username = NULL)
-      b_env_delete(self, private, service, username)
+    get = function(service, username = NULL, keyring = NULL)
+      b_env_get(self, private, service, username, keyring),
+    set = function(service, username = NULL, keyring = NULL)
+      b_env_set(self, private, service, username, keyring),
+    set_with_value = function(service, username = NULL, password = NULL,
+                              keyring = NULL)
+      b_env_set_with_value(self, private, service, username, password,
+                           keyring),
+    delete = function(service, username = NULL, keyring = NULL)
+      b_env_delete(self, private, service, username, keyring)
   ),
   private = list(
     env_to_var = function(service, username) {
@@ -49,33 +51,44 @@ backend_env <- R6Class(
   )
 )
 
-b_env_get <- function(self, private, service, username) {
+warn_for_keyring <- function(keyring) {
+  if (!is.null(keyring)) {
+    warning("The 'env' backend does not support multiple keyrings, ",
+            "the 'keyring' argument is ignored")
+  }
+}
+
+b_env_get <- function(self, private, service, username, keyring) {
+  warn_for_keyring(keyring)
   var <- private$env_to_var(service, username)
   res <- Sys.getenv(var, NA_character_)
   if (is.na(res)) stop("Cannot find password")
   res  
 }
 
-b_env_set <- function(self, private, service, username) {
+b_env_set <- function(self, private, service, username, keyring) {
+  warn_for_keyring(keyring)
   password <- get_pass()
   b_env_set_with_value(self, private, service, username, password)
   invisible(self)
 }
 
 b_env_set_with_value <- function(self, private, service, username,
-                                 password) {
+                                 password, keyring) {
+  warn_for_keyring(keyring)
   var <- private$env_to_var(service, username)
   do.call(Sys.setenv, structure(list(password), names = var))
   invisible(self)
 }
 
-b_env_delete <- function(self, private, service, username) {
+b_env_delete <- function(self, private, service, username, keyring) {
+  warn_for_keyring(keyring)
   var <- private$env_to_var(service, username)
   Sys.unsetenv(var)
   invisible(self)
 }
 
-b_env_to_var <- function(self, private, service, username) {
+b_env_to_var <- function(self, private, service, username, keyring) {
   if (is.null(username)) {
     service
   } else {
