@@ -6,11 +6,21 @@
 #'
 #' `key_get` queries a key from the keyring.
 #'
+#' `key_get_raw` queries a key and returns it as a raw vector.
+#' Most credential stores allow storing a byte sequence with embedded null
+#' bytes, and these cannot be represented as traditional null bytes
+#' terminated strings. If you don't know whether the key contains an
+#' embedded null, it is best to query it with `key_get_raw` instead of
+#' `key_get`.
+#'
 #' `key_set` sets a key in the keyring. The contents of the key is read
 #' interactively from the terminal.
 #'
 #' `key_set_with_value` is the non-interactive pair of `key_set`, to set
 #' a key in the keyring.
+#'
+#' `key_set_raw_with_value` sets a key to a byte sequence from a raw
+#' vector.
 #'
 #' `key_delete` deletes a key.
 #'
@@ -60,6 +70,15 @@ key_get <- function(service, username = NULL, keyring = NULL) {
 #' @export
 #' @rdname key_get
 
+key_get_raw <- function(service, username = NULL, keyring = NULL) {
+  assert_that(is_non_empty_string(service))
+  assert_that(is_string_or_null(username))
+  default_backend()$get_raw(service, username, keyring = keyring)
+}
+
+#' @export
+#' @rdname key_get
+
 key_set <- function(service, username = NULL, keyring = NULL) {
   assert_that(is_non_empty_string(service))
   assert_that(is_string_or_null(username))
@@ -75,6 +94,17 @@ key_set_with_value <- function(service, username = NULL, password = NULL,
   assert_that(is_string(password))
   default_backend()$set_with_value(service, username, password,
                                          keyring = keyring)
+}
+
+#' @export
+#' @rdname key_get
+
+key_set_with_raw_value <- function(service, username = NULL,
+                                   password = NULL, keyring = NULL) {
+  assert_that(is_non_empty_string(service))
+  assert_that(is.raw(password))
+  default_backend()$set_with_raw_value(service, username, password,
+                                       keyring = keyring)
 }
 
 #' @export

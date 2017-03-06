@@ -222,9 +222,11 @@ SEXP keyring_secret_service_get(SEXP keyring, SEXP service, SEXP username) {
 
   gsize passlength;
   const gchar *password = secret_value_get(secretvalue, &passlength);
-  SEXP result = ScalarString(mkCharLen((const char*) password,
-				       (size_t) passlength));
+  SEXP result = PROTECT(allocVector(RAWSXP, passlength));
+  memcpy(RAW(result), password, passlength);
+
   g_list_free(secretlist);
+  UNPROTECT(1);
   return result;
 }
 
@@ -234,7 +236,6 @@ SEXP keyring_secret_service_set(SEXP keyring, SEXP service, SEXP username,
   const char* cservice = CHAR(STRING_ELT(service, 0));
   const char* cusername =
     isNull(username) ? empty : CHAR(STRING_ELT(username, 0));
-  const char* cpassword = CHAR(STRING_ELT(password, 0));
 
   SecretCollection *collection = NULL;
   GHashTable *attributes = NULL;
@@ -248,7 +249,7 @@ SEXP keyring_secret_service_set(SEXP keyring, SEXP service, SEXP username,
   g_hash_table_insert(attributes, g_strdup("service"), g_strdup(cservice));
   g_hash_table_insert(attributes, g_strdup("username"), g_strdup(cusername));
 
-  SecretValue *value = secret_value_new(cpassword, -1,
+  SecretValue *value = secret_value_new(RAW(password), LENGTH(password),
 					/* content_type = */ "text/plain");
 
   SecretItem *item = secret_item_create_sync(
