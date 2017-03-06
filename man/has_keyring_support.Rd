@@ -62,7 +62,7 @@ it will be read in interactively.
 \examples{
 default_backend()
 has_keyring_support()
-backend_env$new()$has_keyring_support()
+backend_env$has_keyring_support()
 
 ## This might ask for a password, so we do not run it by default
 ## It only works if the default backend supports multiple keyrings

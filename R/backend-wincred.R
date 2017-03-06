@@ -70,31 +70,133 @@
 ## keyrings at all, we just use them to get/set/delete/list "regular"
 ## credentials in the credential store.
 
-backend_wincred_protocol_version <- "1.0.0"
+b_wincred_protocol_version <- "1.0.0"
 
 ## This is a low level API
 
-backend_wincred_i_get <- function(target) {
+b_wincred_i_get <- function(target) {
   .Call("keyring_wincred_get", target, PACKAGE = "keyring")
 }
 
-backend_wincred_i_set <- function(target, password, username = NULL,
+b_wincred_i_set <- function(target, password, username = NULL,
 		                  session = FALSE) {
   .Call("keyring_wincred_set", target, password, username, session,
         PACKAGE = "keyring")
 }
 
-backend_wincred_i_delete <- function(target) {
+b_wincred_i_delete <- function(target) {
   .Call("keyring_wincred_delete", target, PACKAGE = "keyring")
 }
 
-backend_wincred_i_exists <- function(target) {
+b_wincred_i_exists <- function(target) {
   .Call("keyring_wincred_exists", target, PACKAGE = "keyring")
 }
 
-backend_wincred_i_enumerate <- function(filter) {
+b_wincred_i_enumerate <- function(filter) {
   .Call("keyring_wincred_enumerate", filter, PACKAGE = "keyring")
 }
+
+#' @importFrom utils URLencode
+
+b_wincred_i_escape <- function(x) {
+  URLencode(x, reserved = TRUE, repeated = TRUE)
+}
+
+#' @importFrom utils URLdecode
+
+b_wincred_i_unescape <- function(x) {
+  URLdecode(x)
+}
+
+b_wincred_target <- function(keyring, service, username) {
+  keyring <- if (is.null(keyring)) "" else b_wincred_i_escape(keyring)
+  service <- b_wincred_i_escape(service)
+  username <- if (is.null(username)) "" else b_wincred_i_escape(username)
+  paste0(keyring, ":", service, ":", username)
+}
+
+## For the username we need a workaround, because
+## strsplit("foo::")[[1]] gives c("foo", ""), i.e. the third empty element
+## is cut off.
+
+b_wincred_i_parse_target <- function(target) {
+  parts <- lapply(strsplit(target, ":"), lapply, b_wincred_i_unescape)
+  res <- data.frame(
+    stringsAsFactors = FALSE,
+    keyring = vapply(parts, "[[", "", 1),
+    service = vapply(parts, "[[", "", 2),
+    username = vapply(parts, function(x) x[3][[1]] %||% "", "")
+  )
+}
+
+b_wincred_target_keyring <- function(keyring) {
+  b_wincred_target(keyring, "", "")
+}
+
+b_wincred_target_lock <- function(keyring) {
+  b_wincred_target(keyring, "", "unlocked")
+}
+
+b_wincred_parse_keyring_credential <- function(target) {
+  value <- b_wincred_i_get(target)
+  con <- textConnection(value)
+  on.exit(close(con), add = TRUE)
+  as.list(read.dcf(con)[1,])
+}
+
+b_wincred_write_keyring_credential <- function(target, data) {
+  con <- textConnection(NULL, open = "w")
+  mat <- matrix(unlist(data), nrow = 1)
+  colnames(mat) <- names(data)
+  write.dcf(mat, con)
+  value <- paste0(paste(textConnectionValue(con), collapse = "\n"), "\n")
+  close(con)
+  b_wincred_i_set(target, password = value)
+}
+
+#' @importFrom openssl base64_decode
+#' @importFrom utils head tail
+
+b_wincred_get_encrypted_aes <- function(str) {
+  r <- base64_decode(str)
+  structure(tail(r, -16), iv = head(r, 16))
+}
+
+## 1. Try to get the unlock credential
+## 2. If it exists, return AES key
+## 3. If not, then get the credential of the keyring
+## 4. Ask for the keyring password
+## 5. Hash the password to get the AES key
+## 6. Verify that the AES key is correct, using the Verify field of
+##    the keyring credential
+## 7. Create a SESSION credential, with the decrypted AES key
+## 8. Return the decrypted AES key
+
+#' @importFrom openssl sha256 aes_cbc_decrypt
+
+b_wincred_unlock_keyring_internal <- function(keyring, password = NULL) {
+  target_lock <- b_wincred_target_lock(keyring)
+  if (b_wincred_i_exists(target_lock)) {
+    base64_decode(b_wincred_i_get(target_lock))
+  } else {
+    target_keyring <- b_wincred_target_keyring(keyring)
+    keyring_data <- b_wincred_parse_keyring_credential(target_keyring)
+    if (is.null(password)) {
+      message("keyring ", sQuote(keyring), " is locked, enter password to unlock")
+      password <- get_pass()
+    }
+    aes <- sha256(charToRaw(password), key = keyring_data$Salt)
+    verify <- b_wincred_get_encrypted_aes(keyring_data$Verify)
+    tryCatch(
+      aes_cbc_decrypt(verify, key = aes),
+      error = function(e) stop("Invalid password, cannot unlock keyring")
+    )
+    b_wincred_i_set(target_lock, base64_encode(aes), session = TRUE)
+    aes
+  }
+}
+
+## -----------------------------------------------------------------------
 
 #' Create a Windows Credential Store keyring backend
 #'
@@ -112,122 +214,53 @@ backend_wincred_i_enumerate <- function(filter) {
 #' @family keyring backends
 #' @export
 
-backend_wincred <- function(keyring = NULL) {
-  assert_that(is_string_or_null(keyring))
-  make_backend(
+backend_wincred <- R6Class(
+  "backend_wincred",
+  inherit = backend_keyrings,
+  public = list(
     name = "windows credential store",
-    keyring = keyring,
-    get = backend_wincred_get,
-    set = backend_wincred_set,
-    set_with_value = backend_wincred_set_with_value,
-    delete = backend_wincred_delete,
-    list = backend_wincred_list,
-    keyring_create = backend_wincred_create_keyring,
-    keyring_list = backend_wincred_list_keyring,
-    keyring_delete = backend_wincred_delete_keyring,
-    keyring_lock = backend_wincred_lock_keyring,
-    keyring_unlock = backend_wincred_unlock_keyring
+    initialize = function(keyring = NULL)
+      b_wincred_init(self, private, keyring),
+
+    get = function(service, username = NULL, keyring = NULL)
+      b_wincred_get(self, private, service, username, keyring),
+    set = function(service, username = NULL, keyring = NULL)
+      b_wincred_set(self, private, service, username, keyring),
+    set_with_value = function(service, username = NULL, password = NULL,
+      keyring = NULL)
+      b_wincred_set_with_value(self, private, service, username, password,
+                             keyring),
+    delete = function(service, username = NULL, keyring = NULL)
+      b_wincred_delete(self, private, service, username, keyring),
+    list = function(service = NULL, keyring = NULL)
+      b_wincred_list(self, private, service, keyring),
+
+    keyring_create = function(keyring)
+      b_wincred_keyring_create(self, private, keyring),
+    keyring_list = function()
+      b_wincred_keyring_list(self, private),
+    keyring_delete = function(keyring = NULL)
+      b_wincred_keyring_delete(self, private, keyring),
+    keyring_lock = function(keyring = NULL)
+      b_wincred_keyring_lock(self, private, keyring),
+    keyring_unlock = function(keyring = NULL, password = NULL)
+      b_wincred_keyring_unlock(self, private, keyring, password),
+    keyring_default = function()
+      b_wincred_keyring_default(self, private),
+    keyring_set_default = function(keyring = NULL)
+      b_wincred_keyring_set_default(self, private, keyring)
+  ),
+
+  private = list(
+    keyring = NULL,
+    keyring_create_direct = function(keyring, password)
+      b_wincred_keyring_create_direct(self, private, keyring, password)
   )
-}
+)
 
-#' @importFrom utils URLencode
-
-backend_wincred_i_escape <- function(x) {
-  URLencode(x, reserved = TRUE, repeated = TRUE)
-}
-
-#' @importFrom utils URLdecode
-
-backend_wincred_i_unescape <- function(x) {
-  URLdecode(x)
-}
-
-backend_wincred_target <- function(keyring, service, username) {
-  keyring <- if (is.null(keyring)) "" else backend_wincred_i_escape(keyring)
-  service <- backend_wincred_i_escape(service)
-  username <- if (is.null(username)) "" else backend_wincred_i_escape(username)
-  paste0(keyring, ":", service, ":", username)
-}
-
-## For the username we need a workaround, because
-## strsplit("foo::")[[1]] gives c("foo", ""), i.e. the third empty element
-## is cut off.
-
-backend_wincred_i_parse_target <- function(target) {
-  parts <- lapply(strsplit(target, ":"), lapply, backend_wincred_i_unescape)
-  res <- data.frame(
-    stringsAsFactors = FALSE,
-    keyring = vapply(parts, "[[", "", 1),
-    service = vapply(parts, "[[", "", 2),
-    username = vapply(parts, function(x) x[3][[1]] %||% "", "")
-  )
-}
-
-backend_wincred_target_keyring <- function(keyring) {
-  backend_wincred_target(keyring, "", "")
-}
-
-backend_wincred_target_lock <- function(keyring) {
-  backend_wincred_target(keyring, "", "unlocked")
-}
-
-backend_wincred_parse_keyring_credential <- function(target) {
-  value <- backend_wincred_i_get(target)
-  con <- textConnection(value)
-  on.exit(close(con), add = TRUE)
-  as.list(read.dcf(con)[1,])
-}
-
-backend_wincred_write_keyring_credential <- function(target, data) {
-  con <- textConnection(NULL, open = "w")
-  mat <- matrix(unlist(data), nrow = 1)
-  colnames(mat) <- names(data)
-  write.dcf(mat, con)
-  value <- paste0(paste(textConnectionValue(con), collapse = "\n"), "\n")
-  close(con)
-  backend_wincred_i_set(target, password = value)
-}
-
-#' @importFrom openssl base64_decode
-#' @importFrom utils head tail
-
-backend_wincred_get_encrypted_aes <- function(str) {
-  r <- base64_decode(str)
-  structure(tail(r, -16), iv = head(r, 16))
-}
-
-## 1. Try to get the unlock credential
-## 2. If it exists, return AES key
-## 3. If not, then get the credential of the keyring
-## 4. Ask for the keyring password
-## 5. Hash the password to get the AES key
-## 6. Verify that the AES key is correct, using the Verify field of
-##    the keyring credential
-## 7. Create a SESSION credential, with the decrypted AES key
-## 8. Return the decrypted AES key
-
-#' @importFrom openssl sha256 aes_cbc_decrypt
-
-backend_wincred_unlock_keyring_internal <- function(keyring, password = NULL) {
-  target_lock <- backend_wincred_target_lock(keyring)
-  if (backend_wincred_i_exists(target_lock)) {
-    base64_decode(backend_wincred_i_get(target_lock))
-  } else {
-    target_keyring <- backend_wincred_target_keyring(keyring)
-    keyring_data <- backend_wincred_parse_keyring_credential(target_keyring)
-    if (is.null(password)) {
-      message("keyring ", sQuote(keyring), " is locked, enter password to unlock")
-      password <- get_pass()
-    }
-    aes <- sha256(charToRaw(password), key = keyring_data$Salt)
-    verify <- backend_wincred_get_encrypted_aes(keyring_data$Verify)
-    tryCatch(
-      aes_cbc_decrypt(verify, key = aes),
-      error = function(e) stop("Invalid password, cannot unlock keyring")
-    )
-    backend_wincred_i_set(target_lock, base64_encode(aes), session = TRUE)
-    aes
-  }
+b_wincred_init <- function(self, private, keyring) {
+  private$keyring <- keyring
+  invisible(self)
 }
 
 #' Get a key from a Wincred keyring
@@ -245,25 +278,27 @@ backend_wincred_unlock_keyring_internal <- function(keyring, password = NULL) {
 #'
 #' @keywords internal
 
-backend_wincred_get <- function(backend, service, username) {
-  target <- backend_wincred_target(backend$keyring, service, username)
-  password <- backend_wincred_i_get(target)
-  if (is.null(backend$keyring)) return(password)
+b_wincred_get <- function(self, private, service, username, keyring) {
+  keyring <- keyring %||% private$keyring
+  target <- b_wincred_target(keyring, service, username)
+  password <- b_wincred_i_get(target)
+  if (is.null(keyring)) return(password)
 
   ## If it is encrypted, we need to decrypt it
-  aes <- backend_wincred_unlock_keyring_internal(backend$keyring)
-  enc <- backend_wincred_get_encrypted_aes(password)
+  aes <- b_wincred_unlock_keyring_internal(keyring)
+  enc <- b_wincred_get_encrypted_aes(password)
   rawToChar(aes_cbc_decrypt(enc, key = aes))
 }
 
-backend_wincred_set <- function(backend, service, username) {
-  pw <- get_pass()
-  backend_wincred_set_with_value(backend, service, username, pw)
+b_wincred_set <- function(self, private, service, username, keyring) {
+  password <- get_pass()
+  b_wincred_set_with_value(self, private, service, username, password,
+                           keyring)
+  invisible(self)
 }
 
 #' Set a key on a Wincred keyring
 #'
-#' @param backend The backend object.
 #' @param service Service name. Must not be empty.
 #' @param username Username. Might be empty.
 #' @param password The key text to store.
@@ -278,43 +313,46 @@ backend_wincred_set <- function(backend, service, username) {
 #'
 #' @keywords internal
 
-backend_wincred_set_with_value <- function(backend, service,
-                                           username, password) {
-  target <- backend_wincred_target(backend$keyring, service, username)
-  if (is.null(backend$keyring)) {
-    backend_wincred_i_set(target, password, username = username)
-    return(invisible())
+b_wincred_set_with_value <- function(self, private, service,
+                                     username, password, keyring) {
+  keyring <- keyring %||% private$keyring
+  target <- b_wincred_target(keyring, service, username)
+  if (is.null(keyring)) {
+    b_wincred_i_set(target, password, username = username)
+    return(invisible(self))
   }
 
   ## Not the default keyring, we need to encrypt it
-  target_keyring <- backend_wincred_target_keyring(backend$keyring)
-  aes <- backend_wincred_unlock_keyring_internal(backend$keyring)
+  target_keyring <- b_wincred_target_keyring(keyring)
+  aes <- b_wincred_unlock_keyring_internal(keyring)
   enc <- aes_cbc_encrypt(charToRaw(password), key = aes)
-  backend_wincred_i_set(target, password = base64_encode(c(attr(enc, "iv"), enc)),
+  b_wincred_i_set(target, password = base64_encode(c(attr(enc, "iv"), enc)),
                         username = username)
-  invisible()
+  invisible(self)
 }
 
-backend_wincred_delete <- function(backend, service, username) {
-  target <- backend_wincred_target(backend$keyring, service, username)
-  backend_wincred_i_delete(target)
-  invisible()
+b_wincred_delete <- function(self, private, service, username, keyring) {
+  keyring <- keyring %||% private$keyring
+  target <- b_wincred_target(keyring, service, username)
+  b_wincred_i_delete(target)
+  invisible(self)
 }
 
-backend_wincred_list <- function(backend, service) {
+b_wincred_list <- function(self, private, service, keyring) {
+  keyring <- keyring %||% private$keyring
 
   filter <- if (is.null(service)) {
-    paste0(backend$keyring, ":*")
+    paste0(keyring, ":*")
   } else {
-    paste0(backend$keyring, ":", service, ":*")
+    paste0(keyring, ":", service, ":*")
   }
 
-  list <- backend_wincred_i_enumerate(filter)
+  list <- b_wincred_i_enumerate(filter)
 
   ## Filter out the credentials that belong to the keyring or its lock
   list <- grep("(::|::unlocked)$", list, value = TRUE, invert = TRUE)
 
-  parts <- backend_wincred_i_parse_target(list)
+  parts <- b_wincred_i_parse_target(list)
   data.frame(
     service = parts$service,
     username = parts$username,
@@ -322,9 +360,10 @@ backend_wincred_list <- function(backend, service) {
   )
 }
 
-backend_wincred_create_keyring <- function(backend) {
-  pw <- get_pass()
-  backend_wincred_create_keyring_direct(backend$keyring, pw)
+b_wincred_keyring_create <- function(self, private, keyring) {
+  password <- get_pass()
+  private$keyring_create_direct(keyring, password)
+  invisible(self)
 }
 
 ## 1. Check that the keyring does not exist, error if it does
@@ -336,28 +375,29 @@ backend_wincred_create_keyring <- function(backend) {
 
 #' @importFrom openssl base64_encode rand_bytes aes_cbc_encrypt
 
-backend_wincred_create_keyring_direct <- function(keyring, pw) {
-  target_keyring <- backend_wincred_target_keyring(keyring)
-  if (backend_wincred_i_exists(target_keyring)) {
+b_wincred_keyring_create_direct <- function(self, private, keyring,
+                                            password) {
+  target_keyring <- b_wincred_target_keyring(keyring)
+  if (b_wincred_i_exists(target_keyring)) {
     stop("keyring ", sQuote(keyring), " already exists")
   }
   salt <- base64_encode(rand_bytes(32))
-  aes <- sha256(charToRaw(pw), key = salt)
+  aes <- sha256(charToRaw(password), key = salt)
   verify <- aes_cbc_encrypt(rand_bytes(15), key = aes)
   verify <- base64_encode(c(attr(verify, "iv"), verify))
   dcf <- list(
-    Version = backend_wincred_protocol_version,
+    Version = b_wincred_protocol_version,
     Verify = verify,
     Salt = salt
   )
-  backend_wincred_write_keyring_credential(target_keyring, dcf)
-  backend_wincred_unlock_keyring_internal(keyring, pw)
-  invisible()
+  b_wincred_write_keyring_credential(target_keyring, dcf)
+  b_wincred_unlock_keyring_internal(keyring, password)
+  invisible(self)
 }
 
-backend_wincred_list_keyring <- function(backend) {
-  list <- backend_wincred_i_enumerate("*")
-  parts <- backend_wincred_i_parse_target(list)
+b_wincred_keyring_list <- function(self, private) {
+  list <- b_wincred_i_enumerate("*")
+  parts <- b_wincred_i_parse_target(list)
 
   ## if keyring:: does not exist, then keyring is not a real keyring, assign it
   ## to the default
@@ -390,30 +430,35 @@ backend_wincred_list_keyring <- function(backend) {
   res
 }
 
-backend_wincred_delete_keyring <- function(backend) {
-  if (is.null(backend$keyring)) stop("Cannot delete the default keyring")
+b_wincred_keyring_delete <- function(self, private, keyring) {
+  keyring <- keyring %||% private$keyring
+
+  if (is.null(keyring)) stop("Cannot delete the default keyring")
   ## TODO: confirmation
-  target_keyring <- backend_wincred_target_keyring(backend$keyring)
-  backend_wincred_i_delete(target_keyring)
-  target_lock <- backend_wincred_target_lock(backend$keyring)
-  try(backend_wincred_i_delete(target_lock), silent = TRUE)
+  target_keyring <- b_wincred_target_keyring(keyring)
+  b_wincred_i_delete(target_keyring)
+  target_lock <- b_wincred_target_lock(keyring)
+  try(b_wincred_i_delete(target_lock), silent = TRUE)
   invisible()
 }
 
-backend_wincred_lock_keyring <- function(backend) {
-  if (is.null(backend$keyring)) {
+b_wincred_keyring_lock <- function(self, private, keyring) {
+  keyring <- keyring %||% private$keyring
+  if (is.null(keyring)) {
     warning("Cannot lock the default windows credential store keyring")
   } else {
-    target_lock <- backend_wincred_target_lock(backend$keyring)
-    try(backend_wincred_i_delete(target_lock), silent = TRUE)
+    target_lock <- b_wincred_target_lock(keyring)
+    try(b_wincred_i_delete(target_lock), silent = TRUE)
     invisible()
   }
 }
 
-backend_wincred_unlock_keyring <- function(backend, password = NULL) {
+b_wincred_keyring_unlock <- function(self, private, keyring,
+                                     password = NULL) {
+  keyring <- keyring %||% private$keyring
   if (is.null(password)) password <- get_pass()
-  if (!is.null(backend$keyring)) {
-    backend_wincred_unlock_keyring_internal(backend$keyring, password)
+  if (!is.null(keyring)) {
+    b_wincred_unlock_keyring_internal(keyring, password)
   }
   invisible()
 }
