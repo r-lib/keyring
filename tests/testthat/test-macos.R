@@ -8,28 +8,27 @@ test_that("specify keyring explicitly", {
   username <- random_username()
   password <- random_password()
 
-  backend <- backend_macos("login")
+  kb <- backend_macos$new(keyring = "login")
 
   expect_silent(
-    key_set_with_value(service, username, password, backend = backend)
+    kb$set_with_value(service, username, password)
   )
 
-  expect_equal(key_get(service, username, backend = backend), password)
+  expect_equal(kb$get(service, username), password)
 
-  expect_silent(key_delete(service, username, backend = backend))
+  expect_silent(kb$delete(service, username))
 })
 
 test_that("creating keychains", {
   skip_if_not_macos()
 
   keyring <- random_keyring()
-  backend <- backend_macos(keyring = keyring)
+  kb <- backend_macos$new()
+  
+  ## To avoid an interactive password
+  kb$.__enclos_env__$private$keyring_create_direct(keyring, "secret123!")
 
-  ## This asks for a password interactively.
-  ## keyring_create(backend = backend)
-  backend_macos_create_keyring_direct(backend$keyring, pw = "secret123!")
-
-  list <- key_list(backend = backend)
+  list <- kb$list(keyring = keyring)
   expect_equal(nrow(list), 0)
 
   service <- random_service()
@@ -37,41 +36,40 @@ test_that("creating keychains", {
   password <- random_password()
 
   expect_silent(
-    key_set_with_value(service, username, password, backend = backend)
+    kb$set_with_value(service, username, password)
   )
 
-  expect_equal(key_get(service, username, backend = backend), password)
+  expect_equal(kb$get(service, username), password)
 
-  expect_silent(key_delete(service, username, backend = backend))
+  expect_silent(kb$delete(service, username))
 
-  expect_silent(keyring_delete(backend = backend))
+  expect_silent(kb$keyring_delete(keyring = keyring))
 
-  expect_false(keyring %in% keyring_list(backend = backend)$keyring)
+  expect_false(keyring %in% kb$keyring_list()$keyring)
 })
 
-test_that("creating keychains, interactive", {
+test_that("creating keychains 2", {
   skip_if_not_macos()
 
   keyring <- random_keyring()
-  backend <- backend_macos(keyring = keyring)
-  backend$keyring_create <- function(backend, pw) {
-    backend_macos_create_keyring_direct(backend$keyring, "secret")
-  }
+  kb <- backend_macos$new()
 
-  keyring_create(backend = backend)
+  ## To avoid an interactive password
+  kb$.__enclos_env__$private$keyring_create_direct(keyring, "secret")
+  kb$keyring_set_default(keyring)
 
   service <- random_service()
   username <- random_username()
   password <- random_password()
 
   expect_silent(
-    key_set_with_value(service, username, password, backend = backend)
+    kb$set_with_value(service, username, password)
   )
 
-  expect_equal(key_get(service, username, backend = backend), password)
-  expect_silent(key_delete(service, username, backend = backend))
-  expect_silent(keyring_delete(backend = backend))
-  expect_false(keyring %in% keyring_list(backend = backend)$keyring)
+  expect_equal(kb$get(service, username), password)
+  expect_silent(kb$delete(service, username))
+  expect_silent(kb$keyring_delete())
+  expect_false(keyring %in% kb$keyring_list()$keyring)
 })
 
 test_that("keyring file at special location", {
@@ -79,21 +77,21 @@ test_that("keyring file at special location", {
   skip_if_not_macos()
 
   keyring <- tempfile(fileext = ".keychain")
-  backend <- backend_macos(keyring = keyring)
+  kb <- backend_macos$new(keyring = keyring)
 
-  backend_macos_create_keyring_direct(backend$keyring, pw = "secret123!")
+  kb$.__enclos_env__$private$keyring_create_direct(keyring, "secret123!")
 
   service <- random_service()
   username <- random_username()
   password <- random_password()
 
   expect_silent(
-    key_set_with_value(service, username, password, backend = backend)
+    kb$set_with_value(service, username, password)
   )
-  expect_equal(key_get(service, username, backend = backend), password)
-  expect_silent(key_delete(service, username, backend = backend))
-  expect_silent(keyring_delete(backend = backend))
-  expect_false(keyring %in% keyring_list(backend = backend)$keyring)
+  expect_equal(kb$get(service, username), password)
+  expect_silent(kb$delete(service, username))
+  expect_silent(kb$keyring_delete())
+  expect_false(keyring %in% kb$keyring_list()$keyring)
   expect_false(file.exists(keyring))
 })
 
@@ -103,26 +101,26 @@ test_that("errors", {
 
   ## Non-existing keychain
   expect_error(
-    key_list(backend = backend_macos(tempfile())),
+    backend_macos$new(tempfile())$list(),
     "cannot open keychain"
   )
 
   ## Getting non-existing password
   expect_error(
-    key_get(random_service(), random_username(), backend = backend_macos()),
+    backend_macos$new()$get(random_service(), random_username()),
     "cannot get password"
   )
 
   ## Deleting non-existing password
   expect_error(
-    key_delete(random_service(), random_username(),
-               backend = backend_macos()),
+    backend_macos$new()$delete(random_service(), random_username()),
     "cannot delete password"
   )
 
   ## Create keychain without access to file
+  kb <- backend_macos$new()
   expect_error(
-    backend_macos_create_keyring_direct("/xxx", pw = "secret123!"),
+    kb$.__enclos_env__$private$keyring_create_direct("/xxx", "secret123!"),
     "cannot create keychain"
   )
 })
@@ -131,26 +129,23 @@ test_that("lock/unlock keyrings", {
   skip_if_not_macos()
 
   keyring <- random_keyring()
-  backend <- backend_macos(keyring = keyring)
-
-  ## This asks for a password interactively.
-  ## keyring_create(backend = backend)
-  backend_macos_create_keyring_direct(backend$keyring, pw = "secret123!")
+  kb <- backend_macos$new(keyring = keyring)
+  kb$.__enclos_env__$private$keyring_create_direct(keyring, "secret123!")
 
   ## It is unlocked by default
-  list <- keyring_list(backend = backend)
+  list <- kb$keyring_list()
   expect_true(keyring %in% list$keyring)
   expect_false(list$locked[match(keyring, list$keyring)])
 
   ## Lock it
-  keyring_lock(backend = backend)
-  list <- keyring_list(backend = backend)
+  kb$keyring_lock()
+  list <- kb$keyring_list()
   expect_true(list$locked[match(keyring, list$keyring)])
 
   ## Unlock it
-  keyring_unlock(backend = backend, password = "secret123!")
-  list <- keyring_list(backend = backend)
+  kb$keyring_unlock(password = "secret123!")
+  list <- kb$keyring_list()
   expect_false(list$locked[match(keyring, list$keyring)])
 
-  expect_silent(keyring_delete(backend = backend))
+  expect_silent(kb$keyring_delete())
 })
