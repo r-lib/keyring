@@ -3,15 +3,17 @@
 #'
 #' The default backend is selected
 #' 1. based on the `keyring_backend` option. See [base::options()].
-#'    This can be set currently to `"env"`, `"macos"`, `"wincred"` or
-#'    `"secret_service"`.
+#'    This can be set to a character string, and then the
+#'    *backend_*`string` class is used to create the default backend.
 #' 1. If this is not set, then the `R_KEYRING_BACKEND` environment variable
 #'    is checked.
 #' 1. If this is not set, either, then the backend is selected
 #'    automatically, based on the OS:
 #'    1. On Windows, the Windows Credential Store (`"wincred"`) is used.
 #'    1. On macOS, Keychain services are selected (`"macos"`).
-#'    1. Linux uses the Secret Service API (`"secret_service"`).
+#'    1. Linux uses the Secret Service API (`"secret_service"`),
+#'       and it also checks that the service is available. It is typically
+#'       only available on systems with a GUI.
 #'    1. On other operating systems, secrets are stored in environment
 #'       variables (`"env"`).
 #'
@@ -39,7 +41,7 @@ default_backend <- function(keyring = NULL) {
   ## Is it just a backend name?
   if (is_string(backend)) backend <- backend_factory(backend)
 
-  ## At this point 'backend' is a backend constructor
+  ## At this point 'backend' is a backend R6 class
   ## Check if a specific keyring is requested
   if (is.null(keyring)) {
     keyring <- getOption(
@@ -49,9 +51,9 @@ default_backend <- function(keyring = NULL) {
   }
 
   if (! is.null(keyring) && nzchar(keyring)) {
-    backend(keyring = keyring)
+    backend$new(keyring = keyring)
   } else {
-    backend()
+    backend$new()
   }
 }
 
@@ -71,7 +73,7 @@ default_backend_auto <- function() {
     backend_macos
 
   } else if (sysname == "linux" && "secret_service" %in% names(known_backends) &&
-             backend_secret_service()$is_available()) {
+             backend_secret_service$new()$is_available()) {
     backend_secret_service
 
   } else {
@@ -85,8 +87,11 @@ default_backend_auto <- function() {
 
 backend_factory <- function(name) {
   assert_that(is_string(name))
-  if (name %in% names(known_backends)) return(known_backends[[name]])
-  stop("Unknown backend: ", sQuote(name))
+  if (!name %in% names(known_backends)) {
+    stop("Unknown backend: ", sQuote(name))
+  }
+  class_name <- paste0("backend_", name)
+  get(class_name, envir = parent.frame())
 }
 
 known_backends <- list(
