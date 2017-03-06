@@ -32,18 +32,19 @@ backend_env <- R6Class(
   "backend_env",
   inherit = backend,
   public = list(
+    name = "env",
     get = function(service, username = NULL)
       b_env_get(self, private, service, username),
     set = function(service, username = NULL)
       b_env_set(self, private, service, username),
     set_with_value = function(service, username = NULL, password = NULL)
       b_env_set_with_value(self, private, service, username, password),
-    delete = function(service, username)
+    delete = function(service, username = NULL)
       b_env_delete(self, private, service, username)
   ),
   private = list(
     env_to_var = function(service, username) {
-      b_env_env_to_var(self, private, service, username)
+      b_env_to_var(self, private, service, username)
     }
   )
 )
@@ -58,21 +59,23 @@ b_env_get <- function(self, private, service, username) {
 b_env_set <- function(self, private, service, username) {
   password <- get_pass()
   b_env_set_with_value(self, private, service, username, password)
+  invisible(self)
 }
 
 b_env_set_with_value <- function(self, private, service, username,
                                  password) {
   var <- private$env_to_var(service, username)
   do.call(Sys.setenv, structure(list(password), names = var))
-  invisible()
+  invisible(self)
 }
 
 b_env_delete <- function(self, private, service, username) {
   var <- private$env_to_var(service, username)
   Sys.unsetenv(var)
+  invisible(self)
 }
 
-b_env_env_to_var <- function(self, private, service, username) {
+b_env_to_var <- function(self, private, service, username) {
   if (is.null(username)) {
     service
   } else {
