@@ -7,56 +7,42 @@ test_that("set, get, delete", {
   username <- random_username()
   password <- random_password()
 
-  backend <- backend_env()
-  var <- backend_env_to_var(service, username)
+  kb <- backend_env$new()
+  var <- kb$.__enclos_env__$private$env_to_var(service, username)
 
   expect_silent(
-    key_set_with_value(service, username, password, backend = backend)
+    kb$set_with_value(service, username, password)
   )
 
-  expect_equal(key_get(service, username, backend = backend), password)
+  expect_equal(kb$get(service, username), password)
   expect_equal(Sys.getenv(var, "foo"), password)
 
-  expect_silent(key_delete(service, username, backend = backend))
+  expect_silent(kb$delete(service, username))
   expect_equal(Sys.getenv(var, "foo"), "foo")
-})
-
-test_that("interactive set", {
-
-  backend <- backend_env()
-  backend$set <- function(backend, service, username) {
-    backend$set_with_value(backend, service, username, "secret")
-  }
-
-  service <- random_service()
-  username <- random_username()
-
-  expect_silent(key_set(service, username, backend = backend))
-  expect_equal(key_get(service, username, backend = backend), "secret")
-  expect_silent(key_delete(service, username, backend = backend))
 })
 
 test_that("set, get, delete, without username", {
   service <- random_service()
   password <- random_password()
 
-  backend <- backend_env()
-  var <- backend_env_to_var(service, NULL)
+  kb <- backend_env$new()
+  var <- kb$.__enclos_env__$private$env_to_var(service, NULL)
 
   expect_silent(
-    key_set_with_value(service, password = password, backend = backend)
+    kb$set_with_value(service, password = password)
   )
 
-  expect_equal(key_get(service, backend = backend), password)
+  expect_equal(kb$get(service), password)
   expect_equal(Sys.getenv(var, "foo"), password)
 
-  expect_silent(key_delete(service, backend = backend))
+  expect_silent(kb$delete(service))
   expect_equal(Sys.getenv(var, "foo"), "foo")
 })
 
 test_that("no list method", {
+  kb <- backend_env$new()
   expect_error(
-    key_list(backend = backend_env()),
-    "Backend .*env.* does not support .*list.*"
+    kb$list(),
+    "Backend does not implement .list."
   )
 })
