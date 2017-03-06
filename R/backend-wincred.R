@@ -207,12 +207,21 @@ b_wincred_unlock_keyring_internal <- function(keyring, password = NULL) {
 #' are implemented in the `keyring` R package, using some dummy keyring
 #' keys that represent keyrings and their locked/unlocked state.
 #'
-#' @param keyring Name of the keyring to use. `NULL` specifies the
-#'   default keyring.
-#' @return A backend object that can be used in `keyring` functions.
+#' See [backend] for the documentation of the individual methods.
 #'
 #' @family keyring backends
 #' @export
+#' @examples
+#' \dontrun{
+#' ## This only works on Windows
+#' kb <- backend_wincred$new()
+#' kb$create_keyring("foobar")
+#' kb$set_default_keyring("foobar")
+#' kb$set_with_value("service", password = "secret")
+#' kb$get("service")
+#' kb$delete("service")
+#' kb$delete_keyring("foobar")
+#' }
 
 backend_wincred <- R6Class(
   "backend_wincred",

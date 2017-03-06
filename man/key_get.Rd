@@ -25,6 +25,10 @@ key_list(service = NULL, keyring = NULL)
 \item{username}{Username, a character scalar, or \code{NULL} if the key
 is not associated with a username.}
 
+\item{keyring}{For systems that support multiple keyrings, specify
+the name of the keyring to use here. If \code{NULL}, then the default
+keyring is used. See also \code{\link[=has_keyring_support]{has_keyring_support()}}.}
+
 \item{password}{The secret to store. For \code{key_set}, it is read from
 the console, interactively. \code{key_set_with_value} can be also used
 in non-interactive mode.}
@@ -62,7 +66,6 @@ key_set("R-keyring-test-service", "donaldduck")
 key_get("R-keyring-test-service", "donaldduck")
 if (has_keyring_support()) key_list(service = "R-keyring-test-service")
 key_delete("R-keyring-test-service", "donaldduck")
-}
 
 ## This is non-interactive, assuming that that default keyring
 ## is unlocked
@@ -71,4 +74,5 @@ key_set_with_value("R-keyring-test-service", "donaldduck",
 key_get("R-keyring-test-service", "donaldduck")
 if (has_keyring_support()) key_list(service = "R-keyring-test-service")
 key_delete("R-keyring-test-service", "donaldduck")
+}
 }

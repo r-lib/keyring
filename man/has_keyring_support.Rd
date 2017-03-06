@@ -22,24 +22,28 @@ keyring_lock(keyring)
 keyring_unlock(keyring, password = NULL)
 }
 \arguments{
+\item{keyring}{The name of the keyring to create or to operate on.}
+
 \item{password}{The password to unlock the keyring. If not specified
 or \code{NULL}, it will be read from the console.}
 }
 \description{
-Most keyring backends support multiple keyrings. A keyring is a
+On most platforms \code{keyring} supports multiple keyrings. This includes
+Windows, macOS and Linux (Secret Service) as well. A keyring is a
 collection of keys that can be treated as a unit. A keyring typically
 has a name and a password to unlock it. Once a keyring is unlocked,
 it remains unlocked until the end of the user session, or until it is
 explicitly locked again.
 }
 \details{
-Backends typically have a default keyring, which is unlocked
+Platforms typically have a default keyring, which is unlocked
 automatically when the user logs in. This keyring does not need to be
 unlocked explicitly.
 
 You can configure the keyring to use via R options or environment
 variables (see \code{\link[=default_backend]{default_backend()}}), or you can also specify it
-directly in the backend calls or in the call to [default_backend().
+directly in the \code{\link[=default_backend]{default_backend()}} call, or in the individual
+\code{keyring} calls.
 
 \code{has_keyring_support} checks if a backend supports multiple keyrings.
 
@@ -62,7 +66,7 @@ it will be read in interactively.
 \examples{
 default_backend()
 has_keyring_support()
-backend_env$has_keyring_support()
+backend_env$new()$has_keyring_support()
 
 ## This might ask for a password, so we do not run it by default
 ## It only works if the default backend supports multiple keyrings
@@ -72,6 +76,6 @@ key_set_with_value("R-test-service", "donaldduck", password = "secret",
                    keyring = "foobar")
 key_get("R-test-service", "donaldduck", keyring = "foobar")
 key_list(keyring = "foobar")
-key_delete(keyring = "foobar")
+keyring_delete(keyring = "foobar")
 }
 }

@@ -14,11 +14,16 @@ environment variables of the R session.
 }
 \details{
 It does not support multiple keyrings. It also does not support listing
-all keys, since there is no way to distinguish between keys and regular
+all keys, since there is no way to distinguish keys from regular
 environment variables.
 
 It does support service names and usernames: they will be separated
-with a \code{:} character in the name of the environment variable.
+with a \code{:} character in the name of the environment variable. (Note that
+such an environment variable typically cannot be set or queried from a
+shell, but it can be set and queried from R or other programming
+languages.)
+
+See \link{backend} for the documentation of the class's methods.
 }
 \examples{
 \dontrun{
@@ -28,7 +33,7 @@ env$get("r-keyring-test", username = "donaldduck")
 Sys.getenv("r-keyring-test:donaldduck")
 
 # This is an error
-env$list(backend = env)
+env$list()
 
 # Clean up
 env$delete("r-keyring-test", username = "donaldduck")

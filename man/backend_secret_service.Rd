@@ -8,20 +8,25 @@
 \usage{
 backend_secret_service
 }
-\arguments{
-\item{keyring}{Name of the keyring to use. \code{NULL} specifies the
-default keyring.}
-}
-\value{
-A backend object that can be used in \code{keyring} functions.
-}
 \description{
 This backend is the default on Linux. It uses the libsecret library,
 and needs a secret service daemon running (e.g. Gnome Keyring, or
 KWallet). It uses DBUS to communicate with the secret service daemon.
 }
 \details{
-This backend supports multiple keyrings
+This backend supports multiple keyrings.
+
+See \link{backend} for the documentation of the individual methods.
+The \code{is_available()} method checks is a Secret Service daemon is
+running on the system, by trying to connect to it. It returns a logical
+scalar, or throws an error, depending on its argument:\preformatted{is_available = function(report_error = FALSE)
+}
+
+Argument:
+\itemize{
+\item \code{report_error} Whether to throw an error if the Secret Service is
+not available.
+}
 }
 \seealso{
 Other keyring backends: \code{\link{backend_env}},

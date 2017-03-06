@@ -5,7 +5,48 @@ abstract_method <- function() {
        "does not implement all keyring functions.")
 }
 
+#' Abstract class of a minimal keyring backend
+#'
+#' To implement a new keyring backend, you need to inherit from this
+#' class and then redefine the `get`, `set`, `set_with_value` and `delete`
+#' methods. Implementing the `list` method is optional. Additional methods
+#' can be defined as well.
+#'
+#' These are the semantics of the various methods:
+#'
+#' ```
+#' get(service, username = NULL, keyring = NULL)
+#' set(service, username = NULL, keyring = NULL)
+#' set_with_value(service, username = NULL, password = NULL,
+#'                keyring = NULL)
+#' delete(service, username = NULL, keyring = NULL)
+#' list(service = NULL, keyring = NULL)
+#' ```
+#'
+#' * `get()` queries the secret in a keyring item.
+#' * `set()` sets the secret in a keyring item. The secret itself is read
+#'   in interactively from the keyboard.
+#' * `set_with_value()` sets the secret in a keyring item to the specified
+#'   value.
+#' * `delete()` remotes a keyring item.
+#' * `list()` lists keyring items.
+#'
+#' The arguments:
+#' * `service` String, the name of a service. This is used to find the
+#'   secret later.
+#' * `username` String, the username associated with a secret. It can be
+#'   `NULL`, if no username belongs to the secret.
+#' * `keyring` String, the name of the keyring to work with. This only makes
+#'   sense if the platform supports multiple keyrings. `NULL` selects the
+#'   default (and maybe only) keyring.
+#' * `password` The value of the secret, typically a password, or other
+#'   credential.
+#'
+#' @family keyring backend base classes
 #' @importFrom R6 R6Class
+#' @name backend
+NULL
+
 #' @export
 
 backend <- R6Class(
@@ -28,6 +69,46 @@ backend <- R6Class(
       stop("Backend does not implement 'list'")
   )
 )
+
+#' Abstract class of a backend that supports multiple keyrings
+#'
+#' To implement a new keyring that supports multiple keyrings, you need to
+#' inherit from this class and redefine the `get`, `set`, `set_with_value`,
+#' `delete`, `list` methods, and also the keyring management methods:
+#' `keyring_create`, `keyring_list`, `keyring_delete`, `keyring_lock`,
+#' `keyring_unlock`, `keyring_default` and `keyring_set_default`.
+#'
+#' See [backend] for the first set of methods. This is the semantics of the
+#' keyring management methods:
+#'
+#' ```
+#' keyring_create(keyring)
+#' keyring_list()
+#' keyring_delete(keyring = NULL)
+#' keyring_lock(keyring = NULL)
+#' keyring_unlock(keyring = NULL, password = NULL)
+#' keyring_default()
+#' keyring_set_default(keyring = NULL)
+#' ```
+#'
+#' * `keyring_create()` creates a new keyring.
+#' * `keyring_list()` lists all keyrings.
+#' * `keyring_delete()` deletes a keyring. It is a good idea to protect
+#'    the default keyring, and/or a non-empty keyring with a password or
+#'    a confirmation dialog.
+#' * `keyring_lock()` locks a keyring.
+#' * `keyring_unlock()` unlocks a keyring.
+#' * `keyring_default()` returns the default keyring.
+#' * `keyring_set_default()` sets the default keyring.
+#'
+#' Arguments:
+#' * `keyring` is the name of the keyring to use or create. For some
+#'   methods in can be `NULL` to select the default keyring.
+#' * `password` is the password of the keyring.
+#'
+#' @family keyring backend base classes
+#' @name backend_keyrings
+NULL
 
 #' @export
 
