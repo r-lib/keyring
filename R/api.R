@@ -23,6 +23,9 @@
 #' @param password The secret to store. For `key_set`, it is read from
 #'   the console, interactively. `key_set_with_value` can be also used
 #'   in non-interactive mode.
+#' @param keyring For systems that support multiple keyrings, specify
+#'   the name of the keyring to use here. If `NULL`, then the default
+#'   keyring is used. See also [has_keyring_support()].
 #' @return `key_get` returns a character scalar, the password or other
 #'   confidential information that was stored in the key.
 #'
@@ -38,7 +41,6 @@
 #' key_get("R-keyring-test-service", "donaldduck")
 #' if (has_keyring_support()) key_list(service = "R-keyring-test-service")
 #' key_delete("R-keyring-test-service", "donaldduck")
-#' }
 #'
 #' ## This is non-interactive, assuming that that default keyring
 #' ## is unlocked
@@ -47,6 +49,7 @@
 #' key_get("R-keyring-test-service", "donaldduck")
 #' if (has_keyring_support()) key_list(service = "R-keyring-test-service")
 #' key_delete("R-keyring-test-service", "donaldduck")
+#' }
 
 key_get <- function(service, username = NULL, keyring = NULL) {
   assert_that(is_non_empty_string(service))
@@ -93,19 +96,21 @@ key_list <- function(service = NULL, keyring = NULL) {
 
 #' Manage keyrings
 #'
-#' Most keyring backends support multiple keyrings. A keyring is a
+#' On most platforms `keyring` supports multiple keyrings. This includes
+#' Windows, macOS and Linux (Secret Service) as well. A keyring is a
 #' collection of keys that can be treated as a unit. A keyring typically
 #' has a name and a password to unlock it. Once a keyring is unlocked,
 #' it remains unlocked until the end of the user session, or until it is
 #' explicitly locked again.
 #'
-#' Backends typically have a default keyring, which is unlocked
+#' Platforms typically have a default keyring, which is unlocked
 #' automatically when the user logs in. This keyring does not need to be
 #' unlocked explicitly.
 #'
 #' You can configure the keyring to use via R options or environment
 #' variables (see [default_backend()]), or you can also specify it
-#' directly in the backend calls or in the call to [default_backend().
+#' directly in the [default_backend()] call, or in the individual
+#' `keyring` calls.
 #'
 #' `has_keyring_support` checks if a backend supports multiple keyrings.
 #'
@@ -125,6 +130,7 @@ key_list <- function(service = NULL, keyring = NULL) {
 #' `keyring_unlock` unlocks a keyring. If a password is not specified,
 #' it will be read in interactively.
 #'
+#' @param keyring The name of the keyring to create or to operate on.
 #' @param password The password to unlock the keyring. If not specified
 #'   or `NULL`, it will be read from the console.
 #'
@@ -132,7 +138,7 @@ key_list <- function(service = NULL, keyring = NULL) {
 #' @examples
 #' default_backend()
 #' has_keyring_support()
-#' backend_env$has_keyring_support()
+#' backend_env$new()$has_keyring_support()
 #'
 #' ## This might ask for a password, so we do not run it by default
 #' ## It only works if the default backend supports multiple keyrings
@@ -142,7 +148,7 @@ key_list <- function(service = NULL, keyring = NULL) {
 #'                    keyring = "foobar")
 #' key_get("R-test-service", "donaldduck", keyring = "foobar")
 #' key_list(keyring = "foobar")
-#' key_delete(keyring = "foobar")
+#' keyring_delete(keyring = "foobar")
 #' }
 
 has_keyring_support <- function() {
@@ -176,7 +182,6 @@ keyring_delete <- function(keyring) {
 #' @rdname has_keyring_support
 
 keyring_lock <- function(keyring) {
-  assert_that(is_keyring_backend(backend))
   default_backend()$keyring_lock(keyring)
 }
 

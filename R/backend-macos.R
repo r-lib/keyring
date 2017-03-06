@@ -5,13 +5,23 @@
 #' Service API.
 #'
 #' It supports multiple keyrings.
-#' @param keyring Name of the keyring to use. `NULL` specifies the
-#'   default keyring.
-#' @return A backend object that can be used in `keyring` functions.
+#'
+#' See [backend] for the documentation of the individual methods.
 #'
 #' @family keyring backends
 #' @include backend-class.R
 #' @export
+#' @examples
+#' \dontrun{
+#' ## This only works on macOS
+#' kb <- backend_macos$new()
+#' kb$create_keyring("foobar")
+#' kb$set_default_keyring("foobar")
+#' kb$set_with_value("service", password = "secret")
+#' kb$get("service")
+#' kb$delete("service")
+#' kb$delete_keyring("foobar")
+#' }
 
 backend_macos <- R6Class(
   "backend_macos",
@@ -20,7 +30,7 @@ backend_macos <- R6Class(
     name = "macos",
     initialize = function(keyring = NULL)
       b_macos_init(self, private, keyring),
-    
+
     get = function(service, username = NULL, keyring = NULL)
       b_macos_get(self, private, service, username, keyring),
     set = function(service, username = NULL, keyring = NULL)
@@ -63,7 +73,7 @@ b_macos_init <- function(self, private, keyring) {
   private$keyring <- keyring
   invisible(self)
 }
-    
+
 b_macos_get <- function(self, private, service, username, keyring) {
   keyring <- private$keyring_file(keyring %||% private$keyring)
   .Call("keyring_macos_get", utf8(keyring), utf8(service),

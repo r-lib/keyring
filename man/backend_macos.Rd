@@ -8,19 +8,26 @@
 \usage{
 backend_macos
 }
-\arguments{
-\item{keyring}{Name of the keyring to use. \code{NULL} specifies the
-default keyring.}
-}
-\value{
-A backend object that can be used in \code{keyring} functions.
-}
 \description{
 This backend is the default on macOS. It uses the macOS native Keychain
 Service API.
 }
 \details{
 It supports multiple keyrings.
+
+See \link{backend} for the documentation of the individual methods.
+}
+\examples{
+\dontrun{
+## This only works on macOS
+kb <- backend_macos$new()
+kb$create_keyring("foobar")
+kb$set_default_keyring("foobar")
+kb$set_with_value("service", password = "secret")
+kb$get("service")
+kb$delete("service")
+kb$delete_keyring("foobar")
+}
 }
 \seealso{
 Other keyring backends: \code{\link{backend_env}},
