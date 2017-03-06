@@ -1,0 +1,161 @@
+
+#' Create a Secret Service keyring backend
+#'
+#' This backend is the default on Linux. It uses the libsecret library,
+#' and needs a secret service daemon running (e.g. Gnome Keyring, or
+#' KWallet). It uses DBUS to communicate with the secret service daemon.
+#'
+#' This backend supports multiple keyrings
+#'
+#' @param keyring Name of the keyring to use. `NULL` specifies the
+#'   default keyring.
+#' @return A backend object that can be used in `keyring` functions.
+#'
+#' @family keyring backends
+#' @export
+
+backend_secret_service <- R6Class(
+  "backend_secret_service",
+  inherit = backend_keyrings,
+  public = list(
+    name = "secret service",
+    initialize = function(keyring = NULL)
+      b_ss_init(self, private, keyring),
+
+    get = function(service, username = NULL, keyring = NULL)
+      b_ss_get(self, private, service, username, keyring),
+    set = function(service, username = NULL, keyring = NULL)
+      b_ss_set(self, private, service, username, keyring),
+    set_with_value = function(service, username = NULL, password = NULL,
+      keyring = NULL)
+      b_ss_set_with_value(self, private, service, username, password,
+                             keyring),
+    delete = function(service, username = NULL, keyring = NULL)
+      b_ss_delete(self, private, service, username, keyring),
+    list = function(service = NULL, keyring = NULL)
+      b_ss_list(self, private, service, keyring),
+
+    keyring_create = function(keyring)
+      b_ss_keyring_create(self, private, keyring),
+    keyring_list = function()
+      b_ss_keyring_list(self, private),
+    keyring_delete = function(keyring = NULL)
+      b_ss_keyring_delete(self, private, keyring),
+    keyring_lock = function(keyring = NULL)
+      b_ss_keyring_lock(self, private, keyring),
+    keyring_unlock = function(keyring = NULL, password = NULL)
+      b_ss_keyring_unlock(self, private, keyring, password),
+    keyring_default = function()
+      b_ss_keyring_default(self, private),
+    keyring_set_default = function(keyring = NULL)
+      b_ss_keyring_set_default(self, private, keyring),
+    is_available = function(report_error = FALSE)
+      b_ss_is_available(self, private, report_error)
+  ),
+
+  private = list(
+    keyring = NULL,
+    keyring_create_direct = function(keyring, password)
+      b_ss_keyring_create_direct(self, private, keyring, password)
+  )
+)
+
+b_ss_init <- function(self, private, keyring) {
+  private$keyring <- keyring
+  invisible(self)
+}
+
+b_ss_get <- function(self, private, service, username, keyring) {
+  keyring <- keyring %||% private$keyring
+  .Call("keyring_secret_service_get", keyring, service, username,
+        PACKAGE = "keyring")
+}
+
+b_ss_set <- function(self, private, service, username, keyring) {
+  password <- get_pass()
+  b_ss_set_with_value(backend, service, username, password, keyring)
+  invisible(self)
+}
+
+b_ss_set_with_value <- function(self, private, service, username, password,
+                                keyring) {
+  keyring <- keyring %||% private$keyring
+  .Call("keyring_secret_service_set", keyring, service, username, password,
+        PACKAGE = "keyring")
+  invisible(self)
+}
+
+b_ss_delete <- function(self, private, service, username, keyring) {
+  keyring <- keyring %||% private$keyring
+  .Call("keyring_secret_service_delete", keyring, service, username,
+        PACKAGE = "keyring")
+  invisible(self)
+}
+
+b_ss_list <- function(self, private, service, keyring) {
+  keyring <- keyring %||% private$keyring
+  res <- .Call("keyring_secret_service_list", keyring, service,
+               PACKAGE = "keyring")
+  data.frame(
+    service = res[[1]],
+    username = res[[2]],
+    stringsAsFactors = FALSE
+  )
+}
+
+b_ss_keyring_create <- function(self, private, keyring) {
+  password <- get_pass()
+  private$keyring_create_direct(keyring, password)
+  invisible(self)
+}
+
+b_ss_keyring_list <- function(self, private) {
+  res <- .Call("keyring_secret_service_list_keyring", PACKAGE = "keyring")
+  data.frame(
+    keyring = res[[1]],
+    num_secrets = res[[2]],
+    locked = res[[3]],
+    stringsAsFactors = FALSE
+  )
+}
+
+b_ss_keyring_delete <- function(self, private, keyring) {
+  keyring <- keyring %||% private$keyring
+  .Call("keyring_secret_service_delete_keyring", keyring,
+        PACKAGE = "keyring")
+  invisible()
+}
+
+b_ss_keyring_lock <- function(self, private, keyring) {
+  keyring <- keyring %||% private$keyring
+  .Call("keyring_secret_service_lock_keyring", keyring, PACKAGE = "keyring")
+  invisible()
+}
+
+b_ss_keyring_unlock <- function(self, private, keyring, password) {
+  keyring <- keyring %||% private$keyring
+  if (is.null(password)) password <- get_pass()
+  .Call("keyring_secret_service_unlock_keyring", keyring, password,
+        PACKAGE = "keyring")
+  invisible()
+}
+
+b_ss_keyring_default <- function(self, private) {
+  private$keyring
+}
+
+b_ss_keyring_set_default <- function(self, private, keyring) {
+  private$keyring <- keyring
+  invisible(self)
+}
+
+b_ss_is_available <- function(self, private, report_error) {
+  .Call("keyring_secret_service_is_available", report_error, PACKAGE = "keyring")
+}
+
+b_ss_keyring_create_direct <- function(self, private, keyring, password) {
+  keyring <- keyring %||% private$keyring
+  .Call("keyring_secret_service_create_keyring", keyring, password,
+        PACKAGE = "keyring")
+  invisible(self)
+}

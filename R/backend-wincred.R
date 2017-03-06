@@ -462,3 +462,12 @@ b_wincred_keyring_unlock <- function(self, private, keyring,
   }
   invisible()
 }
+
+b_wincred_keyring_default <- function(self, private) {
+  private$keyring
+}
+
+b_wincred_keyring_set_default <- function(self, private, keyring) {
+  private$keyring <- keyring
+  invisible(self)
+}
