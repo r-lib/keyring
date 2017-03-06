@@ -72,7 +72,8 @@ SEXP keyring_macos_get(SEXP keyring, SEXP service, SEXP username) {
 
   keyring_macos_handle_status("cannot get password", status);
 
-  result = PROTECT(ScalarString(mkCharLen((const char*) data, length)));
+  result = PROTECT(allocVector(RAWSXP, length));
+  memcpy(RAW(result), data, length);
   SecKeychainItemFreeContent(NULL, data);
 
   UNPROTECT(1);
@@ -86,7 +87,6 @@ SEXP keyring_macos_set(SEXP keyring, SEXP service, SEXP username,
   const char* cservice = CHAR(STRING_ELT(service, 0));
   const char* cusername =
     isNull(username) ? empty : CHAR(STRING_ELT(username, 0));
-  const char* cpassword = CHAR(STRING_ELT(password, 0));
   SecKeychainItemRef item;
 
   SecKeychainRef keychain =
@@ -107,14 +107,14 @@ SEXP keyring_macos_set(SEXP keyring, SEXP service, SEXP username,
       keychain,
       (UInt32) strlen(cservice), cservice,
       (UInt32) strlen(cusername), cusername,
-      (UInt32) strlen(cpassword), cpassword,
+      (UInt32) LENGTH(password), RAW(password),
       /* itemRef = */ NULL);
 
   } else {
     status = SecKeychainItemModifyAttributesAndData(
       item,
       /* attrList= */ NULL,
-      (UInt32) strlen(cpassword), cpassword);
+      (UInt32) LENGTH(password), RAW(password));
     CFRelease(item);
   }
 

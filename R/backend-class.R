@@ -16,18 +16,25 @@ abstract_method <- function() {
 #'
 #' ```
 #' get(service, username = NULL, keyring = NULL)
+#' get_raw(service, username = NULL, keyring = NULL)
 #' set(service, username = NULL, keyring = NULL)
 #' set_with_value(service, username = NULL, password = NULL,
+#'                keyring = NULL)
+#' set_with_raw_value(service, username = NULL, password = NULL,
 #'                keyring = NULL)
 #' delete(service, username = NULL, keyring = NULL)
 #' list(service = NULL, keyring = NULL)
 #' ```
 #'
 #' * `get()` queries the secret in a keyring item.
+#' * `get_raw()` is similar to `get()`, but returns the result as a raw
+#'   vector.
 #' * `set()` sets the secret in a keyring item. The secret itself is read
 #'   in interactively from the keyboard.
 #' * `set_with_value()` sets the secret in a keyring item to the specified
 #'   value.
+#' * `set_with_raw_value()` sets the secret in keyring item to the
+#'   byte sequence of a raw vector.
 #' * `delete()` remotes a keyring item.
 #' * `list()` lists keyring items.
 #'
@@ -58,11 +65,15 @@ backend <- R6Class(
 
     get = function(service, username = NULL, keyring = NULL)
       abstract_method(),
+    get_raw = function(service, username = NULL, keyring = NULL)
+      charToRaw(self$get(service, username, keyring)),
     set = function(service, username = NULL, keyring = NULL)
       abstract_method(),
     set_with_value = function(service, username = NULL, password = NULL,
-                              keyring = NULL)
-      abstract_method(),
+      keyring = NULL) abstract_method(),
+    set_with_raw_value = function(service, username = NULL, password = NULL,
+      keyring = NULL) self$set_with_value(service, username,
+        rawToChar(password), keyring),
     delete = function(service, username = NULL, keyring = NULL)
       abstract_method(),
     list = function(service = NULL, keyring = NULL)

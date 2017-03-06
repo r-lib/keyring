@@ -2,17 +2,24 @@
 % Please edit documentation in R/api.R
 \name{key_get}
 \alias{key_get}
+\alias{key_get_raw}
 \alias{key_set}
 \alias{key_set_with_value}
+\alias{key_set_with_raw_value}
 \alias{key_delete}
 \alias{key_list}
 \title{Query, set, delete list keys in a keyring}
 \usage{
 key_get(service, username = NULL, keyring = NULL)
 
+key_get_raw(service, username = NULL, keyring = NULL)
+
 key_set(service, username = NULL, keyring = NULL)
 
 key_set_with_value(service, username = NULL, password = NULL,
+  keyring = NULL)
+
+key_set_with_raw_value(service, username = NULL, password = NULL,
   keyring = NULL)
 
 key_delete(service, username = NULL, keyring = NULL)
@@ -47,11 +54,21 @@ as a secure key-value store.
 \details{
 \code{key_get} queries a key from the keyring.
 
+\code{key_get_raw} queries a key and returns it as a raw vector.
+Most credential stores allow storing a byte sequence with embedded null
+bytes, and these cannot be represented as traditional null bytes
+terminated strings. If you don't know whether the key contains an
+embedded null, it is best to query it with \code{key_get_raw} instead of
+\code{key_get}.
+
 \code{key_set} sets a key in the keyring. The contents of the key is read
 interactively from the terminal.
 
 \code{key_set_with_value} is the non-interactive pair of \code{key_set}, to set
 a key in the keyring.
+
+\code{key_set_raw_with_value} sets a key to a byte sequence from a raw
+vector.
 
 \code{key_delete} deletes a key.
 

@@ -11,18 +11,25 @@ can be defined as well.
 }
 \details{
 These are the semantics of the various methods:\preformatted{get(service, username = NULL, keyring = NULL)
+get_raw(service, username = NULL, keyring = NULL)
 set(service, username = NULL, keyring = NULL)
 set_with_value(service, username = NULL, password = NULL,
+               keyring = NULL)
+set_with_raw_value(service, username = NULL, password = NULL,
                keyring = NULL)
 delete(service, username = NULL, keyring = NULL)
 list(service = NULL, keyring = NULL)
 }
 \itemize{
 \item \code{get()} queries the secret in a keyring item.
+\item \code{get_raw()} is similar to \code{get()}, but returns the result as a raw
+vector.
 \item \code{set()} sets the secret in a keyring item. The secret itself is read
 in interactively from the keyboard.
 \item \code{set_with_value()} sets the secret in a keyring item to the specified
 value.
+\item \code{set_with_raw_value()} sets the secret in keyring item to the
+byte sequence of a raw vector.
 \item \code{delete()} remotes a keyring item.
 \item \code{list()} lists keyring items.
 }

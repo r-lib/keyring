@@ -33,12 +33,18 @@ backend_macos <- R6Class(
 
     get = function(service, username = NULL, keyring = NULL)
       b_macos_get(self, private, service, username, keyring),
+    get_raw = function(service, username = NULL, keyring = NULL)
+      b_macos_get_raw(self, private, service, username, keyring),
     set = function(service, username = NULL, keyring = NULL)
       b_macos_set(self, private, service, username, keyring),
     set_with_value = function(service, username = NULL, password = NULL,
       keyring = NULL)
       b_macos_set_with_value(self, private, service, username, password,
                              keyring),
+    set_with_raw_value = function(service, username = NULL, password = NULL,
+      keyring = NULL)
+      b_macos_set_with_raw_value(self, private, service, username, password,
+                                 keyring),
     delete = function(service, username = NULL, keyring = NULL)
       b_macos_delete(self, private, service, username, keyring),
     list = function(service = NULL, keyring = NULL)
@@ -82,6 +88,16 @@ b_macos_init <- function(self, private, keyring) {
 
 b_macos_get <- function(self, private, service, username, keyring) {
   keyring <- private$keyring_file(keyring %||% private$keyring)
+  res <- .Call("keyring_macos_get", utf8(keyring), utf8(service),
+               utf8(username), PACKAGE = "keyring")
+  if (any(res == 0)) {
+    stop("Key contains embedded null bytes, use get_raw()")
+  }
+  rawToChar(res)
+}
+
+b_macos_get_raw <- function(self, private, service, username, keyring) {
+  keyring <- private$keyring_file(keyring %||% private$keyring)
   .Call("keyring_macos_get", utf8(keyring), utf8(service),
         utf8(username), PACKAGE = "keyring")
 }
@@ -94,6 +110,14 @@ b_macos_set <- function(self, private, service, username, keyring) {
 
 b_macos_set_with_value <- function(self, private, service, username,
                                    password, keyring) {
+  keyring <- private$keyring_file(keyring %||% private$keyring)
+  .Call("keyring_macos_set", utf8(keyring), utf8(service),
+        utf8(username), charToRaw(password), PACKAGE = "keyring")
+  invisible(self)
+}
+
+b_macos_set_with_raw_value <- function(self, private, service, username,
+                                       password, keyring) {
   keyring <- private$keyring_file(keyring %||% private$keyring)
   .Call("keyring_macos_set", utf8(keyring), utf8(service),
         utf8(username), password, PACKAGE = "keyring")
