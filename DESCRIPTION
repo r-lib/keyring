@@ -19,6 +19,7 @@ Imports:
     assertthat,
     getPass,
     openssl,
+    R6,
     utils
 Suggests:
     covr,
@@ -27,3 +28,17 @@ Suggests:
     withr
 Encoding: UTF-8
 SystemRequirements: libsecret on Linux
+Collate: 
+    'api.R'
+    'assertions.R'
+    'backend-class.R'
+    'backend-env.R'
+    'backend.R'
+    'backend_macos.R'
+    'backend_secret_service.R'
+    'backend_wincred.R'
+    'default_backend.R'
+    'package.R'
+    'pass.R'
+    'print.R'
+    'utils.R'
