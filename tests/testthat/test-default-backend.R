@@ -65,7 +65,7 @@ test_that("auto macos", {
 test_that("auto linux", {
   skip_if_not_linux()  
   mockery::stub(default_backend_auto, "Sys.info", c(sysname = "Linux"))
-  expect_true(default_backend_auto()()$name %in% c("secret service", "env"))
+  expect_equal(default_backend_auto(), backend_secret_service)
 })
 
 test_that("auto other", {
