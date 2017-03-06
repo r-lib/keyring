@@ -15,15 +15,16 @@ backend <- R6Class(
 
     has_keyring_support = function() FALSE,
 
-    get = function(service, username = NULL)
+    get = function(service, username = NULL, keyring = NULL)
       abstract_method(),
-    set = function(service, username = NULL)
+    set = function(service, username = NULL, keyring = NULL)
       abstract_method(),
-    set_with_value = function(service, username = NULL, password = NULL)
+    set_with_value = function(service, username = NULL, password = NULL,
+                              keyring = NULL)
       abstract_method(),
-    delete = function(service, username = NULL)
+    delete = function(service, username = NULL, keyring = NULL)
       abstract_method(),
-    list = function(service = NULL)
+    list = function(service = NULL, keyring = NULL)
       stop("Backend does not implement 'list'")
   )
 )

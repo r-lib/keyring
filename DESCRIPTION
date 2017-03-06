@@ -34,7 +34,6 @@ Collate:
     'backend-class.R'
     'backend-env.R'
     'backend-macos.R'
-    'backend.R'
     'backend_secret_service.R'
     'backend_wincred.R'
     'default_backend.R'
