@@ -20,7 +20,8 @@ Imports:
     getPass,
     openssl,
     utils
-Suggests: 
+Suggests:
+    covr,
     mockery,
     testthat,
     withr
