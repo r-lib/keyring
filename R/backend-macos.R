@@ -57,7 +57,13 @@ backend_macos <- R6Class(
     keyring_default = function()
       b_macos_keyring_default(self, private),
     keyring_set_default = function(keyring = NULL)
-      b_macos_keyring_set_default(self, private, keyring)
+      b_macos_keyring_set_default(self, private, keyring),
+
+    docs = function() {
+      modifyList(super$docs(), list(
+        . = "Store secrets in the macOS Keychain."
+      ))
+    }
   ),
 
   private = list(

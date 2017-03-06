@@ -70,7 +70,14 @@ backend_secret_service <- R6Class(
     keyring_set_default = function(keyring = NULL)
       b_ss_keyring_set_default(self, private, keyring),
     is_available = function(report_error = FALSE)
-      b_ss_is_available(self, private, report_error)
+      b_ss_is_available(self, private, report_error),
+
+    docs = function() {
+      modifyList(super$docs(), list(
+        . = "Store secrets using the Secret Service library and daemon.",
+        is_available = "check is Secret Service is available"
+      ))
+    }
   ),
 
   private = list(

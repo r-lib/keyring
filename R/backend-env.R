@@ -47,7 +47,13 @@ backend_env <- R6Class(
       b_env_set_with_value(self, private, service, username, password,
                            keyring),
     delete = function(service, username = NULL, keyring = NULL)
-      b_env_delete(self, private, service, username, keyring)
+      b_env_delete(self, private, service, username, keyring),
+
+    docs = function() {
+      modifyList(super$docs(), list(
+        . = "Store secrets in environment variables."
+      ))
+    }
   ),
   private = list(
     env_to_var = function(service, username) {

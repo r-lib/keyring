@@ -52,7 +52,7 @@ NULL
 backend <- R6Class(
   "backend",
   public = list(
-    name = "Unknown keyring backend",
+    name = "abstract backend",
 
     has_keyring_support = function() FALSE,
 
@@ -66,7 +66,27 @@ backend <- R6Class(
     delete = function(service, username = NULL, keyring = NULL)
       abstract_method(),
     list = function(service = NULL, keyring = NULL)
-      stop("Backend does not implement 'list'")
+      stop("Backend does not implement 'list'"),
+
+    print = function(...) {
+      d <- self$docs()
+      cat0("<keyring backend: ", sQuote(self$name), ">\n")
+      cat0(d[[1]], "\n\n")
+      cat0(paste0(" $", format(names(d[-1])), "  ", d[-1]), sep = "\n")
+      invisible(self)
+    },
+
+    docs = function() {
+      list(
+        . = "Inherit from this class to implement a basic backend.",
+        get = "query a key from the keyring",
+        set = "set a key in the keyring (interactive)",
+        set_with_value = "set a key in the keyring",
+        delete = "delete a key",
+        list = "list keys in a keyring",
+        has_keyring_support = "TRUE if multiple keyrings are supported"
+      )
+    }
   )
 )
 
@@ -137,6 +157,19 @@ backend_keyrings <- R6Class(
     keyring_unlock = function(keyring = NULL, password = NULL)
       abstract_method(),
     keyring_default = function() abstract_method(),
-    keyring_set_default = function(keyring = NULL) abstract_method()
+    keyring_set_default = function(keyring = NULL) abstract_method(),
+
+    docs = function() {
+      modifyList(super$docs(), list(
+        . = "Inherit from this class for a new backend with multiple keyrings.",
+        keyring_create = "create new keyring",
+        keyring_list = "list all keyrings",
+        keyring_delete = "delete a keyring",
+        keyring_lock = "lock a keyring",
+        keyring_unlock = "unlock a keyring",
+        keyring_default = "query the default keyring",
+        keyring_set_default = "set the default keyring"
+      ))
+    }
   )
 )

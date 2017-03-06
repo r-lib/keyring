@@ -257,7 +257,13 @@ backend_wincred <- R6Class(
     keyring_default = function()
       b_wincred_keyring_default(self, private),
     keyring_set_default = function(keyring = NULL)
-      b_wincred_keyring_set_default(self, private, keyring)
+      b_wincred_keyring_set_default(self, private, keyring),
+
+    docs = function() {
+      modifyList(super$docs(), list(
+        . = "Store secrets in the Windows Credential Store."
+      ))
+    }
   ),
 
   private = list(

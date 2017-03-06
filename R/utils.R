@@ -5,3 +5,7 @@ utf8 <- function(x) {
 }
 
 `%||%` <- function(l, r) if (is.null(l)) r else l
+
+cat0 <- function(..., sep = "") {
+  cat(..., sep = sep)
+}
