@@ -6,18 +6,18 @@ on.exit(options(opts), add = TRUE)
 
 test_that("use options", {
   withr::with_options(
-    list(keyring_backend = backend_env),
-    expect_equal(default_backend(), backend_env())
+    list(keyring_backend = "env"),
+    expect_equal(default_backend(), backend_env$new())
   )
   withr::with_options(
     list(keyring_backend = "env"),
-    expect_equal(default_backend(), backend_env())
+    expect_equal(default_backend(), backend_env$new())
   )
   ## This should run on all OSes currently, as we are not actually
   ## calling the Keychain API here.
   withr::with_options(
     list(keyring_backend = "macos", keyring_keyring = "foobar"),
-    expect_equal(default_backend(), backend_macos(keyring = "foobar"))
+    expect_equal(default_backend(), backend_macos$new(keyring = "foobar"))
   )
 })
 
@@ -27,7 +27,7 @@ test_that("use env var", {
     list(keyring_backend = NULL, keyring_keyring = NULL),
     withr::with_envvar(
       c(R_KEYRING_BACKEND = "env"),
-      expect_equal(default_backend(), backend_env())
+      expect_equal(default_backend(), backend_env$new())
     )
   )
 })
@@ -38,7 +38,7 @@ test_that("mixing options and env vars", {
     list(keyring_backend = "macos", keyring_keyring = NULL),
     withr::with_envvar(
       c(R_KEYRING_KEYRING = "foobar"),
-      expect_equal(default_backend(), backend_macos(keyring = "foobar"))
+      expect_equal(default_backend(), backend_macos$new(keyring = "foobar"))
     )
   )
 
@@ -47,7 +47,7 @@ test_that("mixing options and env vars", {
     list(keyring_backend = NULL, keyring_keyring = "foobar"),
     withr::with_envvar(
       c(R_KEYRING_BACKEND = "macos"),
-      expect_equal(default_backend(), backend_macos(keyring = "foobar"))
+      expect_equal(default_backend(), backend_macos$new(keyring = "foobar"))
     )
   )
 })

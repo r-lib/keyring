@@ -18,8 +18,8 @@ The backend object itself.
 The default backend is selected
 \enumerate{
 \item based on the \code{keyring_backend} option. See \code{\link[base:options]{base::options()}}.
-This can be set currently to \code{"env"}, \code{"macos"}, \code{"wincred"} or
-\code{"secret_service"}.
+This can be set to a character string, and then the
+\emph{backend_}\code{string} class is used to create the default backend.
 \item If this is not set, then the \code{R_KEYRING_BACKEND} environment variable
 is checked.
 \item If this is not set, either, then the backend is selected
@@ -27,7 +27,9 @@ automatically, based on the OS:
 \enumerate{
 \item On Windows, the Windows Credential Store (\code{"wincred"}) is used.
 \item On macOS, Keychain services are selected (\code{"macos"}).
-\item Linux uses the Secret Service API (\code{"secret_service"}).
+\item Linux uses the Secret Service API (\code{"secret_service"}),
+and it also checks that the service is available. It is typically
+only available on systems with a GUI.
 \item On other operating systems, secrets are stored in environment
 variables (\code{"env"}).
 }
