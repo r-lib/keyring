@@ -28,6 +28,18 @@ Argument:
 not available.
 }
 }
+\examples{
+\dontrun{
+## This only works on Linux, typically desktop Linux
+kb <- backend_secret_service$new()
+kb$create_keyring("foobar")
+kb$set_default_keyring("foobar")
+kb$set_with_value("service", password = "secret")
+kb$get("service")
+kb$delete("service")
+kb$delete_keyring("foobar")
+}
+}
 \seealso{
 Other keyring backends: \code{\link{backend_env}},
   \code{\link{backend_macos}},
