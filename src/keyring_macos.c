@@ -8,6 +8,7 @@ void keyring_macos_dummy() { }
 #include <Security/Security.h>
 
 #include <R.h>
+#include <R_ext/Rdynload.h>
 #include <Rinternals.h>
 
 #include <sys/param.h>
@@ -449,6 +450,29 @@ SEXP keyring_macos_unlock_keyring(SEXP keyring, SEXP password) {
   if (keychain) CFRelease(keychain);
   keyring_macos_handle_status("cannot unlock keychain", status);
   return R_NilValue;
+}
+
+static const R_CallMethodDef callMethods[]  = {
+  { "keyring_macos_get",    (DL_FUNC) &keyring_macos_get,            3 },
+  { "keyring_macos_set",    (DL_FUNC) &keyring_macos_set,            4 },
+  { "keyring_macos_delete", (DL_FUNC) &keyring_macos_delete,         3 },
+  { "keyring_macos_list",   (DL_FUNC) &keyring_macos_list,           2 },
+  { "keyring_macos_create", (DL_FUNC) &keyring_macos_create,         2 },
+  { "keyring_macos_list_keyring",
+                            (DL_FUNC) &keyring_macos_list_keyring,   0 },
+  { "keyring_macos_delete_keyring",
+                            (DL_FUNC) &keyring_macos_delete_keyring, 1 },
+  { "keyring_macos_lock_keyring",
+                            (DL_FUNC) &keyring_macos_lock_keyring,   1 },
+  { "keyring_macos_unlock_keyring",
+                            (DL_FUNC) &keyring_macos_unlock_keyring, 2 },
+  { NULL, NULL, 0 }
+};
+
+void R_init_keyring(DllInfo *dll) {
+  R_registerRoutines(dll, NULL, callMethods, NULL, NULL);
+  R_useDynamicSymbols(dll, FALSE);
+  R_forceSymbols(dll, TRUE);
 }
 
 #endif // __APPLE__

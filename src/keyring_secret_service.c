@@ -8,15 +8,9 @@ void keyring_secret_service_dummy() { }
 #include <Rinternals.h>
 #include <R_ext/Rdynload.h>
 
+#define SECRET_WITH_UNSTABLE 1
+#define SECRET_API_SUBJECT_TO_CHANGE 1
 #include <libsecret/secret.h>
-
-void R_init_keyring(DllInfo *info) {
-  g_type_ensure (G_TYPE_OBJECT);
-}
-
-void R_unload_keyring(DllInfo *info) {
-  secret_service_disconnect();
- }
 
 const SecretSchema *keyring_secret_service_schema() {
   static const SecretSchema schema = {
@@ -65,8 +59,6 @@ SEXP keyring_secret_service_is_available(SEXP report_error) {
 SecretCollection* keyring_secret_service_get_collection_default() {
 
   SecretCollection *collection = NULL;
-
-  const char *errormsg = NULL;
   GError *err = NULL;
 
   SecretService *secretservice = secret_service_get_sync(
@@ -190,7 +182,6 @@ GList* keyring_secret_service_get_item(SEXP keyring, SEXP service,
     /* cancellable = */ NULL,
     &err);
 
- cleanup:
   if (collection) g_object_unref(collection);
   if (attributes) g_hash_table_unref(attributes);
   keyring_secret_service_handle_status("get", TRUE, err);
@@ -249,7 +240,8 @@ SEXP keyring_secret_service_set(SEXP keyring, SEXP service, SEXP username,
   g_hash_table_insert(attributes, g_strdup("service"), g_strdup(cservice));
   g_hash_table_insert(attributes, g_strdup("username"), g_strdup(cusername));
 
-  SecretValue *value = secret_value_new(RAW(password), LENGTH(password),
+  SecretValue *value = secret_value_new((gchar *)RAW(password),
+					LENGTH(password),
 					/* content_type = */ "text/plain");
 
   SecretItem *item = secret_item_create_sync(
@@ -460,13 +452,6 @@ SEXP keyring_secret_service_lock_keyring(SEXP keyring) {
   GList *list = g_list_append(NULL, collection);
   GError *err = NULL;
 
-  gint num_locked = secret_service_lock_sync(
-    /* service = */ NULL,
-    list,
-    /* cancellable = */ NULL,
-    /* locked = */ NULL,
-    &err);
-
   g_list_free(list);
   keyring_secret_service_handle_status("lock_keyring", TRUE, err);
 
@@ -480,17 +465,45 @@ SEXP keyring_secret_service_unlock_keyring(SEXP keyring, SEXP password) {
   GList *list = g_list_append(NULL, collection);
   GError *err = NULL;
 
-  gint num_unlocked = secret_service_unlock_sync(
-    /* service = */ NULL,
-    list,
-    /* cancellable = */ NULL,
-    /* unlcoked = */ NULL,
-    &err);
-
   g_list_free(list);
   keyring_secret_service_handle_status("unlock_keyring", TRUE, err);
 
   return R_NilValue;
 }
+
+static const R_CallMethodDef callMethods[]  = {
+  { "keyring_secret_service_is_available",
+    (DL_FUNC) &keyring_secret_service_is_available, 1 },
+  { "keyring_secret_service_get",
+    (DL_FUNC) &keyring_secret_service_get, 3 },
+  { "keyring_secret_service_set",
+    (DL_FUNC) &keyring_secret_service_set, 4 },
+  { "keyring_secret_service_delete",
+    (DL_FUNC) &keyring_secret_service_delete, 3 },
+  { "keyring_secret_service_list",
+    (DL_FUNC) &keyring_secret_service_list, 2 },
+  { "keyring_secret_service_create_keyring",
+    (DL_FUNC) &keyring_secret_service_create_keyring, 1 },
+  { "keyring_secret_service_list_keyring",
+    (DL_FUNC) &keyring_secret_service_list_keyring, 0 },
+  { "keyring_secret_service_delete_keyring",
+    (DL_FUNC) &keyring_secret_service_delete_keyring, 1 },
+  { "keyring_secret_service_lock_keyring",
+    (DL_FUNC) &keyring_secret_service_lock_keyring, 1 },
+  { "keyring_secret_service_unlock_keyring",
+    (DL_FUNC) &keyring_secret_service_unlock_keyring, 2 },
+  { NULL, NULL, 0 }
+};
+
+void R_init_keyring(DllInfo *dll) {
+  R_registerRoutines(dll, NULL, callMethods, NULL, NULL);
+  R_useDynamicSymbols(dll, FALSE);
+  R_forceSymbols(dll, TRUE);
+  g_type_ensure (G_TYPE_OBJECT);
+}
+
+void R_unload_keyring(DllInfo *dll) {
+  secret_service_disconnect();
+ }
 
 #endif // __linux__

@@ -46,7 +46,7 @@ test_that("creating keychains", {
 
   expect_silent(kb$delete(service, username))
 
-  expect_silent(kb$keyring_delete())
+  expect_silent(kb$keyring_delete(keyring = keyring))
 
   expect_false(keyring %in% kb$keyring_list()$keyring)
 })
@@ -73,7 +73,7 @@ test_that("lock/unlock keyrings", {
   list <- kb$keyring_list()
   expect_false(list$locked[match(keyring, list$keyring)])
 
-  expect_silent(kb$keyring_delete())
+  expect_silent(kb$keyring_delete(keyring = keyring))
 })
 
 test_that(": in keyring, service and usernames", {

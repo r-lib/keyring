@@ -5,11 +5,11 @@ Authors@R:
     c(person(given = "Gábor", family = "Csárdi", role = c("aut", "cre"),
              email = "csardi.gabor@gmail.com"),
       person("RStudio", role = "cph"))
-Description: Platform independent 'API' to accdss the operating system's
-    credential store. Currently supports: Keychain on 'macOS', Credential
+Description: Platform independent 'API' to access the operating system's
+    credential store. Currently supports: 'Keychain' on 'macOS', Credential
     Store on 'Windows', the Secret Service 'API' on 'Linux', and a simple,
     platform independent store implemented with environment variables.
-    Additional storage backends can be added easily.
+    Additional storage back-ends can be added easily.
 License: MIT + file LICENSE
 LazyData: true
 URL: https://github.com/gaborcsardi/keyring#readme

@@ -89,6 +89,22 @@ backend <- R6Class(
       invisible(self)
     },
 
+    ## This should be 'protected', really, but not possible in R6
+    confirm_delete_keyring = function(keyring) {
+      if (is.null(keyring)) {
+        stop("Cannot delete the default keyring. ",
+             "You need to specify the name of the keyring explicitly.")
+      }
+      list <- self$keyring_list()
+      if (keyring %in% list$keyring &&
+          list$num_secrets[match(keyring, list$keyring)] > 0) {
+        confirmation(
+          "The keyring is not empty, type 'yes' to delete it",
+          "yes"
+        )
+      }
+    },
+
     docs = function() {
       list(
         . = "Inherit from this class to implement a basic backend.",

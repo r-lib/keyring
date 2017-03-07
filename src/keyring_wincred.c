@@ -6,6 +6,7 @@ void keyring_wincred_dummy() { }
 
 #include <R.h>
 #include <Rinternals.h>
+#include <R_ext/Rdynload.h>
 
 #include <windows.h>
 #include <wincred.h>
@@ -115,6 +116,21 @@ SEXP keyring_wincred_enumerate(SEXP filter) {
     UNPROTECT(1);
     return result;
   }
+}
+
+static const R_CallMethodDef callMethods[]  = {
+  { "keyring_wincred_get",       (DL_FUNC) &keyring_wincred_get,       1 },
+  { "keyring_wincred_exists",    (DL_FUNC) &keyring_wincred_exists,    1 },
+  { "keyring_wincred_set",       (DL_FUNC) &keyring_wincred_set,       4 },
+  { "keyring_wincred_delete",    (DL_FUNC) &keyring_wincred_delete,    1 },
+  { "keyring_wincred_enumerate", (DL_FUNC) &keyring_wincred_enumerate, 1 },
+  { NULL, NULL, 0 }
+};
+
+void R_init_keyring(DllInfo *dll) {
+  R_registerRoutines(dll, NULL, callMethods, NULL, NULL);
+  R_useDynamicSymbols(dll, FALSE);
+  R_forceSymbols(dll, TRUE);
 }
 
 #endif // _WIN32

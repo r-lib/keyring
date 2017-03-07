@@ -35,6 +35,6 @@
 #'   - Or store the secrets in environment variables on other operating systems: [backend_env()]
 #'   
 #' @docType package
-#' @useDynLib keyring
+#' @useDynLib keyring, .registration = TRUE, .fixes = "c_"
 #' @name keyring
 NULL

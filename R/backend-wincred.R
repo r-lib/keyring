@@ -8,25 +8,24 @@ b_wincred_protocol_version <- "1.0.0"
 ## This is a low level API
 
 b_wincred_i_get <- function(target) {
-  .Call("keyring_wincred_get", target, PACKAGE = "keyring")
+  .Call("keyring_wincred_get", target)
 }
 
 b_wincred_i_set <- function(target, password, username = NULL,
 		                  session = FALSE) {
-  .Call("keyring_wincred_set", target, password, username, session,
-        PACKAGE = "keyring")
+  .Call("keyring_wincred_set", target, password, username, session)
 }
 
 b_wincred_i_delete <- function(target) {
-  .Call("keyring_wincred_delete", target, PACKAGE = "keyring")
+  .Call("keyring_wincred_delete", target)
 }
 
 b_wincred_i_exists <- function(target) {
-  .Call("keyring_wincred_exists", target, PACKAGE = "keyring")
+  .Call("keyring_wincred_exists", target)
 }
 
 b_wincred_i_enumerate <- function(filter) {
-  .Call("keyring_wincred_enumerate", filter, PACKAGE = "keyring")
+  .Call("keyring_wincred_enumerate", filter)
 }
 
 #' @importFrom utils URLencode
@@ -366,7 +365,7 @@ b_wincred_keyring_list <- function(self, private) {
   ## if keyring:: does not exist, then keyring is not a real keyring, assign it
   ## to the default
   default <- ! paste0(parts$keyring, "::") %in% list
-  if (any(default)) {
+  if (length(list) > 0 && any(default)) {
     parts$username[default] <-
       paste0(parts$service[default], ":", parts$username[default])
     parts$service[default] <- parts$keyring[default]
@@ -395,14 +394,23 @@ b_wincred_keyring_list <- function(self, private) {
 }
 
 b_wincred_keyring_delete <- function(self, private, keyring) {
+  self$confirm_delete_keyring(keyring)
   keyring <- keyring %||% private$keyring
+  items <- self$list(keyring = keyring)
 
-  if (is.null(keyring)) stop("Cannot delete the default keyring")
-  ## TODO: confirmation
+  ## Remove the keyring credential and the lock credential first
   target_keyring <- b_wincred_target_keyring(keyring)
   b_wincred_i_delete(target_keyring)
   target_lock <- b_wincred_target_lock(keyring)
   try(b_wincred_i_delete(target_lock), silent = TRUE)
+
+  ## Then the items themselves
+  for (i in seq_len(nrow(items))) {
+    target <- b_wincred_target(keyring, items$service[i],
+                               items$username[i])
+    try(b_wincred_i_delete(target), silent = TRUE)
+  }
+
   invisible()
 }
 
