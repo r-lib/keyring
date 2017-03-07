@@ -194,7 +194,10 @@ b_ss_is_available <- function(self, private, report_error) {
 }
 
 b_ss_keyring_create_direct <- function(self, private, keyring, password) {
+  if (!is.null(password)) {
+    warning("Password ignored, will be read interactively")
+  }
   keyring <- keyring %||% private$keyring
-  .Call(c_keyring_secret_service_create_keyring, keyring, password)
+  .Call(c_keyring_secret_service_create_keyring, keyring)
   invisible(self)
 }
