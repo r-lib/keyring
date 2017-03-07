@@ -8,6 +8,8 @@ void keyring_secret_service_dummy() { }
 #include <Rinternals.h>
 #include <R_ext/Rdynload.h>
 
+#define SECRET_WITH_UNSTABLE 1
+#define SECRET_API_SUBJECT_TO_CHANGE 1
 #include <libsecret/secret.h>
 
 void R_init_keyring(DllInfo *info) {
