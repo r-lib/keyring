@@ -7,6 +7,6 @@
 #' 'Linux'.
 #'
 #' @docType package
-#' @useDynLib keyring
+#' @useDynLib keyring, .registration = TRUE, .fixes = "c_"
 #' @name keyring
 NULL
