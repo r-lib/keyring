@@ -8,25 +8,24 @@ b_wincred_protocol_version <- "1.0.0"
 ## This is a low level API
 
 b_wincred_i_get <- function(target) {
-  .Call("keyring_wincred_get", target, PACKAGE = "keyring")
+  .Call("keyring_wincred_get", target)
 }
 
 b_wincred_i_set <- function(target, password, username = NULL,
 		                  session = FALSE) {
-  .Call("keyring_wincred_set", target, password, username, session,
-        PACKAGE = "keyring")
+  .Call("keyring_wincred_set", target, password, username, session)
 }
 
 b_wincred_i_delete <- function(target) {
-  .Call("keyring_wincred_delete", target, PACKAGE = "keyring")
+  .Call("keyring_wincred_delete", target)
 }
 
 b_wincred_i_exists <- function(target) {
-  .Call("keyring_wincred_exists", target, PACKAGE = "keyring")
+  .Call("keyring_wincred_exists", target)
 }
 
 b_wincred_i_enumerate <- function(filter) {
-  .Call("keyring_wincred_enumerate", filter, PACKAGE = "keyring")
+  .Call("keyring_wincred_enumerate", filter)
 }
 
 #' @importFrom utils URLencode

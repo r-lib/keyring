@@ -88,7 +88,7 @@ b_macos_init <- function(self, private, keyring) {
 
 b_macos_get <- function(self, private, service, username, keyring) {
   keyring <- private$keyring_file(keyring %||% private$keyring)
-  res <- .Call(c_keyring_macos_get, utf8(keyring), utf8(service),
+  res <- .Call("keyring_macos_get", utf8(keyring), utf8(service),
                utf8(username))
   if (any(res == 0)) {
     stop("Key contains embedded null bytes, use get_raw()")
@@ -98,7 +98,7 @@ b_macos_get <- function(self, private, service, username, keyring) {
 
 b_macos_get_raw <- function(self, private, service, username, keyring) {
   keyring <- private$keyring_file(keyring %||% private$keyring)
-  .Call(c_keyring_macos_get, utf8(keyring), utf8(service), utf8(username))
+  .Call("keyring_macos_get", utf8(keyring), utf8(service), utf8(username))
 }
 
 b_macos_set <- function(self, private, service, username, keyring) {
@@ -110,7 +110,7 @@ b_macos_set <- function(self, private, service, username, keyring) {
 b_macos_set_with_value <- function(self, private, service, username,
                                    password, keyring) {
   keyring <- private$keyring_file(keyring %||% private$keyring)
-  .Call(c_keyring_macos_set, utf8(keyring), utf8(service),
+  .Call("keyring_macos_set", utf8(keyring), utf8(service),
         utf8(username), charToRaw(password))
   invisible(self)
 }
@@ -118,21 +118,21 @@ b_macos_set_with_value <- function(self, private, service, username,
 b_macos_set_with_raw_value <- function(self, private, service, username,
                                        password, keyring) {
   keyring <- private$keyring_file(keyring %||% private$keyring)
-  .Call(c_keyring_macos_set, utf8(keyring), utf8(service),
+  .Call("keyring_macos_set", utf8(keyring), utf8(service),
         utf8(username), password)
   invisible(self)
 }
 
 b_macos_delete <- function(self, private, service, username, keyring) {
   keyring <- private$keyring_file(keyring %||% private$keyring)
-  .Call(c_keyring_macos_delete, utf8(keyring), utf8(service),
+  .Call("keyring_macos_delete", utf8(keyring), utf8(service),
         utf8(username))
   invisible(self)
 }
 
 b_macos_list <- function(self, private, service, keyring) {
   keyring <- private$keyring_file(keyring %||% private$keyring)
-  res <- .Call(c_keyring_macos_list, utf8(keyring), utf8(service))
+  res <- .Call("keyring_macos_list", utf8(keyring), utf8(service))
   data.frame(
     service = res[[1]],
     username = res[[2]],
@@ -147,7 +147,7 @@ b_macos_keyring_create <- function(self, private, keyring) {
 }
 
 b_macos_keyring_list <- function(self, private) {
-  res <- .Call(c_keyring_macos_list_keyring)
+  res <- .Call("keyring_macos_list_keyring")
   data.frame(
     keyring = sub("\\.keychain$", "", basename(res[[1]])),
     num_secrets = res[[2]],
@@ -158,20 +158,20 @@ b_macos_keyring_list <- function(self, private) {
 
 b_macos_keyring_delete <- function(self, private, keyring) {
   keyring <- private$keyring_file(keyring %||% private$keyring)
-  .Call(c_keyring_macos_delete_keyring, utf8(keyring))
+  .Call("keyring_macos_delete_keyring", utf8(keyring))
   invisible(self)
 }
 
 b_macos_keyring_lock <- function(self, private, keyring) {
   keyring <- private$keyring_file(keyring %||% private$keyring)
-  .Call(c_keyring_macos_lock_keyring, utf8(keyring))
+  .Call("keyring_macos_lock_keyring", utf8(keyring))
   invisible(self)
 }
 
 b_macos_keyring_unlock <- function(self, private, keyring, password) {
   password <- password %||% get_pass()
   keyring <- private$keyring_file(keyring %||% private$keyring)
-  .Call(c_keyring_macos_unlock_keyring, utf8(keyring), password)
+  .Call("keyring_macos_unlock_keyring", utf8(keyring), password)
   invisible(self)
 }
 
@@ -204,6 +204,6 @@ b_macos_keyring_file <- function(self, private, name) {
 
 b_macos_keyring_create_direct <- function(self, private, keyring, password) {
   keyring <- private$keyring_file(keyring)
-  .Call(c_keyring_macos_create, utf8(keyring), password)
+  .Call("keyring_macos_create", utf8(keyring), password)
   invisible(self)
 }
