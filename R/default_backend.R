@@ -12,6 +12,8 @@
 #'    1. On Windows, the Windows Credential Store (`"wincred"`) is used.
 #'    1. On macOS, Keychain services are selected (`"macos"`).
 #'    1. Linux uses the Secret Service API (`"secret_service"`).
+#'       and it also checks that the service is available. It is typically
+#'       only available on systems with a GUI.
 #'    1. On other operating systems, secrets are stored in environment
 #'       variables (`"env"`).
 #'
@@ -21,16 +23,19 @@
 #' 1. the `keyring_keyring` option.
 #'     - You can change this by using `options(keyring_keyring = "NEWVALUE")`
 #' 1. If this is not set, the `R_KEYRING_KEYRING` environment variable.
-#'     - Change this value by using `Sys.setenv(R_KEYRING_KEYRING = "NEWVALUE")`, either in your script or in your `.Renviron` file. See [startup][base::startup] for information about using `.Renviron`
-#' 1. Finally, if neither of these are set, then the OS default keyring is selected.
-#'    - Usually this keyring is automatically unlocked when the user logs in.
+#'     - Change this value with `Sys.setenv(R_KEYRING_KEYRING = "NEWVALUE")`, 
+#'     either in your script or in your `.Renviron` file. 
+#'     See [base::startup] for information about using `.Renviron`
+#' 1. Finally, if neither of these are set, the OS default keyring is used.
+#'     - Usually the keyring is automatically unlocked when the user logs in.
 #'
 #' @param keyring Character string, the name of the keyring to use,
 #'   or `NULL` for the default keyring.
 #' @return The backend object itself.
 #' 
 #' 
-#' @seealso [backend_env()], [backend_macos()], [backend_secret_service()], [backend_wincred()]
+#' @seealso [backend_env], [backend_macos], [backend_secret_service], 
+#'          [backend_wincred]
 #'
 #' @export
 #' @name backends

@@ -14,8 +14,8 @@ implementations. Currently supported:
 \item the Secret Service API and the Gnome keyring API on 'Linux'.
 }
 }
-\details{
-\strong{Managing keyrings:}
+\section{Managing keyrings}{
+
 
 A keyring is a collection of keys that can be treated as a unit. A keyring typically has a name and a password to unlock it.
 \itemize{
@@ -25,24 +25,36 @@ A keyring is a collection of keys that can be treated as a unit. A keyring typic
 \item \code{\link[=keyring_lock]{keyring_lock()}}
 \item \code{\link[=keyring_unlock]{keyring_unlock()}}
 }
+}
 
-\strong{Query secret keys in a keyring:}
+\section{Query secret keys in a keyring}{
 
-Each keyring can contain one or many secrets (keys). A key is defined by a service name and a password. Once a key is defined, it persists in the keyring store of the operating system. This means the keys persist beyond the termination of and R session. Specifically, you can define a key once, and then read the key value in completely independent R sessions.
+
+Each keyring can contain one or many secrets (keys). A key is defined by
+a service name and a password. Once a key is defined, it persists in the
+keyring store of the operating system. This means the keys persist beyond
+the termination of and R session. Specifically, you can define a key
+once, and then read the key value in completely independent R sessions.
 \itemize{
 \item Setting a secret interactively: \code{\link[=key_set]{key_set()}}
-\item Setting a secret from the console or script, i.e. non-interactively: \code{\link[=key_set_with_value]{key_set_with_value()}}
+\item Setting a secret from the console or script, i.e. non-interactively:
+\code{\link[=key_set_with_value]{key_set_with_value()}}
 \item Reading a secret: \code{\link[=key_get]{key_get()}}
 \item Listing secrets: \code{\link[=key_list]{key_list()}}
 \item Deleting a secret: \code{\link[=key_delete]{key_delete()}}
 }
+}
 
-\strong{Configuring an OS-specific backend:}
+\section{Configuring an OS-specific backend}{
+
 \itemize{
-\item The default is operating system specific, and is described in \code{\link[=default_backend]{default_backend()}}. In most cases you don't have to configure this.
-\item MacOS: \code{\link[=backend_macos]{backend_macos()}}
-\item Linux: \code{\link[=backend_secret_service]{backend_secret_service()}}
-\item Windows: \code{\link[=backend_wincred]{backend_wincred()}}
-\item Or store the secrets in environment variables on other operating systems: \code{\link[=backend_env]{backend_env()}}
+\item The default is operating system specific, and is described in
+\code{\link[=default_backend]{default_backend()}}. In most cases you don't have to configure this.
+\item MacOS: \link{backend_macos}
+\item Linux: \link{backend_secret_service}
+\item Windows: \link{backend_wincred}
+\item Or store the secrets in environment variables on other operating
+systems: \link{backend_env}
 }
 }
+
