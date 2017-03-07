@@ -9,3 +9,8 @@ utf8 <- function(x) {
 cat0 <- function(..., sep = "") {
   cat(..., sep = sep)
 }
+
+confirmation <- function(prompt, yes) {
+  ans <- readline(paste0(prompt, ": "))
+  if (ans != yes) stop("Aborted", call. = FALSE)
+}

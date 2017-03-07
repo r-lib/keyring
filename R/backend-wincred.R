@@ -394,10 +394,8 @@ b_wincred_keyring_list <- function(self, private) {
 }
 
 b_wincred_keyring_delete <- function(self, private, keyring) {
+  self$confirm_delete_keyring(keyring)
   keyring <- keyring %||% private$keyring
-
-  if (is.null(keyring)) stop("Cannot delete the default keyring")
-  ## TODO: confirmation
   target_keyring <- b_wincred_target_keyring(keyring)
   b_wincred_i_delete(target_keyring)
   target_lock <- b_wincred_target_lock(keyring)

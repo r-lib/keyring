@@ -157,6 +157,7 @@ b_macos_keyring_list <- function(self, private) {
 }
 
 b_macos_keyring_delete <- function(self, private, keyring) {
+  self$confirm_delete_keyring(keyring)
   keyring <- private$keyring_file(keyring %||% private$keyring)
   .Call("keyring_macos_delete_keyring", utf8(keyring))
   invisible(self)

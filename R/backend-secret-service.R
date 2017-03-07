@@ -162,6 +162,7 @@ b_ss_keyring_list <- function(self, private) {
 }
 
 b_ss_keyring_delete <- function(self, private, keyring) {
+  self$confirm_delete_keyring(keyring)
   keyring <- keyring %||% private$keyring
   .Call("keyring_secret_service_delete_keyring", keyring)
   invisible()
