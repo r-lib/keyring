@@ -9,15 +9,17 @@
 Platform independent API to many system credential store
 implementations. Currently supported:
 \itemize{
-\item Keychain on 'macOS'
-\item Credential Store on 'Windows'
-\item the Secret Service API and the Gnome keyring API on 'Linux'.
+\item Keychain on macOS,
+\item Credential Store on Windows,
+\item the Secret Service API on Linux, and
+\item environment variables on other platforms.
 }
 }
 \section{Managing keyrings}{
 
 
-A keyring is a collection of keys that can be treated as a unit. A keyring typically has a name and a password to unlock it.
+A keyring is a collection of keys that can be treated as a unit.
+A keyring typically has a name and a password to unlock it.
 \itemize{
 \item \code{\link[=keyring_create]{keyring_create()}}
 \item \code{\link[=keyring_delete]{keyring_delete()}}

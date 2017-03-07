@@ -3,13 +3,15 @@
 #'
 #' Platform independent API to many system credential store
 #' implementations. Currently supported: 
-#' * Keychain on 'macOS'
-#' * Credential Store on 'Windows'
-#' * the Secret Service API and the Gnome keyring API on 'Linux'.
+#' * Keychain on macOS,
+#' * Credential Store on Windows,
+#' * the Secret Service API on Linux, and
+#' * environment variables on other platforms.
 #' 
 #' @section Managing keyrings:
 #' 
-#' A keyring is a collection of keys that can be treated as a unit. A keyring typically has a name and a password to unlock it.
+#' A keyring is a collection of keys that can be treated as a unit.
+#' A keyring typically has a name and a password to unlock it.
 #'     
 #' - [keyring_create()]
 #' - [keyring_delete()]
@@ -27,19 +29,19 @@
 #' 
 #' - Setting a secret interactively: [key_set()]
 #' - Setting a secret from the console or script, i.e. non-interactively: 
-#' [key_set_with_value()]
+#'   [key_set_with_value()]
 #' - Reading a secret: [key_get()]
 #' - Listing secrets: [key_list()]
 #' - Deleting a secret: [key_delete()]
 #'
 #' @section Configuring an OS-specific backend:
 #' 
-#'   - The default is operating system specific, and is described in 
+#' - The default is operating system specific, and is described in 
 #'   [default_backend()]. In most cases you don't have to configure this.
-#'   - MacOS: [backend_macos]
-#'   - Linux: [backend_secret_service]
-#'   - Windows: [backend_wincred]
-#'   - Or store the secrets in environment variables on other operating 
+#' - MacOS: [backend_macos]
+#' - Linux: [backend_secret_service]
+#' - Windows: [backend_wincred]
+#' - Or store the secrets in environment variables on other operating 
 #'   systems: [backend_env]
 #'   
 #' @docType package
