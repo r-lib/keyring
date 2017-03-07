@@ -12,14 +12,6 @@ void keyring_secret_service_dummy() { }
 #define SECRET_API_SUBJECT_TO_CHANGE 1
 #include <libsecret/secret.h>
 
-void R_init_keyring(DllInfo *info) {
-  g_type_ensure (G_TYPE_OBJECT);
-}
-
-void R_unload_keyring(DllInfo *info) {
-  secret_service_disconnect();
- }
-
 const SecretSchema *keyring_secret_service_schema() {
   static const SecretSchema schema = {
     "com.rstudio.keyring.password", SECRET_SCHEMA_NONE, {
@@ -478,5 +470,40 @@ SEXP keyring_secret_service_unlock_keyring(SEXP keyring, SEXP password) {
 
   return R_NilValue;
 }
+
+static const R_CallMethodDef callMethods[]  = {
+  { "keyring_secret_service_is_available",
+    (DL_FUNC) &keyring_secret_service_is_available, 1 },
+  { "keyring_secret_service_get",
+    (DL_FUNC) &keyring_secret_service_get, 3 },
+  { "keyring_secret_service_set",
+    (DL_FUNC) &keyring_secret_service_set, 4 },
+  { "keyring_secret_service_delete",
+    (DL_FUNC) &keyring_secret_service_delete, 3 },
+  { "keyring_secret_service_list",
+    (DL_FUNC) &keyring_secret_service_list, 2 },
+  { "keyring_secret_service_create_keyring",
+    (DL_FUNC) &keyring_secret_service_create_keyring, 1 },
+  { "keyring_secret_service_list_keyring",
+    (DL_FUNC) &keyring_secret_service_list_keyring, 0 },
+  { "keyring_secret_service_delete_keyring",
+    (DL_FUNC) &keyring_secret_service_delete_keyring, 1 },
+  { "keyring_secret_service_lock_keyring",
+    (DL_FUNC) &keyring_secret_service_lock_keyring, 1 },
+  { "keyring_secret_service_unlock_keyring",
+    (DL_FUNC) &keyring_secret_service_unlock_keyring, 2 },
+  { NULL, NULL, 0 }
+};
+
+void R_init_keyring(DllInfo *dll) {
+  R_registerRoutines(dll, NULL, callMethods, NULL, NULL);
+  R_useDynamicSymbols(dll, FALSE);
+  R_forceSymbols(dll, TRUE);
+  g_type_ensure (G_TYPE_OBJECT);
+}
+
+void R_unload_keyring(DllInfo *dll) {
+  secret_service_disconnect();
+ }
 
 #endif // __linux__
