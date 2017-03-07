@@ -15,9 +15,25 @@ void keyring_wincred_dummy() { }
 
 void keyring_wincred_handle_status(const char *func, BOOL status) {
   if (status == FALSE) {
-    /* DWORD errorcode = GetLastError(); */
-    /* TODO: proper error message */
-    error("Windows credential store error in '%s': %s", func, "TODO");
+    DWORD errorcode = GetLastError();
+    LPVOID lpMsgBuf;
+    char *msg;
+
+    FormatMessage(
+        FORMAT_MESSAGE_ALLOCATE_BUFFER |
+        FORMAT_MESSAGE_FROM_SYSTEM |
+        FORMAT_MESSAGE_IGNORE_INSERTS,
+        NULL,
+        errorcode,
+        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+        (LPTSTR) &lpMsgBuf,
+        0, NULL );
+
+    msg = R_alloc(1, strlen(lpMsgBuf) + 1);
+    strcpy(msg, lpMsgBuf);
+    LocalFree(lpMsgBuf);
+
+    error("Windows credential store error in '%s': %s", func, msg);
   }
 }
 
