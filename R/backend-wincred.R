@@ -375,8 +375,9 @@ b_wincred_keyring_list <- function(self, private) {
   res <- data.frame(
     stringsAsFactors = FALSE,
     keyring = unname(unique(parts$keyring)),
-    num_secrets = as.integer(unlist(tapply(parts$keyring, parts$keyring,
-      length, simplify = FALSE))),
+    num_secrets = as.integer(unlist(tapply(parts$keyring,
+      factor(parts$keyring, levels = unique(parts$keyring)), length,
+      simplify = FALSE))),
     locked = vapply(unique(parts$keyring), FUN.VALUE = TRUE, USE.NAMES = FALSE,
       function(x) {
         ! any(parts$username[parts$keyring == x] == "unlocked")
