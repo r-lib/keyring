@@ -396,10 +396,21 @@ b_wincred_keyring_list <- function(self, private) {
 b_wincred_keyring_delete <- function(self, private, keyring) {
   self$confirm_delete_keyring(keyring)
   keyring <- keyring %||% private$keyring
+  items <- self$list(keyring = keyring)
+
+  ## Remove the keyring credential and the lock credential first
   target_keyring <- b_wincred_target_keyring(keyring)
   b_wincred_i_delete(target_keyring)
   target_lock <- b_wincred_target_lock(keyring)
   try(b_wincred_i_delete(target_lock), silent = TRUE)
+
+  ## Then the items themselves
+  for (i in seq_len(nrow(items))) {
+    target <- b_wincred_target(keyring, items$service[i],
+                               items$username[i])
+    try(b_wincred_i_delete(target), silent = TRUE)
+  }
+
   invisible()
 }
 
