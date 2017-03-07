@@ -68,7 +68,7 @@ test_that("creating keychains 2", {
 
   expect_equal(kb$get(service, username), password)
   expect_silent(kb$delete(service, username))
-  expect_silent(kb$keyring_delete())
+  expect_silent(kb$keyring_delete(keyring = keyring))
   expect_false(keyring %in% kb$keyring_list()$keyring)
 })
 
@@ -90,7 +90,7 @@ test_that("keyring file at special location", {
   )
   expect_equal(kb$get(service, username), password)
   expect_silent(kb$delete(service, username))
-  expect_silent(kb$keyring_delete())
+  expect_silent(kb$keyring_delete(keyring = keyring))
   expect_false(keyring %in% kb$keyring_list()$keyring)
   expect_false(file.exists(keyring))
 })
@@ -147,5 +147,5 @@ test_that("lock/unlock keyrings", {
   list <- kb$keyring_list()
   expect_false(list$locked[match(keyring, list$keyring)])
 
-  expect_silent(kb$keyring_delete())
+  expect_silent(kb$keyring_delete(keyring = keyring))
 })
