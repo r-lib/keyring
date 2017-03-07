@@ -15,17 +15,16 @@ implementations. Currently supported:
 \item environment variables on other platforms.
 }
 }
-\section{Managing keyrings}{
+\section{Configuring an OS-specific backend}{
 
-
-A keyring is a collection of keys that can be treated as a unit.
-A keyring typically has a name and a password to unlock it.
 \itemize{
-\item \code{\link[=keyring_create]{keyring_create()}}
-\item \code{\link[=keyring_delete]{keyring_delete()}}
-\item \code{\link[=keyring_list]{keyring_list()}}
-\item \code{\link[=keyring_lock]{keyring_lock()}}
-\item \code{\link[=keyring_unlock]{keyring_unlock()}}
+\item The default is operating system specific, and is described in
+\code{\link[=default_backend]{default_backend()}}. In most cases you don't have to configure this.
+\item MacOS: \link{backend_macos}
+\item Linux: \link{backend_secret_service}
+\item Windows: \link{backend_wincred}
+\item Or store the secrets in environment variables on other operating
+systems: \link{backend_env}
 }
 }
 
@@ -39,7 +38,7 @@ the termination of and R session. Specifically, you can define a key
 once, and then read the key value in completely independent R sessions.
 \itemize{
 \item Setting a secret interactively: \code{\link[=key_set]{key_set()}}
-\item Setting a secret from the console or script, i.e. non-interactively:
+\item Setting a secret from a script, i.e. non-interactively:
 \code{\link[=key_set_with_value]{key_set_with_value()}}
 \item Reading a secret: \code{\link[=key_get]{key_get()}}
 \item Listing secrets: \code{\link[=key_list]{key_list()}}
@@ -47,16 +46,25 @@ once, and then read the key value in completely independent R sessions.
 }
 }
 
-\section{Configuring an OS-specific backend}{
+\section{Managing keyrings}{
 
+
+A keyring is a collection of keys that can be treated as a unit.
+A keyring typically has a name and a password to unlock it.
 \itemize{
-\item The default is operating system specific, and is described in
-\code{\link[=default_backend]{default_backend()}}. In most cases you don't have to configure this.
-\item MacOS: \link{backend_macos}
-\item Linux: \link{backend_secret_service}
-\item Windows: \link{backend_wincred}
-\item Or store the secrets in environment variables on other operating
-systems: \link{backend_env}
+\item \code{\link[=keyring_create]{keyring_create()}}
+\item \code{\link[=keyring_delete]{keyring_delete()}}
+\item \code{\link[=keyring_list]{keyring_list()}}
+\item \code{\link[=keyring_lock]{keyring_lock()}}
+\item \code{\link[=keyring_unlock]{keyring_unlock()}}
 }
+
+Note that all platforms have a default keyring, and \code{key_get()}, etc.
+will use that automatically. The default keyring is also convenient,
+because the OS unlocks it automatically when you log in, so secrets
+are available immediately.
+
+You only need to explicitly deal with keyrings and the \code{keyring_*}
+functions if you want to use a different keyring.
 }
 
