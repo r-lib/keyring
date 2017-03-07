@@ -18,16 +18,24 @@
 #'       variables (`"env"`).
 #'
 #' Most backends support multiple keyrings. For these the keyring is
-#' selected from
+#' selected from:
 #' 1. the supplied `keyring` argument (if not `NULL`), or
 #' 1. the `keyring_keyring` option.
+#'     - You can change this by using `options(keyring_keyring = "NEWVALUE")`
 #' 1. If this is not set, the `R_KEYRING_KEYRING` environment variable.
-#' 1. If this is not set, then the OS default keyring is selected.
-#'    Usually this keyring is automatically unlocked when the user logs in.
+#'     - Change this value with `Sys.setenv(R_KEYRING_KEYRING = "NEWVALUE")`, 
+#'     either in your script or in your `.Renviron` file. 
+#'     See [base::startup] for information about using `.Renviron`
+#' 1. Finally, if neither of these are set, the OS default keyring is used.
+#'     - Usually the keyring is automatically unlocked when the user logs in.
 #'
 #' @param keyring Character string, the name of the keyring to use,
 #'   or `NULL` for the default keyring.
 #' @return The backend object itself.
+#' 
+#' 
+#' @seealso [backend_env], [backend_macos], [backend_secret_service], 
+#'          [backend_wincred]
 #'
 #' @export
 #' @name backends

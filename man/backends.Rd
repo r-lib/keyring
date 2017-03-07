@@ -37,12 +37,26 @@ variables (\code{"env"}).
 }
 \details{
 Most backends support multiple keyrings. For these the keyring is
-selected from
+selected from:
 \enumerate{
 \item the supplied \code{keyring} argument (if not \code{NULL}), or
 \item the \code{keyring_keyring} option.
-\item If this is not set, the \code{R_KEYRING_KEYRING} environment variable.
-\item If this is not set, then the OS default keyring is selected.
-Usually this keyring is automatically unlocked when the user logs in.
+\itemize{
+\item You can change this by using \code{options(keyring_keyring = "NEWVALUE")}
 }
+\item If this is not set, the \code{R_KEYRING_KEYRING} environment variable.
+\itemize{
+\item Change this value with \code{Sys.setenv(R_KEYRING_KEYRING = "NEWVALUE")},
+either in your script or in your \code{.Renviron} file.
+See \link[base:startup]{base::startup} for information about using \code{.Renviron}
+}
+\item Finally, if neither of these are set, the OS default keyring is used.
+\itemize{
+\item Usually the keyring is automatically unlocked when the user logs in.
+}
+}
+}
+\seealso{
+\link{backend_env}, \link{backend_macos}, \link{backend_secret_service},
+\link{backend_wincred}
 }
