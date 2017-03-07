@@ -6,6 +6,7 @@ void keyring_wincred_dummy() { }
 
 #include <R.h>
 #include <Rinternals.h>
+#include <R_ext/Rdynload.h>
 
 #include <windows.h>
 #include <wincred.h>
