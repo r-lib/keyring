@@ -48,7 +48,7 @@ selected from:
 \itemize{
 \item Change this value with \code{Sys.setenv(R_KEYRING_KEYRING = "NEWVALUE")},
 either in your script or in your \code{.Renviron} file.
-See \link[base:startup]{base::startup} for information about using \code{.Renviron}
+See \link[base:Startup]{base::Startup} for information about using \code{.Renviron}
 }
 \item Finally, if neither of these are set, the OS default keyring is used.
 \itemize{

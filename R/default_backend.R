@@ -25,7 +25,7 @@
 #' 1. If this is not set, the `R_KEYRING_KEYRING` environment variable.
 #'     - Change this value with `Sys.setenv(R_KEYRING_KEYRING = "NEWVALUE")`, 
 #'     either in your script or in your `.Renviron` file. 
-#'     See [base::startup] for information about using `.Renviron`
+#'     See [base::Startup] for information about using `.Renviron`
 #' 1. Finally, if neither of these are set, the OS default keyring is used.
 #'     - Usually the keyring is automatically unlocked when the user logs in.
 #'
