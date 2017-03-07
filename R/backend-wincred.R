@@ -365,7 +365,7 @@ b_wincred_keyring_list <- function(self, private) {
   ## if keyring:: does not exist, then keyring is not a real keyring, assign it
   ## to the default
   default <- ! paste0(parts$keyring, "::") %in% list
-  if (any(default)) {
+  if (length(list) > 0 && any(default)) {
     parts$username[default] <-
       paste0(parts$service[default], ":", parts$username[default])
     parts$service[default] <- parts$keyring[default]
