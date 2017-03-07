@@ -25,6 +25,8 @@ abstract_method <- function() {
 #' delete(service, username = NULL, keyring = NULL)
 #' list(service = NULL, keyring = NULL)
 #' ```
+#' 
+#' What these functions do:
 #'
 #' * `get()` queries the secret in a keyring item.
 #' * `get_raw()` is similar to `get()`, but returns the result as a raw

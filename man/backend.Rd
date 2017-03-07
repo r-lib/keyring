@@ -20,6 +20,8 @@ set_with_raw_value(service, username = NULL, password = NULL,
 delete(service, username = NULL, keyring = NULL)
 list(service = NULL, keyring = NULL)
 }
+
+What these functions do:
 \itemize{
 \item \code{get()} queries the secret in a keyring item.
 \item \code{get_raw()} is similar to \code{get()}, but returns the result as a raw
