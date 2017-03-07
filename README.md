@@ -76,6 +76,11 @@ are available immediately.
 You only need to explicitly deal with keyrings and the `keyring_*`
 functions if you want to use a different keyring.
 
+## Development documentation
+
+Please see our [writeup of some `keyring` internals](https://github.com/gaborcsardi/keyring/blob/master/inst/development-notes.md),
+and as always, use the source code.
+
 ## License
 
 MIT © RStudio
