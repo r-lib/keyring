@@ -1,74 +1,7 @@
 
 ## The windows credential store does not support multiple keyrings,
-## so we emulate them.
-##
-## For every (non-default) keyring, we create a credential, with target name
-## "keyring::". This credential contains metadata about the keyring. It currently
-## has the following (DCF) format:
-##
-## Version: 1.0.0
-## Verify: NgF+vkkNsOoSnXVXt249u6xknskhDasMIhE8Uuzpl/w=
-## Salt: some random salt
-##
-## The verify tag is used to check if the keyring password that was specified to
-## unlock the keyring, was correct.
-##
-## The Salt tag is used to salt the SHA256 hash, to make it more secure.
-## It is generated randomly when the keyring is created.
-##
-## When a keyring is unlocked, the user specifies the pass phrase of the
-## keyring. We create the SHA256 hash of this pass phrase, and this will be the
-## AES key to encrypt/decrypt the items (keys) in the keyring. When unlocking a
-## keyring, we use the 'Verify' field, to see if the supplied password indeed
-## hashes to the correct AES key. If it can decrypt the verify string, then it
-## is correct.
-##
-## We also store the AES key in the keyring, in a session credential with
-## target name "keyring::unlocked". A session credential's life time is the
-## life time of a single login session. The AES key is stored in a base64
-## encoded form, e.g.:
-##
-## JvL7srqc0X1vVnqbSayFnIkJZoe2xMOWoDh+aBR9DJc=
-##
-## The credentials of the keyring itself have target names as
-## "keyring:service:username", where the username may be empty.
-## If keyring is empty, then the credential is considered to be
-## on the default keyring, and it is not encrypted. Credentials on
-## other keyrings are encrypted using the AES key of the keyring.
-## The random initialization vector of the encryption is stored as the
-## first 16 bytes of the keyring item.
-##
-## When we 'set' a key, we need to:
-## 1. Check if the key is on the default keyring.
-## 2. If 1. is TRUE, then just set the key, using target name
-##    ":service:username" (username might be empty, servicename not),
-##    and finish.
-## 3. Check if the keyring exists.
-## 4. If 3. is FALSE, then error and finish.
-## 5. Check that the keyring is unlocked.
-## 6. If 5. is FALSE, then prompt the user and unlock the keyring.
-## 7. Encrypt the key with the AES key, and store the encrypted
-##    key using target name "keyring:service:username" (again, username
-##    might be empty, service name not).
-##
-## When we 'get' a key, we need to:
-## 1. Check if the key is on the default keyring.
-## 2. If 1. is TRUE, then we just get the key, using target name
-##    ":service:username".
-## 3. Check if the keyring is locked.
-## 4. If 3. is TRUE, then prompt the user and unlock the keyring.
-## 5. Get the AES key from the unlocked keyring.
-## 6. Get the key and use the AES key to decrypt it.
-##
-## To unlock a keyring we need to:
-## 1. Get the keyring password and SHA256 hash it.
-## 2. Store the
-## 2. Read the private RSA key, and decrypt the encrypted AES key with it.
-## 3. Store the AES key under target name keyring::unlocked.
-##
-## The C functions for the wincred backend do not know about multiple
-## keyrings at all, we just use them to get/set/delete/list "regular"
-## credentials in the credential store.
+## so we emulate them. See the inst/development-notes.md file for a
+## complete description on how this is done.
 
 b_wincred_protocol_version <- "1.0.0"
 
