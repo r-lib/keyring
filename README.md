@@ -66,7 +66,7 @@ once, and then read the key value in completely independent R sessions.
 A keyring is a collection of keys that can be treated as a unit.
 A keyring typically has a name and a password to unlock it.
 See `keyring_create()`, `keyring_delete()`, `keyring_list()`,
-`keyring_lock()`, `keyring_unlock()`.
+`keyring_lock()`, `keyring_unlock()`, `keyring_is_locked()`.
 
 Note that all platforms have a default keyring, and `key_get()`, etc.
 will use that automatically. The default keyring is also convenient,
