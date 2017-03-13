@@ -452,8 +452,17 @@ SEXP keyring_secret_service_lock_keyring(SEXP keyring) {
   GList *list = g_list_append(NULL, collection);
   GError *err = NULL;
 
+  gint ret = secret_service_lock_sync(
+    /* service = */ NULL,
+    /* objects = */ list,
+    /* cancellable = */ NULL,
+    /* locked = */ NULL,
+    &err);
+
   g_list_free(list);
   keyring_secret_service_handle_status("lock_keyring", TRUE, err);
+
+  if (ret == 0) { error("Could not lock keyring"); }
 
   return R_NilValue;
 }
@@ -465,8 +474,17 @@ SEXP keyring_secret_service_unlock_keyring(SEXP keyring, SEXP password) {
   GList *list = g_list_append(NULL, collection);
   GError *err = NULL;
 
+  gint ret = secret_service_unlock_sync(
+    /* service = */ NULL,
+    /* objects = */ list,
+    /* cancellable = */ NULL,
+    /* unlocked = */ NULL,
+    &err);
+
   g_list_free(list);
   keyring_secret_service_handle_status("unlock_keyring", TRUE, err);
+
+  if (ret == 0) { error("Could not unlock keyring"); }
 
   return R_NilValue;
 }
