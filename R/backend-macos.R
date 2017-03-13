@@ -151,7 +151,7 @@ b_macos_keyring_create <- function(self, private, keyring) {
 b_macos_keyring_list <- function(self, private) {
   res <- .Call("keyring_macos_list_keyring")
   data.frame(
-    keyring = sub("\\.keychain$", "", basename(res[[1]])),
+    keyring = sub("\\.keychain(-db)?$", "", basename(res[[1]])),
     num_secrets = res[[2]],
     locked = res[[3]],
     stringsAsFactors = FALSE
@@ -203,10 +203,19 @@ b_macos_keyring_file <- function(self, private, name) {
     normalizePath(name, mustWork = FALSE)
 
   } else {
-    normalizePath(
-      paste0("~/Library/Keychains/", name, ".keychain"),
+    files <- normalizePath(
+      paste0("~/Library/Keychains/", name, c(".keychain", ".keychain-db")),
       mustWork = FALSE
     )
+    if (file.exists(files[1])) {
+      files[1]
+    } else if (file.exists(files[2])) {
+      files[2]
+    } else if (darwin_version() >= "16.0.0") {
+      files[2]
+    } else {
+      files[1]
+    }
   }
 }
 

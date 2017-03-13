@@ -14,3 +14,9 @@ confirmation <- function(prompt, yes) {
   ans <- readline(paste0(prompt, ": "))
   if (ans != yes) stop("Aborted", call. = FALSE)
 }
+
+darwin_version <- function() {
+  info <- Sys.info()
+  if (info[["sysname"]] != "Darwin") stop("Not macOS")
+  package_version(info[["release"]])
+}

@@ -26,8 +26,18 @@ You don't need it for using `keyring`.
 
 ### macOS Keychain
 
-Nothing particular about this backend, just read the source code
-and the documentation.
+On macOS, the keyrings are store in files. We handle the user's keyrings,
+these are in `~/Library/Keychains`. They are files with extension
+`.keychain` (before Sierra) or `.keychain-db` (starting from Sierra).
+
+Whenever a keyring is specified, it can be a symbolic name (e.g. `login`),
+or an absolute filename (e.g. `/Users/gaborcsardi/Library/Keychains/login.keychain`).
+If a symbolic name is specified, we look for both `.keychain` and
+`.keychain-db` files:
+* If the `.keychain` file exists, we use that.
+* Otherwise, if the `.keychain-db` file exists, we use that.
+* Otherwise, if the system is Sierra or later, we use `.keychain-db`.
+* Otherwise we use the `.keychain` file.
 
 ### Windows Credential Store
 
