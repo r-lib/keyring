@@ -88,7 +88,7 @@ backend_secret_service <- R6Class(
 
   private = list(
     keyring = NULL,
-    keyring_create_direct = function(keyring, password)
+    keyring_create_direct = function(keyring, password = NULL)
       b_ss_keyring_create_direct(self, private, keyring, password)
   )
 )
@@ -176,7 +176,7 @@ b_ss_keyring_lock <- function(self, private, keyring) {
 
 b_ss_keyring_unlock <- function(self, private, keyring, password) {
   keyring <- keyring %||% private$keyring
-  if (is.null(password)) password <- get_pass()
+  if (! is.null(password)) warning("password ignored, will be read interactively")
   .Call("keyring_secret_service_unlock_keyring", keyring, password)
   invisible()
 }
