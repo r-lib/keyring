@@ -205,7 +205,7 @@ keyring_list <- function() {
 #' @export
 #' @rdname has_keyring_support
 
-keyring_delete <- function(keyring) {
+keyring_delete <- function(keyring = NULL) {
   assert_that(is_string_or_null(keyring))
   default_backend()$keyring_delete(keyring)
 }
@@ -213,7 +213,7 @@ keyring_delete <- function(keyring) {
 #' @export
 #' @rdname has_keyring_support
 
-keyring_lock <- function(keyring) {
+keyring_lock <- function(keyring = NULL) {
   assert_that(is_string_or_null(keyring))
   default_backend()$keyring_lock(keyring)
 }
@@ -221,7 +221,7 @@ keyring_lock <- function(keyring) {
 #' @export
 #' @rdname has_keyring_support
 
-keyring_unlock <- function(keyring, password = NULL) {
+keyring_unlock <- function(keyring = NULL, password = NULL) {
   assert_that(is_string_or_null(keyring))
   default_backend()$keyring_unlock(keyring, password)
 }
