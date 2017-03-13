@@ -128,6 +128,11 @@ b_wincred_unlock_keyring_internal <- function(keyring, password = NULL) {
   }
 }
 
+b_wincred_is_locked_keyring_internal <- function(keyring) {
+  target_lock <- b_wincred_target_lock(keyring)
+  ! b_wincred_i_exists(target_lock)
+}
+
 ## -----------------------------------------------------------------------
 
 #' Create a Windows Credential Store keyring backend
@@ -192,6 +197,8 @@ backend_wincred <- R6Class(
       b_wincred_keyring_lock(self, private, keyring),
     keyring_unlock = function(keyring = NULL, password = NULL)
       b_wincred_keyring_unlock(self, private, keyring, password),
+    keyring_is_locked = function(keyring = NULL)
+      b_wincred_keyring_is_locked(self, private, keyring),
     keyring_default = function()
       b_wincred_keyring_default(self, private),
     keyring_set_default = function(keyring = NULL)
@@ -434,6 +441,15 @@ b_wincred_keyring_unlock <- function(self, private, keyring,
     b_wincred_unlock_keyring_internal(keyring, password)
   }
   invisible()
+}
+
+b_wincred_keyring_is_locked <- function(self, private, keyring) {
+  keyring <- keyring %||% private$keyring
+  if (is.null(keyring)) {
+    FALSE
+  } else {
+    b_wincred_is_locked_keyring_internal(keyring)
+  }
 }
 
 b_wincred_keyring_default <- function(self, private) {
