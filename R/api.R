@@ -161,6 +161,8 @@ key_list <- function(service = NULL, keyring = NULL) {
 #' it will be read in interactively.
 #'
 #' @param keyring The name of the keyring to create or to operate on.
+#'   For functions other than `keyring_create`, it can also be `NULL` to
+#'   select the default keyring.
 #' @param password The password to unlock the keyring. If not specified
 #'   or `NULL`, it will be read from the console.
 #'
@@ -204,7 +206,7 @@ keyring_list <- function() {
 #' @rdname has_keyring_support
 
 keyring_delete <- function(keyring) {
-  assert_that(is_string(keyring))
+  assert_that(is_string_or_null(keyring))
   default_backend()$keyring_delete(keyring)
 }
 
@@ -212,6 +214,7 @@ keyring_delete <- function(keyring) {
 #' @rdname has_keyring_support
 
 keyring_lock <- function(keyring) {
+  assert_that(is_string_or_null(keyring))
   default_backend()$keyring_lock(keyring)
 }
 
@@ -219,6 +222,6 @@ keyring_lock <- function(keyring) {
 #' @rdname has_keyring_support
 
 keyring_unlock <- function(keyring, password = NULL) {
-  assert_that(is_string(keyring))
+  assert_that(is_string_or_null(keyring))
   default_backend()$keyring_unlock(keyring, password)
 }

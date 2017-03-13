@@ -22,7 +22,9 @@ keyring_lock(keyring)
 keyring_unlock(keyring, password = NULL)
 }
 \arguments{
-\item{keyring}{The name of the keyring to create or to operate on.}
+\item{keyring}{The name of the keyring to create or to operate on.
+For functions other than \code{keyring_create}, it can also be \code{NULL} to
+select the default keyring.}
 
 \item{password}{The password to unlock the keyring. If not specified
 or \code{NULL}, it will be read from the console.}
