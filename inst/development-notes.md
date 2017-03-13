@@ -131,6 +131,13 @@ and `keyring` cannot use the OS credential store on these systems.
 The default backend is the environment variable based one (`backend_env`)
 on these systems.
 
+#### Prompts
+
+For the Secret Service backend, it is currently not possible to specify
+a password for some functions. Instead, the password is read in
+interactively on this backend, by the system. This currently happens
+when a new keyring is created, and when a keyring is unlocked.
+
 #### Unloading the package
 
 `libsecret` uses `libglib`, and `libglib` does not allow unloading
