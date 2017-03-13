@@ -7,6 +7,7 @@
 \alias{keyring_delete}
 \alias{keyring_lock}
 \alias{keyring_unlock}
+\alias{keyring_is_locked}
 \title{Manage keyrings}
 \usage{
 has_keyring_support()
@@ -15,11 +16,13 @@ keyring_create(keyring)
 
 keyring_list()
 
-keyring_delete(keyring)
+keyring_delete(keyring = NULL)
 
-keyring_lock(keyring)
+keyring_lock(keyring = NULL)
 
-keyring_unlock(keyring, password = NULL)
+keyring_unlock(keyring = NULL, password = NULL)
+
+keyring_is_locked(keyring = NULL)
 }
 \arguments{
 \item{keyring}{The name of the keyring to create or to operate on.
@@ -64,6 +67,8 @@ Credential Store), the default keyring cannot be locked.
 
 \code{keyring_unlock} unlocks a keyring. If a password is not specified,
 it will be read in interactively.
+
+\code{keyring_is_locked} queries whether a keyring is locked.
 }
 \examples{
 default_backend()

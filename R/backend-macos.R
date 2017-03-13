@@ -60,6 +60,8 @@ backend_macos <- R6Class(
       b_macos_keyring_lock(self, private, keyring),
     keyring_unlock = function(keyring = NULL, password = NULL)
       b_macos_keyring_unlock(self, private, keyring, password),
+    keyring_is_locked = function(keyring = NULL)
+      b_macos_keyring_is_locked(self, private, keyring),
     keyring_default = function()
       b_macos_keyring_default(self, private),
     keyring_set_default = function(keyring = NULL)
@@ -174,6 +176,11 @@ b_macos_keyring_unlock <- function(self, private, keyring, password) {
   keyring <- private$keyring_file(keyring %||% private$keyring)
   .Call("keyring_macos_unlock_keyring", utf8(keyring), password)
   invisible(self)
+}
+
+b_macos_keyring_is_locked <- function(self, private, keyring) {
+  keyring <- private$keyring_file(keyring %||% private$keyring)
+  .Call("keyring_macos_is_locked_keyring", utf8(keyring))
 }
 
 b_macos_keyring_default <- function(self, private) {

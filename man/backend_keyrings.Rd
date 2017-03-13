@@ -8,7 +8,8 @@ To implement a new keyring that supports multiple keyrings, you need to
 inherit from this class and redefine the \code{get}, \code{set}, \code{set_with_value},
 \code{delete}, \code{list} methods, and also the keyring management methods:
 \code{keyring_create}, \code{keyring_list}, \code{keyring_delete}, \code{keyring_lock},
-\code{keyring_unlock}, \code{keyring_default} and \code{keyring_set_default}.
+\code{keyring_unlock}, \code{keyring_is_locked}, \code{keyring_default} and
+\code{keyring_set_default}.
 }
 \details{
 See \link{backend} for the first set of methods. This is the semantics of the
@@ -17,6 +18,7 @@ keyring_list()
 keyring_delete(keyring = NULL)
 keyring_lock(keyring = NULL)
 keyring_unlock(keyring = NULL, password = NULL)
+keyring_is_locked(keyring = NULL)
 keyring_default()
 keyring_set_default(keyring = NULL)
 }
@@ -28,6 +30,7 @@ the default keyring, and/or a non-empty keyring with a password or
 a confirmation dialog.
 \item \code{keyring_lock()} locks a keyring.
 \item \code{keyring_unlock()} unlocks a keyring.
+\item `keyring_is_locked() checks whether a keyring is locked.
 \item \code{keyring_default()} returns the default keyring.
 \item \code{keyring_set_default()} sets the default keyring.
 }

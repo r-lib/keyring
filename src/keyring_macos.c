@@ -452,6 +452,18 @@ SEXP keyring_macos_unlock_keyring(SEXP keyring, SEXP password) {
   return R_NilValue;
 }
 
+SEXP keyring_macos_is_locked_keyring(SEXP keyring) {
+  SecKeychainRef keychain =
+    isNull(keyring) ? NULL :
+    keyring_macos_open_keychain(CHAR(STRING_ELT(keyring, 0)));
+
+  SecKeychainStatus kstatus;
+  OSStatus status = SecKeychainGetStatus(keychain, &kstatus);
+  if (status) keyring_macos_error("cannot get lock information", status);
+
+  return ScalarLogical(! (kstatus & kSecUnlockStateStatus));
+}
+
 static const R_CallMethodDef callMethods[]  = {
   { "keyring_macos_get",    (DL_FUNC) &keyring_macos_get,            3 },
   { "keyring_macos_set",    (DL_FUNC) &keyring_macos_set,            4 },
@@ -466,6 +478,8 @@ static const R_CallMethodDef callMethods[]  = {
                             (DL_FUNC) &keyring_macos_lock_keyring,   1 },
   { "keyring_macos_unlock_keyring",
                             (DL_FUNC) &keyring_macos_unlock_keyring, 2 },
+  { "keyring_macos_is_locked_keyring",
+                            (DL_FUNC) &keyring_macos_is_locked_keyring, 1 },
   { NULL, NULL, 0 }
 };
 

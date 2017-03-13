@@ -125,7 +125,8 @@ backend <- R6Class(
 #' inherit from this class and redefine the `get`, `set`, `set_with_value`,
 #' `delete`, `list` methods, and also the keyring management methods:
 #' `keyring_create`, `keyring_list`, `keyring_delete`, `keyring_lock`,
-#' `keyring_unlock`, `keyring_default` and `keyring_set_default`.
+#' `keyring_unlock`, `keyring_is_locked`, `keyring_default` and
+#' `keyring_set_default`.
 #'
 #' See [backend] for the first set of methods. This is the semantics of the
 #' keyring management methods:
@@ -136,6 +137,7 @@ backend <- R6Class(
 #' keyring_delete(keyring = NULL)
 #' keyring_lock(keyring = NULL)
 #' keyring_unlock(keyring = NULL, password = NULL)
+#' keyring_is_locked(keyring = NULL)
 #' keyring_default()
 #' keyring_set_default(keyring = NULL)
 #' ```
@@ -147,6 +149,7 @@ backend <- R6Class(
 #'    a confirmation dialog.
 #' * `keyring_lock()` locks a keyring.
 #' * `keyring_unlock()` unlocks a keyring.
+#' * `keyring_is_locked() checks whether a keyring is locked.
 #' * `keyring_default()` returns the default keyring.
 #' * `keyring_set_default()` sets the default keyring.
 #'
@@ -185,6 +188,7 @@ backend_keyrings <- R6Class(
     keyring_lock = function(keyring = NULL) abstract_method(),
     keyring_unlock = function(keyring = NULL, password = NULL)
       abstract_method(),
+    keyring_is_locked = function(keyring = NULL) abstract_method(),
     keyring_default = function() abstract_method(),
     keyring_set_default = function(keyring = NULL) abstract_method(),
 
@@ -196,6 +200,7 @@ backend_keyrings <- R6Class(
         keyring_delete = "delete a keyring",
         keyring_lock = "lock a keyring",
         keyring_unlock = "unlock a keyring",
+        keyring_is_locked = "check if a keyring is locked",
         keyring_default = "query the default keyring",
         keyring_set_default = "set the default keyring"
       ))

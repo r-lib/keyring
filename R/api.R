@@ -160,6 +160,8 @@ key_list <- function(service = NULL, keyring = NULL) {
 #' `keyring_unlock` unlocks a keyring. If a password is not specified,
 #' it will be read in interactively.
 #'
+#' `keyring_is_locked` queries whether a keyring is locked.
+#'
 #' @param keyring The name of the keyring to create or to operate on.
 #'   For functions other than `keyring_create`, it can also be `NULL` to
 #'   select the default keyring.
@@ -224,4 +226,12 @@ keyring_lock <- function(keyring = NULL) {
 keyring_unlock <- function(keyring = NULL, password = NULL) {
   assert_that(is_string_or_null(keyring))
   default_backend()$keyring_unlock(keyring, password)
+}
+
+#' @export
+#' @rdname has_keyring_support
+
+keyring_is_locked <- function(keyring = NULL) {
+  assert_that(is_string_or_null(keyring))
+  default_backend()$keyring_is_locked(keyring)
 }
