@@ -489,6 +489,16 @@ SEXP keyring_secret_service_unlock_keyring(SEXP keyring, SEXP password) {
   return R_NilValue;
 }
 
+SEXP keyring_secret_service_is_locked_keyring(SEXP keyring) {
+
+  SecretCollection *collection =
+    keyring_secret_service_get_collection(keyring);
+
+  gboolean locked = secret_collection_get_locked(collection);
+
+  return ScalarLogical(locked);
+}
+
 static const R_CallMethodDef callMethods[]  = {
   { "keyring_secret_service_is_available",
     (DL_FUNC) &keyring_secret_service_is_available, 1 },
@@ -510,6 +520,8 @@ static const R_CallMethodDef callMethods[]  = {
     (DL_FUNC) &keyring_secret_service_lock_keyring, 1 },
   { "keyring_secret_service_unlock_keyring",
     (DL_FUNC) &keyring_secret_service_unlock_keyring, 2 },
+  { "keyring_secret_service_is_locked_keyring",
+    (DL_FUNC) &keyring_secret_service_is_locked_keyring, 1 },
   { NULL, NULL, 0 }
 };
 

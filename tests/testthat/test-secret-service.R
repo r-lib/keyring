@@ -56,20 +56,24 @@ test_that("lock/unlock keyrings", {
 
   keyring <- random_keyring()
   kb <- backend_secret_service$new(keyring = keyring)
-  kb$.__enclos_env__$private$keyring_create_direct(keyring, "secret123!")
+  # interactive
+  kb$.__enclos_env__$private$keyring_create_direct(keyring)
 
   ## It is unlocked by default
+  expect_false(kb$keyring_is_locked())
   list <- kb$keyring_list()
   expect_true(keyring %in% list$keyring)
   expect_false(list$locked[match(keyring, list$keyring)])
 
   ## Lock it
   kb$keyring_lock()
+  expect_true(kb$keyring_is_locked())
   list <- kb$keyring_list()
   expect_true(list$locked[match(keyring, list$keyring)])
 
-  ## Unlock it
-  kb$keyring_unlock(password = "secret123!")
+  ## Unlock it (interactive)
+  kb$keyring_unlock()
+  expect_false(kb$keyring_is_locked())
   list <- keyring_list()
   expect_false(list$locked[match(keyring, list$keyring)])
 
