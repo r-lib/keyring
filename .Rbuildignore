@@ -6,3 +6,4 @@
 ^appveyor.yml$
 ^src/keyring\.so$
 ^src/*\.o$
+^src/Makevars$
