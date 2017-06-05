@@ -14,6 +14,7 @@ else
 	else
 	    echo "Could not find libsecret headers or libs."
 	    echo "On Ubuntu, you need to install libsecret-1-dev via apt."
+	    echo "On RedHat, Fedora, and CentOS, you need to install libsecret-devel via rpm."
 	    echo "Note that in addition to libsecret, you either need pkg-config or set the"
 	    echo "LIBSECRET_CFLAGS and LIBSECRET_LIBS environment variables."
 	    exit 1
