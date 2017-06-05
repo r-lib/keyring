@@ -21,12 +21,18 @@ Additional storage backends can be added easily.
 
 ## Installation
 
-Note that on Linux you will need to install the `libsecret` library, at
-least version 0.16. On Debian/Ubuntu systems, install the `libsecret-1-dev`
-package. On recent RedHat, Fedora and CentOS systems, install the
-`libsecret-devel` package.
+### Linux
 
-On macOS and Windows, `keyring` does not need any additional software.
+Install the `libsecret` library, at least version 0.16.
+
+- Debian/Ubuntu: `libsecret-1-dev`
+- Recent RedHat, Fedora and CentOS systems: `libsecret-devel`
+
+### OS X and Windows
+
+No additional software needed
+
+### R package
 
 
 ```r
