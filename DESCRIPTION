@@ -12,8 +12,8 @@ Description: Platform independent 'API' to access the operating system's
     Additional storage back-ends can be added easily.
 License: MIT + file LICENSE
 LazyData: true
-URL: https://github.com/gaborcsardi/keyring#readme
-BugReports: https://github.com/gaborcsardi/keyring/issues
+URL: https://github.com/r-lib/keyring#readme
+BugReports: https://github.com/r-lib/keyring/issues
 RoxygenNote: 6.0.1
 Roxygen: list(markdown = TRUE)
 Imports:

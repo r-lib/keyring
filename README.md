@@ -5,11 +5,11 @@
 
 > Access the System Credential Store from R
 
-[![Linux Build Status](https://travis-ci.org/gaborcsardi/keyring.svg?branch=master)](https://travis-ci.org/gaborcsardi/keyring)
-[![Windows Build status](https://ci.appveyor.com/api/projects/status/github/gaborcsardi/keyring?svg=true)](https://ci.appveyor.com/project/gaborcsardi/keyring)
+[![Linux Build Status](https://travis-ci.org/r-lib/keyring.svg?branch=master)](https://travis-ci.org/r-lib/keyring)
+[![Windows Build status](https://ci.appveyor.com/api/projects/status/github/r-lib/keyring?svg=true)](https://ci.appveyor.com/project/gaborcsardi/keyring)
 [![](https://www.r-pkg.org/badges/version/keyring)](https://www.r-pkg.org/pkg/keyring)
 [![CRAN RStudio mirror downloads](https://cranlogs.r-pkg.org/badges/keyring)](https://www.r-pkg.org/pkg/keyring)
-[![Coverage Status](https://img.shields.io/codecov/c/github/gaborcsardi/keyring/master.svg)](https://codecov.io/github/gaborcsardi/keyring?branch=master)
+[![Coverage Status](https://img.shields.io/codecov/c/github/r-lib/keyring/master.svg)](https://codecov.io/github/r-lib/keyring?branch=master)
 
 Platform independent API to access the operating systems
 credential store. Currently supports:
@@ -36,7 +36,7 @@ No additional software needed
 
 
 ```r
-source("https://install-github.me/gaborcsardi/keyring")
+source("https://install-github.me/r-lib/keyring")
 ```
 
 ## Usage
@@ -84,7 +84,7 @@ functions if you want to use a different keyring.
 
 ## Development documentation
 
-Please see our [writeup of some `keyring` internals](https://github.com/gaborcsardi/keyring/blob/master/inst/development-notes.md),
+Please see our [writeup of some `keyring` internals](https://github.com/r-lib/keyring/blob/master/inst/development-notes.md),
 and as always, use the source code.
 
 ## License

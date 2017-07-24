@@ -160,7 +160,7 @@ way around it. For `keyring` a workaround would be to use `libdbus`
 to communicate with the Secret Service daemon directly. `libdbus` is
 a standalone DBUS library, it does not use `libglib`. There is an
 issue for this in our issue tracker, but no plans currently about when
-it would happen: https://github.com/gaborcsardi/keyring/issues/15
+it would happen: https://github.com/r-lib/keyring/issues/15
 
 This limitation is especially annoying for development with `devtools`,
 because `devtools::load_all()`, `devtools::test()`, etc. try to
