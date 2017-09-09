@@ -6,6 +6,7 @@ on.exit(options(opts), add = TRUE)
 
 test_that("specify keyring explicitly", {
   skip_if_not_secret_service()
+  skip_on_cran()
 
   service <- random_service()
   username <- random_username()
@@ -25,6 +26,7 @@ test_that("specify keyring explicitly", {
 test_that("creating keychains", {
   skip("requires interaction")
   skip_if_not_secret_service()
+  skip_on_cran()
 
   keyring <- random_keyring()
   kb <- backend_secret_service$new(keyring = keyring)
@@ -53,6 +55,7 @@ test_that("creating keychains", {
 test_that("lock/unlock keyrings", {
   skip("requires interaction")
   skip_if_not_secret_service()
+  skip_on_cran()
 
   keyring <- random_keyring()
   kb <- backend_secret_service$new(keyring = keyring)

@@ -3,6 +3,7 @@ context("Windows credential store")
 
 test_that("low level API", {
   skip_if_not_win()
+  skip_on_cran()
 
   keyring <- random_keyring()
   service <- random_service()
@@ -25,6 +26,7 @@ test_that("low level API", {
 
 test_that("creating keychains", {
   skip_if_not_win()
+  skip_on_cran()
 
   keyring <- random_keyring()
   kb <- backend_wincred$new(keyring = keyring)
@@ -53,6 +55,7 @@ test_that("creating keychains", {
 
 test_that("lock/unlock keyrings", {
   skip_if_not_win()
+  skip_on_cran()
 
   keyring <- random_keyring()
   kb <- backend_wincred$new(keyring = keyring)
@@ -81,6 +84,7 @@ test_that("lock/unlock keyrings", {
 
 test_that(": in keyring, service and usernames", {
   skip_if_not_win()
+  skip_on_cran()
 
   keyring <- paste0("foo:", random_keyring())
   service <- paste0("bar:", random_service())

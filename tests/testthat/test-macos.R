@@ -3,6 +3,7 @@ context("macOS keyring")
 
 test_that("specify keyring explicitly", {
   skip_if_not_macos()
+  skip_on_cran()
 
   service <- random_service()
   username <- random_username()
@@ -21,6 +22,7 @@ test_that("specify keyring explicitly", {
 
 test_that("creating keychains", {
   skip_if_not_macos()
+  skip_on_cran()
 
   keyring <- random_keyring()
   kb <- backend_macos$new()
@@ -50,6 +52,7 @@ test_that("creating keychains", {
 
 test_that("creating keychains 2", {
   skip_if_not_macos()
+  skip_on_cran()
 
   keyring <- random_keyring()
   kb <- backend_macos$new()
@@ -75,6 +78,7 @@ test_that("creating keychains 2", {
 test_that("keyring file at special location", {
 
   skip_if_not_macos()
+  skip_on_cran()
 
   keyring <- tempfile(fileext = ".keychain")
   kb <- backend_macos$new(keyring = keyring)
@@ -98,6 +102,7 @@ test_that("keyring file at special location", {
 test_that("errors", {
 
   skip_if_not_macos()
+  skip_on_cran()
 
   ## Non-existing keychain
   expect_error(
@@ -127,6 +132,7 @@ test_that("errors", {
 
 test_that("lock/unlock keyrings", {
   skip_if_not_macos()
+  skip_on_cran()
 
   keyring <- random_keyring()
   kb <- backend_macos$new(keyring = keyring)
