@@ -111,7 +111,7 @@ b_ss_get <- function(self, private, service, username, keyring) {
 
 b_ss_set <- function(self, private, service, username, keyring) {
   password <- get_pass()
-  b_ss_set_with_value(backend, service, username, password, keyring)
+  b_ss_set_with_value(self, private, service, username, password, keyring)
   invisible(self)
 }
 
