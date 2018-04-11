@@ -317,7 +317,9 @@ b_wincred_list <- function(self, private, service, keyring) {
     paste0(keyring, ":", service, ":*")
   }
 
-  list <- b_wincred_i_enumerate(filter)
+  list <- b_wincred_i_enumerate(
+    b_wincred_i_escape(filter)
+  )
 
   ## Filter out the credentials that belong to the keyring or its lock
   list <- grep("(::|::unlocked)$", list, value = TRUE, invert = TRUE)
