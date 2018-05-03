@@ -2,6 +2,7 @@
 
 export(backend)
 export(backend_env)
+export(backend_file)
 export(backend_keyrings)
 export(backend_macos)
 export(backend_secret_service)

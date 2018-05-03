@@ -33,7 +33,7 @@ kb$delete_keyring("foobar")
 }
 \seealso{
 Other keyring backends: \code{\link{backend_env}},
-  \code{\link{backend_macos}},
+  \code{\link{backend_file}}, \code{\link{backend_macos}},
   \code{\link{backend_secret_service}}
 }
 \keyword{datasets}
