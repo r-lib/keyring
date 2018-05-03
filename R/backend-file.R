@@ -32,14 +32,19 @@ backend_file <- R6Class(
       keyring = NULL)
       b_file_set_with_value(self, private, service, username, password,
                             keyring),
+
     keyring_create = function(keyring = NULL, nonce = NULL, items = NULL)
       b_file_keyring_create(self, private, keyring, nonce, items),
+    keyring_delete = function(keyring = NULL)
+      b_file_keyring_delete(self, private, keyring),
+
     keyring_lock = function(keyring = NULL)
       b_file_keyring_lock(self, private),
     keyring_unlock = function(keyring = NULL, password = NULL)
       b_file_keyring_unlock(self, private, keyring, password),
     keyring_is_locked = function(keyring = NULL)
       b_file_keyring_is_locked(self, private, keyring),
+
     keyring_default = function()
       b_file_keyring_default(self, private),
     keyring_set_default = function(keyring)
@@ -148,6 +153,11 @@ b_file_keyring_create <- function(self, private, keyring, nonce, items) {
     items %||% list()
   )
 
+  invisible(self)
+}
+
+b_file_keyring_delete <- function(self, private, keyring) {
+  unlink(private$keyring_file(keyring %||% private$keyring))
   invisible(self)
 }
 
