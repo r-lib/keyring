@@ -34,6 +34,12 @@ backend_file <- R6Class(
                             keyring),
     keyring_create = function(keyring = NULL, nonce = NULL, items = NULL)
       b_file_keyring_create(self, private, keyring, nonce, items),
+    keyring_lock = function(keyring = NULL)
+      b_file_keyring_lock(self, private),
+    keyring_unlock = function(keyring = NULL, password = NULL)
+      b_file_keyring_unlock(self, private, keyring, password),
+    keyring_is_locked = function(keyring = NULL)
+      b_file_keyring_is_locked(self, private, keyring),
     keyring_default = function()
       b_file_keyring_default(self, private),
     keyring_set_default = function(keyring)
@@ -143,6 +149,25 @@ b_file_keyring_create <- function(self, private, keyring, nonce, items) {
   )
 
   invisible(self)
+}
+
+b_file_keyring_lock <- function(self, private) {
+  private$key <- NULL
+  invisible(self)
+}
+
+b_file_keyring_unlock <- function(self, private, keyring, password) {
+  if (!is.null(keyring))
+    self$keyring_set_default(keyring)
+  private$key_set(password)
+  invisible(self)
+}
+
+b_file_keyring_is_locked <- function(self, private, keyring) {
+  if (!is.null(keyring))
+    normalizePath(keyring) != private$keyring || is.null(private$key)
+  else
+    is.null(private$key)
 }
 
 b_file_keyring_default <- function(self, private) {
