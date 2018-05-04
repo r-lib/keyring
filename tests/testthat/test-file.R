@@ -3,7 +3,7 @@ context("file-based keyring")
 
 test_that("specify keyring explicitly", {
 
-  service <- random_service()
+  service_1 <- random_service()
   username <- random_username()
   password <- random_password()
   keyring <- random_keyring()
@@ -14,9 +14,20 @@ test_that("specify keyring explicitly", {
   expect_silent(kb$keyring_unlock(password = random_password()))
   expect_false(kb$keyring_is_locked())
 
-  expect_silent(kb$set_with_value(service, username, password))
+  expect_silent(kb$set_with_value(service_1, username, password))
 
-  expect_equal(kb$get(service, username), password)
+  expect_equal(kb$get(service_1, username), password)
+
+  expect_error(kb$set_with_value(service_1, username, password),
+               "The specified item is already in the keychain.")
+
+  expect_silent(kb$set_with_value(random_service(), username, password))
+
+  long_password <- random_string(500L)
+  service_2 <- random_service()
+
+  expect_silent(kb$set_with_value(service_2, username, long_password))
+  expect_equal(kb$get(service_2, username), long_password)
 
   expect_silent(kb$keyring_delete())
 })
