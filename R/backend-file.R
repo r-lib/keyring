@@ -266,10 +266,7 @@ b_file_read_keyring_file <- function(self, private, name) {
   list(
     nonce = sodium::hex2bin(yml[["keyring_info"]][["nonce"]]),
     items = yml[["items"]],
-    check = paste(
-      strsplit(yml[["keyring_info"]][["integrity_check"]], "\n")[[1L]],
-      collapse = ""
-    )
+    check = yml[["keyring_info"]][["integrity_check"]]
   )
 }
 
@@ -416,7 +413,7 @@ b_file_secret_encrypt <- function(self, private, secret, nonce, key) {
 b_file_secret_decrypt <- function(self, private, secret, nonce, key) {
   rawToChar(
     sodium::data_decrypt(
-      sodium::hex2bin(paste(secret, collapse = "")),
+      sodium::hex2bin(b_file_merge_string(secret)),
       key %||% private$key_get(),
       nonce %||% private$nonce_get()
     )
@@ -456,4 +453,9 @@ b_file_split_string <- function(string, width = 78L) {
     ),
     collapse = "\n"
   )
+}
+
+b_file_merge_string <- function(string) {
+  assert_that(is_string(string))
+  paste(strsplit(string, "\n")[[1L]], collapse = "")
 }
