@@ -34,8 +34,8 @@
 #' @return The backend object itself.
 #' 
 #' 
-#' @seealso [backend_env], [backend_macos], [backend_secret_service], 
-#'          [backend_wincred]
+#' @seealso [backend_env], [backend_file], [backend_macos],
+#'          [backend_secret_service], [backend_wincred]
 #'
 #' @export
 #' @name backends
@@ -106,5 +106,6 @@ known_backends <- list(
   "wincred" = backend_wincred,
   "macos" = backend_macos,
   "secret_service" = backend_secret_service,
-  "env" = backend_env
+  "env" = backend_env,
+  "file" = backend_file
 )
