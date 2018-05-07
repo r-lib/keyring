@@ -34,7 +34,6 @@ test_that("specify keyring explicitly", {
 
 test_that("key consistency check", {
 
-  service <- random_service()
   username <- random_username()
   password <- random_password()
   keyring <- random_keyring()
@@ -44,17 +43,52 @@ test_that("key consistency check", {
   kb <- backend_file$new(keyring = keyring)
 
   expect_silent(kb$keyring_unlock(password = keyring_pwd_1))
-  expect_silent(kb$set_with_value(service, username, password))
+  expect_silent(kb$set_with_value(random_service(), username, password))
 
-  expect_silent(kb$keyring_unlock(password = keyring_pwd_2))
+  expect_error(kb$keyring_unlock(password = keyring_pwd_2),
+               "failed to unlock keyring")
+
   expect_silent(kb$keyring_lock())
-
   expect_error(kb$keyring_unlock(password = keyring_pwd_2),
                "failed to unlock keyring")
 
   kb$.__enclos_env__$private$key_set(keyring_pwd_2)
   expect_true(kb$keyring_is_locked())
 
+  # will prompt for keyring pwd since it is locked; how can we test for this?
+  # kb$set_with_value(random_service(), username, password)
+
   expect_silent(kb$keyring_unlock(password = keyring_pwd_1))
   expect_silent(kb$keyring_delete())
+})
+
+test_that("use non-default keyring", {
+
+  service <- random_service()
+  username <- random_username()
+  password <- random_password()
+  default_keyring <- random_keyring()
+  keyring <- random_keyring()
+  default_keyring_pwd <- random_password()
+  keyring_pwd <- random_password()
+
+  kb <- backend_file$new(keyring = default_keyring)
+  expect_silent(kb$keyring_unlock(password = default_keyring_pwd))
+  expect_false(kb$keyring_is_locked())
+
+  expect_silent(kb$keyring_unlock(keyring, keyring_pwd))
+  expect_false(kb$keyring_is_locked(keyring))
+  expect_true(kb$keyring_is_locked())
+
+  expect_silent(kb$set_with_value(service, username, password, keyring))
+  expect_equal(kb$get(service, username, keyring), password)
+
+  # will prompt for keyring pwd since it is locked; how can we test for this?
+  # kb$set_with_value(random_service(), username, password)
+
+  expect_silent(kb$keyring_unlock(password = default_keyring_pwd))
+  expect_silent(kb$keyring_delete())
+
+  expect_silent(kb$keyring_unlock(keyring, keyring_pwd))
+  expect_silent(kb$keyring_delete(keyring))
 })
