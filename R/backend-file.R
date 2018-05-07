@@ -98,7 +98,8 @@ b_file_init <- function(self, private, keyring) {
 
 b_file_get <- function(self, private, service, username, keyring) {
 
-  self$keyring_unlock(keyring)
+  if (self$keyring_is_locked(keyring))
+    self$keyring_unlock(keyring)
 
   all_items <- private$items_get(keyring)
   item_matches <- sapply(all_items, `[[`, "service_name") %in% service
@@ -114,21 +115,28 @@ b_file_get <- function(self, private, service, username, keyring) {
 
   sapply(
     lapply(all_items[item_matches], `[[`, "secret"),
-    private$secret_decrypt
+    private$secret_decrypt,
+    private$nonce_get(keyring)
   )
 }
 
 b_file_set <- function(self, private, service, username, keyring) {
+
+  if (self$keyring_is_locked(keyring))
+    self$keyring_unlock(keyring)
+
   password <- get_pass()
+
   self$set_with_value(service, username, password, keyring)
+
   invisible(self)
 }
 
 b_file_set_with_value <- function(self, private, service, username,
                                   password, keyring) {
 
-
-  self$keyring_unlock(keyring)
+  if (self$keyring_is_locked(keyring))
+    self$keyring_unlock(keyring)
 
   all_items <- private$items_get(keyring)
 
@@ -142,7 +150,7 @@ b_file_set_with_value <- function(self, private, service, username,
   new_item <- list(
     service_name = service,
     user_name = username,
-    secret = private$secret_encrypt(password)
+    secret = private$secret_encrypt(password, private$nonce_get(keyring))
   )
 
   private$items_set(c(all_items, list(new_item)))
@@ -169,7 +177,8 @@ b_file_keyring_create <- function(self, private, keyring, nonce, items) {
 
 b_file_keyring_delete <- function(self, private, keyring) {
 
-  self$keyring_unlock(keyring)
+  if (self$keyring_is_locked(keyring))
+    self$keyring_unlock(keyring)
 
   unlink(private$keyring_file(keyring))
 
@@ -187,13 +196,9 @@ b_file_keyring_lock <- function(self, private, keyring) {
 
 b_file_keyring_unlock <- function(self, private, keyring, password) {
 
-  if (is.null(private$key))
-    private$key_set(password)
+  private$key_set(password)
 
   assert_that(file.exists(private$keyring_file(keyring)))
-
-  if (self$keyring_is_locked(keyring))
-    private$key_set(password)
 
   if (self$keyring_is_locked(keyring)) {
     private$key <- NULL
@@ -210,7 +215,10 @@ b_file_keyring_is_locked <- function(self, private, keyring) {
   } else {
     tryCatch(
       {
-        private$secret_decrypt(private$check_get(keyring))
+        private$secret_decrypt(
+          private$check_get(keyring),
+          private$nonce_get(keyring)
+        )
         FALSE
       },
       error = function(e) {
