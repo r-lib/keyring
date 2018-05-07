@@ -32,6 +32,8 @@ backend_file <- R6Class(
       keyring = NULL)
       b_file_set_with_value(self, private, service, username, password,
                             keyring),
+    list = function(service = NULL, keyring = NULL)
+      b_file_list(self, private, service, keyring),
 
     keyring_create = function(keyring = NULL, nonce = NULL, items = NULL)
       b_file_keyring_create(self, private, keyring, nonce, items),
@@ -157,6 +159,22 @@ b_file_set_with_value <- function(self, private, service, username,
   private$keyring_write_file(keyring)
 
   invisible(self)
+}
+
+b_file_list <- function(self, private, service, keyring) {
+
+  all_items <- private$items_get(keyring)
+
+  res <- data.frame(
+    service = sapply(all_items, `[[`, "service_name"),
+    username = sapply(all_items, `[[`, "user_name"),
+    stringsAsFactors = FALSE
+  )
+
+  if (!is.null(service))
+    res[res[["service"]] == service, ]
+  else
+    res
 }
 
 b_file_keyring_create <- function(self, private, keyring, nonce, items) {

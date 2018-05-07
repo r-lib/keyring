@@ -83,6 +83,14 @@ test_that("use non-default keyring", {
   expect_silent(kb$set_with_value(service, username, password, keyring))
   expect_equal(kb$get(service, username, keyring), password)
 
+  expect_silent(
+    all_items <- kb$list(keyring = keyring)
+  )
+
+  expect_is(all_items, "data.frame")
+  expect_equal(nrow(all_items), 1L)
+  expect_named(all_items, c("service", "username"))
+
   # will prompt for keyring pwd since it is locked; how can we test for this?
   # kb$set_with_value(random_service(), username, password)
 
@@ -90,5 +98,44 @@ test_that("use non-default keyring", {
   expect_silent(kb$keyring_delete())
 
   expect_silent(kb$keyring_unlock(keyring, keyring_pwd))
+  expect_silent(kb$keyring_delete(keyring))
+})
+
+test_that("list keyring items", {
+
+  service <- random_service()
+  username <- random_username()
+
+  keyring <- random_keyring()
+  keyring_pwd <- random_password()
+
+  kb <- backend_file$new(keyring)
+  expect_silent(kb$keyring_unlock(password = keyring_pwd))
+
+  expect_silent(kb$set_with_value(random_service(),
+                                  random_username(),
+                                  random_password()))
+  expect_silent(kb$set_with_value(service, random_username(),
+                                  random_password()))
+  expect_silent(kb$set_with_value(service, random_username(),
+                                  random_password()))
+
+  expect_silent(
+    all_items <- kb$list()
+  )
+
+  expect_is(all_items, "data.frame")
+  expect_equal(nrow(all_items), 3L)
+  expect_named(all_items, c("service", "username"))
+
+  expect_silent(
+    some_items <- kb$list(service)
+  )
+
+  expect_is(some_items, "data.frame")
+  expect_equal(nrow(some_items), 2L)
+  expect_named(some_items, c("service", "username"))
+  sapply(some_items[["service"]], expect_identical, service)
+
   expect_silent(kb$keyring_delete(keyring))
 })
