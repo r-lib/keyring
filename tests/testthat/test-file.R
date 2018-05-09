@@ -78,7 +78,7 @@ test_that("use non-default keyring", {
 
   expect_silent(kb$keyring_unlock(keyring, keyring_pwd))
   expect_false(kb$keyring_is_locked(keyring))
-  expect_true(kb$keyring_is_locked())
+  expect_false(kb$keyring_is_locked())
 
   expect_silent(kb$set_with_value(service, username, password, keyring))
   expect_equal(kb$get(service, username, keyring), password)
@@ -91,13 +91,7 @@ test_that("use non-default keyring", {
   expect_equal(nrow(all_items), 1L)
   expect_named(all_items, c("service", "username"))
 
-  # will prompt for keyring pwd since it is locked; how can we test for this?
-  # kb$set_with_value(random_service(), username, password)
-
-  expect_silent(kb$keyring_unlock(password = default_keyring_pwd))
   expect_silent(kb$keyring_delete())
-
-  expect_silent(kb$keyring_unlock(keyring, keyring_pwd))
   expect_silent(kb$keyring_delete(keyring))
 })
 
@@ -135,7 +129,7 @@ test_that("list keyring items", {
   expect_is(some_items, "data.frame")
   expect_equal(nrow(some_items), 2L)
   expect_named(some_items, c("service", "username"))
-  sapply(some_items[["service"]], expect_identical, service)
+  invisible(sapply(some_items[["service"]], expect_identical, service))
 
   expect_silent(kb$keyring_delete(keyring))
 })
