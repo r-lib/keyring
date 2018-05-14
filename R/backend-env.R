@@ -38,9 +38,6 @@ backend_env <- R6Class(
   inherit = backend,
   public = list(
     name = "env",
-    initialize = function(keyring = NULL)
-      b_env_init(self, private, keyring),
-
     get = function(service, username = NULL, keyring = NULL)
       b_env_get(self, private, service, username, keyring),
     set = function(service, username = NULL, keyring = NULL)
@@ -70,11 +67,6 @@ warn_for_keyring <- function(keyring) {
     warning("The 'env' backend does not support multiple keyrings, ",
             "the 'keyring' argument is ignored")
   }
-}
-
-b_env_init <- function(self, private, keyring) {
-  warn_for_keyring(keyring)
-  invisible(self)
 }
 
 b_env_get <- function(self, private, service, username, keyring) {
