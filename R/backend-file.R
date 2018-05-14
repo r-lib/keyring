@@ -90,12 +90,7 @@ backend_file <- R6Class(
     items_get = function(keyring = NULL)
       b_file_items_get(self, private, keyring),
     check_get = function(keyring = NULL)
-      b_file_check_get(self, private, keyring),
-
-    secret_encrypt = function(secret, nonce = NULL, key = NULL, keyring = NULL)
-      b_file_secret_encrypt(self, private, secret, nonce, key, keyring),
-    secret_decrypt = function(secret, nonce = NULL, key = NULL, keyring = NULL)
-      b_file_secret_decrypt(self, private, secret, nonce, key, keyring)
+      b_file_check_get(self, private, keyring)
   )
 )
 
@@ -124,8 +119,9 @@ b_file_get <- function(self, private, service, username, keyring) {
 
   sapply(
     lapply(all_items[item_matches], `[[`, "secret"),
-    private$secret_decrypt,
-    keyring = keyring
+    b_file_secret_decrypt,
+    private$nonce_get(keyring),
+    private$key_get(keyring)
   )
 }
 
@@ -159,7 +155,11 @@ b_file_set_with_value <- function(self, private, service, username,
   new_item <- list(
     service_name = service,
     user_name = username,
-    secret = private$secret_encrypt(password, keyring = keyring)
+    secret = b_file_secret_encrypt(
+      password,
+      private$nonce_get(keyring),
+      private$key_get(keyring)
+    )
   )
 
   private$keyring_set(keyring, items = c(all_items, list(new_item)))
@@ -229,9 +229,10 @@ b_file_keyring_is_locked <- function(self, private, keyring) {
   } else {
     tryCatch(
       {
-        private$secret_decrypt(
+        b_file_secret_decrypt(
           private$check_get(keyring),
-          keyring = keyring
+          private$nonce_get(keyring),
+          private$key_get(keyring)
         )
         FALSE
       },
@@ -318,10 +319,10 @@ b_file_write_keyring_file <- function(self, private, keyring, nonce, items,
           utils::packageVersion(methods::getPackageName())
         ),
         nonce = sodium::bin2hex(nonce),
-        integrity_check = private$secret_encrypt(
+        integrity_check = b_file_secret_encrypt(
           paste(sample(letters, 22L, replace = TRUE), collapse = ""),
           nonce,
-          key
+          key %||% private$key_get(keyring)
         )
       ),
       items = items %||% private$items_get(keyring)
@@ -433,29 +434,28 @@ b_file_check_get <- function(self, private, keyring) {
   res
 }
 
-b_file_secret_encrypt <- function(self, private, secret, nonce, key, keyring) {
+## --------------------------------------------------------------------
+## helper functions
+
+b_file_secret_encrypt <- function(secret, nonce, key) {
 
   res <- sodium::data_encrypt(
     charToRaw(secret),
-    key %||% private$key_get(keyring),
-    nonce %||% private$nonce_get(keyring)
+    key,
+    nonce
   )
 
   b_file_split_string(sodium::bin2hex(res))
 }
 
-b_file_secret_decrypt <- function(self, private, secret, nonce, key, keyring) {
+b_file_secret_decrypt <- function(secret, nonce, key)
   rawToChar(
     sodium::data_decrypt(
       sodium::hex2bin(b_file_merge_string(secret)),
-      key %||% private$key_get(keyring),
-      nonce %||% private$nonce_get(keyring)
+      key,
+      nonce
     )
   )
-}
-
-## --------------------------------------------------------------------
-## helper functions
 
 b_file_keyring_env <- function(keyring) {
 
