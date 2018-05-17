@@ -1,5 +1,5 @@
 
-#' @importFrom assertthat on_failure<- assert_that
+#' @importFrom assertthat on_failure<- assert_that has_name
 
 is_string <- function(x) {
   is.character(x) && length(x) == 1 && !is.na(x)

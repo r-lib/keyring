@@ -13,6 +13,7 @@ b_file_keyrings <- new.env()
 #' @family keyring backends
 #' @export
 #' @include backend-class.R
+#' @importFrom sodium random hex2bin bin2hex hash data_encrypt data_decrypt
 #' @examples
 #' \dontrun{
 #' kb <- backend_file$new()
@@ -272,7 +273,7 @@ b_file_keyring_create_direct <- function(self, private, keyring, password,
 
   private$keyring_write_file(
     file_name,
-    nonce %||% sodium::random(24L),
+    nonce %||% random(24L),
     items %||% list(),
     password %||% get_pass()
   )
@@ -297,15 +298,15 @@ b_file_read_keyring_file <- function(self, private, keyring) {
   yml <- yaml::yaml.load_file(keyring %||% private$keyring)
 
   assert_that(is.list(yml),
-              assertthat::has_name(yml, "keyring_info"),
+              has_name(yml, "keyring_info"),
               is.list(yml[["keyring_info"]]),
-              assertthat::has_name(yml[["keyring_info"]], "nonce"),
-              assertthat::has_name(yml[["keyring_info"]], "integrity_check"),
-              assertthat::has_name(yml, "items"),
+              has_name(yml[["keyring_info"]], "nonce"),
+              has_name(yml[["keyring_info"]], "integrity_check"),
+              has_name(yml, "items"),
               is.list(yml[["items"]]))
 
   list(
-    nonce = sodium::hex2bin(yml[["keyring_info"]][["nonce"]]),
+    nonce = hex2bin(yml[["keyring_info"]][["nonce"]]),
     items = yml[["items"]],
     check = yml[["keyring_info"]][["integrity_check"]]
   )
@@ -322,7 +323,7 @@ b_file_write_keyring_file <- function(self, private, keyring, nonce, items,
         keyring_version = as.character(
           utils::packageVersion(methods::getPackageName())
         ),
-        nonce = sodium::bin2hex(nonce),
+        nonce = bin2hex(nonce),
         integrity_check = b_file_secret_encrypt(
           paste(sample(letters, 22L, replace = TRUE), collapse = ""),
           nonce,
@@ -368,7 +369,7 @@ b_file_key_set <- function(self, private, key, keyring) {
 
   key <- key %||% get_pass()
   assert_that(is_string(key))
-  key <- sodium::hash(charToRaw(key))
+  key <- hash(charToRaw(key))
 
   kr_env <- b_file_keyring_env(private$keyring_file(keyring, password = key))
 
@@ -443,19 +444,19 @@ b_file_check_get <- function(self, private, keyring) {
 
 b_file_secret_encrypt <- function(secret, nonce, key) {
 
-  res <- sodium::data_encrypt(
+  res <- data_encrypt(
     charToRaw(secret),
     key,
     nonce
   )
 
-  b_file_split_string(sodium::bin2hex(res))
+  b_file_split_string(bin2hex(res))
 }
 
 b_file_secret_decrypt <- function(secret, nonce, key)
   rawToChar(
-    sodium::data_decrypt(
-      sodium::hex2bin(b_file_merge_string(secret)),
+    data_decrypt(
+      hex2bin(b_file_merge_string(secret)),
       key,
       nonce
     )
@@ -484,11 +485,11 @@ b_file_error <- function(problem, reason = NULL) {
 b_file_validate_item <- function(item) {
 
   assert_that(is.list(item), length(item) == 3L,
-              assertthat::has_name(item, "service_name"),
+              has_name(item, "service_name"),
               is_string(item[["service_name"]]),
-              assertthat::has_name(item, "user_name"),
+              has_name(item, "user_name"),
               is_string_or_null(item[["user_name"]]),
-              assertthat::has_name(item, "secret"),
+              has_name(item, "secret"),
               is.raw(item[["secret"]]) || is_string(item[["secret"]]))
 
   invisible(item)
