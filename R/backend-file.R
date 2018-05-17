@@ -106,20 +106,22 @@ b_file_get <- function(self, private, service, username, keyring) {
     self$keyring_unlock(keyring)
 
   all_items <- private$items_get(keyring)
-  item_matches <- sapply(all_items, `[[`, "service_name") %in% service
+  item_matches <- vapply(all_items, `[[`, character(1L), "service_name") %in%
+    service
 
   if (!is.null(username)) {
     item_matches <- item_matches &
-                      sapply(all_items, `[[`, "user_name") %in% username
+      vapply(all_items, `[[`, character(1L), "user_name") %in% username
   }
 
   if (sum(item_matches) < 1L)
     b_file_error("cannot get secret",
                  "The specified item could not be found in the keychain.")
 
-  sapply(
+  vapply(
     lapply(all_items[item_matches], `[[`, "secret"),
     b_file_secret_decrypt,
+    character(1L),
     private$nonce_get(keyring),
     private$key_get(keyring)
   )
@@ -145,8 +147,10 @@ b_file_set_with_value <- function(self, private, service, username,
 
   all_items <- private$items_get(keyring)
 
-  is_duplicate <- any(sapply(all_items, `[[`, "service_name") %in% service &
-                        sapply(all_items, `[[`, "user_name") %in% username)
+  is_duplicate <- any(
+    vapply(all_items, `[[`, character(1L), "service_name") %in% service &
+      vapply(all_items, `[[`, character(1L), "user_name") %in% username
+  )
 
   if (is_duplicate)
     b_file_error("cannot save secret",
@@ -173,8 +177,8 @@ b_file_list <- function(self, private, service, keyring) {
   all_items <- private$items_get(keyring)
 
   res <- data.frame(
-    service = sapply(all_items, `[[`, "service_name"),
-    username = sapply(all_items, `[[`, "user_name"),
+    service = vapply(all_items, `[[`, character(1L), "service_name"),
+    username = vapply(all_items, `[[`, character(1L), "user_name"),
     stringsAsFactors = FALSE
   )
 
