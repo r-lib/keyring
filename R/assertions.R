@@ -63,3 +63,35 @@ on_failure(is_file_keyring_item) <- function(call, env) {
     sQuote("secret")
   )
 }
+
+is_file_keyring_file <- function(x) {
+  is.list(x) && length(x) == 2L &&
+  has_name(x, "keyring_info") &&
+  has_name(x, "items")
+}
+
+on_failure(is_file_keyring_file) <- function(call, env) {
+  paste0(
+    deparse(call$x),
+    " must be a named list of length 2 with entries ",
+    sQuote("keyring_info"), " and ",
+    sQuote("items")
+  )
+}
+
+is_file_keyring_file_header <- function(x) {
+  is.list(x) && length(x) == 3L &&
+  has_name(x, "keyring_version") &&
+  has_name(x, "nonce") &&
+  has_name(x, "integrity_check")
+}
+
+on_failure(is_file_keyring_file_header) <- function(call, env) {
+  paste0(
+    deparse(call$x),
+    " must be a named list of length 3 with entries ",
+    sQuote("keyring_version"), ", ",
+    sQuote("nonce"), " and ",
+    sQuote("integrity_check")
+  )
+}

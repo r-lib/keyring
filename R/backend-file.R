@@ -307,17 +307,14 @@ b_file_read_keyring_file <- function(self, private, keyring) {
 
   yml <- yaml::yaml.load_file(keyring %||% private$keyring)
 
-  assert_that(is.list(yml),
-              has_name(yml, "keyring_info"),
-              is.list(yml[["keyring_info"]]),
-              has_name(yml[["keyring_info"]], "nonce"),
-              has_name(yml[["keyring_info"]], "integrity_check"),
-              has_name(yml, "items"),
-              is.list(yml[["items"]]))
+  assert_that(
+    is_file_keyring_file(yml),
+    is_file_keyring_file_header(yml[["keyring_info"]])
+  )
 
   list(
     nonce = hex2bin(yml[["keyring_info"]][["nonce"]]),
-    items = yml[["items"]],
+    items = lapply(yml[["items"]], b_file_validate_item),
     check = yml[["keyring_info"]][["integrity_check"]]
   )
 }
