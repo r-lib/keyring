@@ -508,13 +508,12 @@ b_file_error <- function(problem, reason = NULL) {
 
 b_file_validate_item <- function(item) {
 
-  assert_that(is.list(item), length(item) == 3L,
-              has_name(item, "service_name"),
-              is_string(item[["service_name"]]),
-              has_name(item, "user_name"),
-              is_string_or_null(item[["user_name"]]),
-              has_name(item, "secret"),
-              is.raw(item[["secret"]]) || is_string(item[["secret"]]))
+  assert_that(
+    is_file_keyring_item(item),
+    is_string(item[["service_name"]]),
+    is_string_or_null(item[["user_name"]]),
+    is_string_or_raw(item[["secret"]])
+  )
 
   invisible(item)
 }
@@ -522,7 +521,7 @@ b_file_validate_item <- function(item) {
 b_file_split_string <- function(string, width = 78L) {
 
   assert_that(is_string(string))
-  
+
   paste(
     lapply(
       seq.int(ceiling(nchar(string) / width)) - 1L,

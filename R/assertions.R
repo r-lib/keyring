@@ -35,3 +35,31 @@ on_failure(is_non_empty_string_or_null) <- function(call, env) {
     " must be a non-empty string (length 1 character) or NULL"
   )
 }
+
+is_string_or_raw <- function(x) {
+  is.raw(x) || is_string(x)
+}
+
+on_failure(is_string_or_raw) <- function(call, env) {
+  paste0(
+    deparse(call$x),
+    " must be a string (length 1 character) or raw vector"
+  )
+}
+
+is_file_keyring_item <- function(x) {
+  is.list(x) && length(x) == 3L &&
+  has_name(x, "service_name") &&
+  has_name(x, "user_name") &&
+  has_name(x, "secret")
+}
+
+on_failure(is_file_keyring_item) <- function(call, env) {
+  paste0(
+    deparse(call$x),
+    " must be a named list of length 3 with entries ",
+    sQuote("service_name"), ", ",
+    sQuote("user_name"), " and ",
+    sQuote("secret")
+  )
+}
