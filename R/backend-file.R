@@ -308,8 +308,11 @@ b_file_read_keyring_file <- function(self, private, keyring) {
   yml <- yaml::yaml.load_file(keyring %||% private$keyring)
 
   assert_that(
-    is_file_keyring_file(yml),
-    is_file_keyring_file_header(yml[["keyring_info"]])
+    is_list_with_names(yml, names = c("keyring_info", "items")),
+    is_list_with_names(
+      yml[["keyring_info"]],
+      names = c("keyring_version", "nonce", "integrity_check")
+    )
   )
 
   list(
@@ -506,7 +509,7 @@ b_file_error <- function(problem, reason = NULL) {
 b_file_validate_item <- function(item) {
 
   assert_that(
-    is_file_keyring_item(item),
+    is_list_with_names(item, names = c("service_name", "user_name", "secret")),
     is_string(item[["service_name"]]),
     is_string_or_null(item[["user_name"]]),
     is_string_or_raw(item[["secret"]])
