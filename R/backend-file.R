@@ -103,21 +103,23 @@ b_file_init <- function(self, private, keyring) {
 
 b_file_get <- function(self, private, service, username, keyring) {
 
-  if (self$keyring_is_locked(keyring))
+  if (self$keyring_is_locked(keyring)) {
     self$keyring_unlock(keyring)
-
-  all_items <- private$items_get(keyring)
-  item_matches <- vapply(all_items, `[[`, character(1L), "service_name") %in%
-    service
-
-  if (!is.null(username)) {
-    item_matches <- item_matches &
-      vapply(all_items, `[[`, character(1L), "user_name") %in% username
   }
 
-  if (sum(item_matches) < 1L)
+  all_items <- private$items_get(keyring)
+  all_services <- vapply(all_items, `[[`, character(1L), "service_name")
+  item_matches <- all_services %in% service
+
+  if (!is.null(username)) {
+    all_users <- vapply(all_items, `[[`, character(1L), "user_name")
+    item_matches <- item_matches & all_users %in% username
+  }
+
+  if (sum(item_matches) < 1L) {
     b_file_error("cannot get secret",
                  "The specified item could not be found in the keychain.")
+  }
 
   vapply(
     lapply(all_items[item_matches], `[[`, "secret"),
@@ -130,8 +132,9 @@ b_file_get <- function(self, private, service, username, keyring) {
 
 b_file_set <- function(self, private, service, username, keyring) {
 
-  if (self$keyring_is_locked(keyring))
+  if (self$keyring_is_locked(keyring)) {
     self$keyring_unlock(keyring)
+  }
 
   password <- get_pass()
 
@@ -143,8 +146,9 @@ b_file_set <- function(self, private, service, username, keyring) {
 b_file_set_with_value <- function(self, private, service, username,
                                   password, keyring) {
 
-  if (self$keyring_is_locked(keyring))
+  if (self$keyring_is_locked(keyring)) {
     self$keyring_unlock(keyring)
+  }
 
   all_items <- private$items_get(keyring)
 
@@ -153,9 +157,10 @@ b_file_set_with_value <- function(self, private, service, username,
       vapply(all_items, `[[`, character(1L), "user_name") %in% username
   )
 
-  if (is_duplicate)
+  if (is_duplicate) {
     b_file_error("cannot save secret",
                  "The specified item is already in the keychain.")
+  }
 
   new_item <- list(
     service_name = service,
@@ -183,19 +188,22 @@ b_file_list <- function(self, private, service, keyring) {
     stringsAsFactors = FALSE
   )
 
-  if (!is.null(service))
+  if (!is.null(service)) {
     res[res[["service"]] == service, ]
-  else
+  } else {
     res
+  }
 }
 
-b_file_keyring_create <- function(self, private, keyring)
+b_file_keyring_create <- function(self, private, keyring) {
   private$keyring_create_direct(keyring)
+}
 
 b_file_keyring_delete <- function(self, private, keyring) {
 
-  if (self$keyring_is_locked(keyring))
+  if (self$keyring_is_locked(keyring)) {
     self$keyring_unlock(keyring)
+  }
 
   unlink(private$keyring_file(keyring))
 
@@ -268,8 +276,9 @@ b_file_keyring_create_direct <- function(self, private, keyring, password,
 
   file_name <- keyring %||% private$keyring
 
-  if (file.exists(file_name))
+  if (file.exists(file_name)) {
     confirmation(paste("are you sure you want to overwrite", file_name))
+  }
 
   private$keyring_write_file(
     file_name,
@@ -287,8 +296,9 @@ b_file_keyring_file <- function(self, private, keyring, ...) {
 
   assert_that(is_string(file_name))
 
-  if (!file.exists(file_name))
+  if (!file.exists(file_name)) {
     private$keyring_create_direct(file_name, ...)
+  }
 
   normalizePath(file_name, mustWork = TRUE)
 }
@@ -321,7 +331,7 @@ b_file_write_keyring_file <- function(self, private, keyring, nonce, items,
     list(
       keyring_info = list(
         keyring_version = as.character(
-          utils::packageVersion(methods::getPackageName())
+          utils::packageVersion(.packageName)
         ),
         nonce = bin2hex(nonce),
         integrity_check = b_file_secret_encrypt(
@@ -342,10 +352,11 @@ b_file_key_get <- function(self, private, keyring) {
 
   kr_env <- b_file_keyring_env(private$keyring_file(keyring))
 
-  if (is.null(kr_env$key))
+  if (is.null(kr_env$key)) {
     key <- private$key_set(keyring = keyring)
-  else
+  } else {
     key <- kr_env$key
+  }
 
   assert_that(is.raw(key), length(key) > 0L)
 
@@ -361,8 +372,9 @@ b_file_key_unset <- function(self, private, keyring) {
   invisible(kr_env)
 }
 
-b_file_key_is_set <- function(self, private, keyring)
+b_file_key_is_set <- function(self, private, keyring) {
   !is.null(b_file_keyring_env(private$keyring_file(keyring))$key)
+}
 
 
 b_file_key_set <- function(self, private, key, keyring) {
@@ -380,8 +392,9 @@ b_file_keyring_set <- function(self, private, keyring, nonce, check, items) {
 
   kr_env <- b_file_keyring_env(private$keyring_file(keyring))
 
-  if (is.null(nonce) || is.null(check) || is.null(items))
+  if (is.null(nonce) || is.null(check) || is.null(items)) {
     kr <- private$keyring_read_file(keyring)
+  }
 
   nonce <- nonce %||% kr[["nonce"]]
   assert_that(is.raw(nonce), length(nonce) > 0L)
@@ -396,19 +409,22 @@ b_file_keyring_set <- function(self, private, keyring, nonce, check, items) {
   kr_env
 }
 
-b_file_keyring_get <- function(self, private, keyring)
+b_file_keyring_get <- function(self, private, keyring) {
+
   list(
     nonce = private$nonce_get(keyring),
     items = private$items_get(keyring),
     check = private$check_get(keyring)
   )
+}
 
 b_file_nonce_get <- function(self, private, keyring) {
 
   kr_env <- b_file_keyring_env(private$keyring_file(keyring))
 
-  if (is.null(kr_env$nonce))
+  if (is.null(kr_env$nonce)) {
     kr_env <- private$keyring_set(keyring)
+  }
 
   res <- kr_env$nonce
   assert_that(is.raw(res), length(res) > 0L)
@@ -420,8 +436,9 @@ b_file_items_get <- function(self, private, keyring) {
 
   kr_env <- b_file_keyring_env(private$keyring_file(keyring))
 
-  if (is.null(kr_env$items))
+  if (is.null(kr_env$items)) {
     private$keyring_set(keyring)
+  }
 
   lapply(kr_env$items, b_file_validate_item)
 }
@@ -430,8 +447,9 @@ b_file_check_get <- function(self, private, keyring) {
 
   kr_env <- b_file_keyring_env(private$keyring_file(keyring))
 
-  if (is.null(kr_env$check))
+  if (is.null(kr_env$check)) {
     private$keyring_set(keyring)
+  }
 
   res <- kr_env$check
   assert_that(is.character(res), length(res) > 0L)
@@ -453,7 +471,8 @@ b_file_secret_encrypt <- function(secret, nonce, key) {
   b_file_split_string(bin2hex(res))
 }
 
-b_file_secret_decrypt <- function(secret, nonce, key)
+b_file_secret_decrypt <- function(secret, nonce, key) {
+
   rawToChar(
     data_decrypt(
       hex2bin(b_file_merge_string(secret)),
@@ -461,6 +480,7 @@ b_file_secret_decrypt <- function(secret, nonce, key)
       nonce
     )
   )
+}
 
 b_file_keyring_env <- function(keyring) {
 
@@ -468,17 +488,21 @@ b_file_keyring_env <- function(keyring) {
 
   kr_env <- get0(env_name, envir = b_file_keyrings, mode = "environment")
 
-  if (is.null(kr_env))
+  if (is.null(kr_env)) {
     kr_env <- assign(env_name, new.env(), envir = b_file_keyrings)
+  }
 
   kr_env
 }
 
 b_file_error <- function(problem, reason = NULL) {
-  info <- if (is.null(reason))
-    problem
-  else
-    paste0(problem, ": ", reason)
+
+  if (is.null(reason)) {
+    info <- problem
+  } else {
+    info <- paste0(problem, ": ", reason)
+  }
+
   stop("keyring error (file-based keyring), ", info, call. = FALSE)
 }
 
@@ -496,7 +520,9 @@ b_file_validate_item <- function(item) {
 }
 
 b_file_split_string <- function(string, width = 78L) {
+
   assert_that(is_string(string))
+  
   paste(
     lapply(
       seq.int(ceiling(nchar(string) / width)) - 1L,
