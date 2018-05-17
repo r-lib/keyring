@@ -1,5 +1,5 @@
 
-keyrings <- new.env()
+b_file_keyrings <- new.env()
 
 #' Store secrets in encrypted files
 #'
@@ -461,10 +461,10 @@ b_file_keyring_env <- function(keyring) {
 
   env_name <- normalizePath(keyring, mustWork = TRUE)
 
-  kr_env <- get0(env_name, envir = keyrings, mode = "environment")
+  kr_env <- get0(env_name, envir = b_file_keyrings, mode = "environment")
 
   if (is.null(kr_env))
-    kr_env <- assign(env_name, new.env(), envir = keyrings)
+    kr_env <- assign(env_name, new.env(), envir = b_file_keyrings)
 
   kr_env
 }
