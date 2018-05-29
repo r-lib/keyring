@@ -120,7 +120,7 @@ b_env_list <- function(self, private, service, keyring) {
   )
   
   data.frame(
-    service = service,
+    service = rep(service, length(keys)),
     username = keys,
     stringsAsFactors = FALSE
   )

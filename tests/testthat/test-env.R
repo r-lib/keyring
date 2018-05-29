@@ -13,6 +13,8 @@ test_that("set, get, delete", {
   expect_silent(
     kb$set_with_value(service, username, password)
   )
+  
+  expect_equal(kb$list(service)$username, c(username))
 
   expect_equal(kb$get(service, username), password)
   expect_equal(Sys.getenv(var, "foo"), password)
@@ -39,10 +41,3 @@ test_that("set, get, delete, without username", {
   expect_equal(Sys.getenv(var, "foo"), "foo")
 })
 
-test_that("no list method", {
-  kb <- backend_env$new()
-  expect_error(
-    kb$list(),
-    "Backend does not implement .list."
-  )
-})
