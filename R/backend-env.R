@@ -48,6 +48,8 @@ backend_env <- R6Class(
                            keyring),
     delete = function(service, username = NULL, keyring = NULL)
       b_env_delete(self, private, service, username, keyring),
+    list = function(service = NULL, keyring = NULL)
+      b_env_list(self, private, service, keyring),
 
     docs = function() {
       modifyList(super$docs(), list(
@@ -105,4 +107,21 @@ b_env_to_var <- function(self, private, service, username, keyring) {
   } else {
     paste0(service, ":", username)
   }
+}
+
+b_env_list <- function(self, private, service, keyring) {
+  if (is.null(service))
+    stop("'service' is required for 'env' backend.")
+  
+  keys <- gsub(
+    paste(service, ":", sep = ""),
+    "",
+    Filter(function(e) startsWith(e, service), names(Sys.getenv()))
+  )
+  
+  data.frame(
+    service = service,
+    username = keys,
+    stringsAsFactors = FALSE
+  )
 }
