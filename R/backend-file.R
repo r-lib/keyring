@@ -91,7 +91,12 @@ backend_file <- R6Class(
     items_get = function(keyring = NULL)
       b_file_items_get(self, private, keyring),
     check_get = function(keyring = NULL)
-      b_file_check_get(self, private, keyring)
+      b_file_check_get(self, private, keyring),
+
+    file_lock = function(keyring = NULL)
+      b_file_lock(self, private, keyring),
+    file_unlock = function(keyring = NULL)
+      b_file_unlock(self, private, keyring)
   )
 )
 
@@ -214,7 +219,14 @@ b_file_keyring_lock <- function(self, private, keyring) {
 
   assert_that(file.exists(private$keyring_file(keyring)))
 
-  private$key_unset(keyring)
+  if (private$file_unlock(keyring)) {
+    private$key_unset(keyring)
+  } else {
+    b_file_error(
+      "cannot lock keyring",
+      "The keyring file cannot be unlocked."
+    )
+  }
 
   invisible(self)
 }
@@ -223,11 +235,24 @@ b_file_keyring_unlock <- function(self, private, keyring, password) {
 
   private$key_set(password, keyring)
 
-  assert_that(file.exists(private$keyring_file(keyring)))
+  file <- private$keyring_file(keyring)
+
+  assert_that(file.exists(file))
 
   if (self$keyring_is_locked(keyring)) {
     private$key_unset(keyring)
-    b_file_error("failed to unlock keyring")
+    b_file_error(
+      "cannot unlock keyring",
+      "The supplied password does not work."
+    )
+  }
+
+  if (!private$file_lock(keyring)) {
+    private$key_unset(keyring)
+    b_file_error(
+      "cannot unlock keyring",
+      "The keyring file cannot be locked."
+    )
   }
 
   invisible(self)
@@ -455,6 +480,31 @@ b_file_check_get <- function(self, private, keyring) {
   assert_that(is.character(res), length(res) > 0L)
 
   res
+}
+
+b_file_lock <- function(self, private, keyring) {
+
+  kr_file <- private$keyring_file(keyring)
+  kr_env <- b_file_keyring_env(kr_file)
+
+  kr_env$lock <- filelock::lock(paste0(kr_file, ".lck"), timeout = 0)
+
+  if (is.null(kr_env$lock)){
+    FALSE
+  } else {
+    TRUE
+  }
+}
+
+b_file_unlock <- function(self, private, keyring) {
+
+  kr_env <- b_file_keyring_env(private$keyring_file(keyring))
+
+  if (inherits(kr_env$lock, "filelock_lock")) {
+    filelock::unlock(kr_env$lock)
+  } else {
+    FALSE
+  }
 }
 
 ## --------------------------------------------------------------------

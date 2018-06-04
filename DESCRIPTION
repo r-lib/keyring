@@ -23,7 +23,8 @@ Imports:
     R6,
     utils,
     sodium,
-    yaml
+    yaml,
+    filelock
 Suggests:
     covr,
     mockery,
