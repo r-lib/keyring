@@ -101,7 +101,10 @@ backend_file <- R6Class(
 )
 
 b_file_init <- function(self, private, keyring) {
-  self$keyring_set_default(keyring %||% "~/.keyring")
+
+  default <- file.path(rappdirs::user_data_dir(), paste0(".", .packageName))
+
+  self$keyring_set_default(keyring %||% default)
 
   invisible(self)
 }

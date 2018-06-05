@@ -24,7 +24,8 @@ Imports:
     utils,
     sodium,
     yaml,
-    filelock
+    filelock,
+    rappdirs
 Suggests:
     covr,
     mockery,
