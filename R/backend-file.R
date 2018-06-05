@@ -213,7 +213,15 @@ b_file_keyring_delete <- function(self, private, keyring) {
     self$keyring_unlock(keyring)
   }
 
-  unlink(private$keyring_file(keyring))
+  self$keyring_lock(keyring)
+
+  kr_file <- private$keyring_file(keyring)
+  lck_file <- paste0(kr_file, ".lck")
+
+  unlink(kr_file)
+  if (file.exists(lck_file)) {
+    unlink(lck_file)
+  }
 
   invisible(self)
 }
