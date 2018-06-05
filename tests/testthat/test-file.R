@@ -46,11 +46,11 @@ test_that("key consistency check", {
   expect_silent(kb$set_with_value(random_service(), username, password))
 
   expect_error(kb$keyring_unlock(password = keyring_pwd_2),
-               "failed to unlock keyring")
+               "cannot unlock keyring")
 
   expect_silent(kb$keyring_lock())
   expect_error(kb$keyring_unlock(password = keyring_pwd_2),
-               "failed to unlock keyring")
+               "cannot unlock keyring")
 
   kb$.__enclos_env__$private$key_set(keyring_pwd_2)
   expect_true(kb$keyring_is_locked())
