@@ -56,8 +56,9 @@ test_that("key consistency check", {
   expect_true(kb$keyring_is_locked())
   kb$.__enclos_env__$private$key_unset()
 
-  mockery::stub(b_file_key_set, "getPass", keyring_pwd_1, depth = 2)
-  kb$set_with_value(random_service(), username, password)
+  with_mock(`keyring:::get_pass` = mockery::mock(keyring_pwd_1), {
+    expect_silent(kb$set_with_value(random_service(), username, password))
+  })
 
   expect_silent(kb$keyring_delete())
 })
