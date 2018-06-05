@@ -54,11 +54,11 @@ test_that("key consistency check", {
 
   kb$.__enclos_env__$private$key_set(keyring_pwd_2)
   expect_true(kb$keyring_is_locked())
+  kb$.__enclos_env__$private$key_unset()
 
-  # will prompt for keyring pwd since it is locked; how can we test for this?
-  # kb$set_with_value(random_service(), username, password)
+  mockery::stub(b_file_key_set, "getPass", keyring_pwd_1, depth = 2)
+  kb$set_with_value(random_service(), username, password)
 
-  expect_silent(kb$keyring_unlock(password = keyring_pwd_1))
   expect_silent(kb$keyring_delete())
 })
 

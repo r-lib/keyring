@@ -30,7 +30,8 @@ Suggests:
     covr,
     mockery,
     testthat,
-    withr
+    withr,
+    mockery
 Encoding: UTF-8
 SystemRequirements: libsecret on Linux (libsecret-1-dev on Debian/Ubuntu,
     libsecret-devel on Fedora/CentOS)
