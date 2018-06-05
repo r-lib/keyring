@@ -134,3 +134,38 @@ test_that("list keyring items", {
 
   expect_silent(kb$keyring_delete(keyring))
 })
+
+test_that("helper functions work", {
+
+  secret <- random_password()
+  long_secret <- random_string(500L)
+  nonce <- random(24L)
+  password <- hash(charToRaw(random_password()))
+
+  expect_identical(b_file_split_string(secret), secret)
+  expect_true(
+    assertthat::is.string(
+      split_key <- b_file_split_string(long_secret)
+    )
+  )
+  expect_match(split_key, "\\n")
+  expect_identical(b_file_merge_string(split_key), long_secret)
+
+  expect_identical(
+    b_file_secret_decrypt(
+      b_file_secret_encrypt(secret, nonce, password),
+      nonce,
+      password
+    ),
+    secret
+  )
+
+  expect_identical(
+    b_file_secret_decrypt(
+      b_file_secret_encrypt(long_secret, nonce, password),
+      nonce,
+      password
+    ),
+    long_secret
+  )
+})
