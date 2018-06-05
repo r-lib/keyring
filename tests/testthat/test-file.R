@@ -6,7 +6,7 @@ test_that("specify keyring explicitly", {
   service_1 <- random_service()
   username <- random_username()
   password <- random_password()
-  keyring <- random_keyring()
+  keyring <- file.path(new_empty_dir(), random_keyring())
 
   kb <- backend_file$new(keyring = keyring)
 
@@ -36,7 +36,7 @@ test_that("key consistency check", {
 
   username <- random_username()
   password <- random_password()
-  keyring <- random_keyring()
+  keyring <- file.path(new_empty_dir(), random_keyring())
   keyring_pwd_1 <- random_password()
   keyring_pwd_2 <- random_password()
 
@@ -67,8 +67,8 @@ test_that("use non-default keyring", {
   service <- random_service()
   username <- random_username()
   password <- random_password()
-  default_keyring <- random_keyring()
-  keyring <- random_keyring()
+  default_keyring <- file.path(new_empty_dir(), random_keyring())
+  keyring <- file.path(new_empty_dir(), random_keyring())
   default_keyring_pwd <- random_password()
   keyring_pwd <- random_password()
 
@@ -100,7 +100,7 @@ test_that("list keyring items", {
   service <- random_service()
   username <- random_username()
 
-  keyring <- random_keyring()
+  keyring <- file.path(new_empty_dir(), random_keyring())
   keyring_pwd <- random_password()
 
   kb <- backend_file$new(keyring)

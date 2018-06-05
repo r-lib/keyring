@@ -55,3 +55,10 @@ random_keyring <- function() {
     random_string(8, use_numbers = FALSE)
   )
 }
+
+new_empty_dir <- function() {
+  new <- tempfile()
+  unlink(new, recursive = TRUE, force = TRUE)
+  dir.create(new)
+  new
+}
