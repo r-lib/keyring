@@ -96,12 +96,7 @@ backend_file <- R6Class(
     items_get = function(keyring = NULL)
       b_file_items_get(self, private, keyring),
     check_get = function(keyring = NULL)
-      b_file_check_get(self, private, keyring),
-
-    file_lock = function(keyring = NULL)
-      b_file_lock(self, private, keyring),
-    file_unlock = function(keyring = NULL)
-      b_file_unlock(self, private, keyring)
+      b_file_check_get(self, private, keyring)
   )
 )
 
@@ -232,14 +227,7 @@ b_file_keyring_lock <- function(self, private, keyring) {
 
   assert_that(file.exists(private$keyring_file(keyring)))
 
-  if (private$file_unlock(keyring)) {
-    private$key_unset(keyring)
-  } else {
-    b_file_error(
-      "cannot lock keyring",
-      "The keyring file cannot be unlocked."
-    )
-  }
+  private$key_unset(keyring)
 
   invisible(self)
 }
@@ -257,14 +245,6 @@ b_file_keyring_unlock <- function(self, private, keyring, password) {
     b_file_error(
       "cannot unlock keyring",
       "The supplied password does not work."
-    )
-  }
-
-  if (!private$file_lock(keyring)) {
-    private$key_unset(keyring)
-    b_file_error(
-      "cannot unlock keyring",
-      "The keyring file cannot be locked."
     )
   }
 
@@ -343,7 +323,12 @@ b_file_keyring_file <- function(self, private, keyring, ...) {
 
 b_file_read_keyring_file <- function(self, private, keyring) {
 
-  yml <- yaml::yaml.load_file(keyring %||% private$keyring)
+  keyring <- keyring %||% private$keyring
+
+  with_lock(
+    keyring,
+    yml <- yaml::yaml.load_file(keyring)
+  )
 
   assert_that(
     is_list_with_names(yml, names = c("keyring_info", "items")),
@@ -365,22 +350,25 @@ b_file_write_keyring_file <- function(self, private, keyring, nonce, items,
 
   nonce <- nonce %||% private$nonce_get(keyring)
 
-  yaml::write_yaml(
-    list(
-      keyring_info = list(
-        keyring_version = as.character(
-          getNamespaceVersion(.packageName)
+  keyring <- keyring %||% private$keyring
+
+  with_lock(
+    keyring,
+    yaml::write_yaml(
+      list(
+        keyring_info = list(
+          keyring_version = as.character(getNamespaceVersion(.packageName)),
+          nonce = sodium::bin2hex(nonce),
+          integrity_check = b_file_secret_encrypt(
+            paste(sample(letters, 22L, replace = TRUE), collapse = ""),
+            nonce,
+            key %||% private$key_get(keyring)
+          )
         ),
-        nonce = sodium::bin2hex(nonce),
-        integrity_check = b_file_secret_encrypt(
-          paste(sample(letters, 22L, replace = TRUE), collapse = ""),
-          nonce,
-          key %||% private$key_get(keyring)
-        )
-      ),
-      items = items %||% private$items_get(keyring)
-    ),
-    keyring %||% private$keyring
+        items = items %||% private$items_get(keyring)
+       ),
+      keyring
+    )
   )
 
   invisible(self)
@@ -495,31 +483,6 @@ b_file_check_get <- function(self, private, keyring) {
   res
 }
 
-b_file_lock <- function(self, private, keyring) {
-
-  kr_file <- private$keyring_file(keyring)
-  kr_env <- b_file_keyring_env(kr_file)
-
-  kr_env$lock <- filelock::lock(paste0(kr_file, ".lck"), timeout = 1000)
-
-  if (is.null(kr_env$lock)){
-    FALSE
-  } else {
-    TRUE
-  }
-}
-
-b_file_unlock <- function(self, private, keyring) {
-
-  kr_env <- b_file_keyring_env(private$keyring_file(keyring))
-
-  if (inherits(kr_env$lock, "filelock_lock")) {
-    filelock::unlock(kr_env$lock)
-  } else {
-    FALSE
-  }
-}
-
 ## --------------------------------------------------------------------
 ## helper functions
 
@@ -597,4 +560,11 @@ b_file_split_string <- function(string, width = 78L) {
 b_file_merge_string <- function(string) {
   assert_that(is_string(string))
   paste(strsplit(string, "\n")[[1L]], collapse = "")
+}
+
+with_lock <- function(file, expr) {
+  lockfile <- paste0(file, ".lck")
+  l <- filelock::lock(lockfile, timeout = 1000)
+  on.exit(filelock::unlock(l), add = TRUE)
+  expr
 }

@@ -169,3 +169,15 @@ test_that("helper functions work", {
     long_secret
   )
 })
+
+test_that("multiple sessions", {
+  ## TODO
+})
+
+test_that("keys updated from another session", {
+  ## TODO
+})
+
+test_that("locking the keyring file", {
+  ## TODO
+})

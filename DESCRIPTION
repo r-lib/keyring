@@ -27,6 +27,7 @@ Imports:
     filelock,
     rappdirs
 Suggests:
+    callr,
     covr,
     mockery,
     testthat,
