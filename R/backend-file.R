@@ -337,11 +337,13 @@ b_file_keyring_create_direct <- function(self, private, keyring, password,
     confirmation(paste("are you sure you want to overwrite", file_name))
   }
 
-  private$keyring_write_file(
-    file_name,
-    nonce %||% sodium::random(24L),
-    items %||% list(),
-    password %||% get_pass("Keyring password: ")
+  with_lock(file_name,
+    private$keyring_write_file(
+      file_name,
+      nonce %||% sodium::random(24L),
+      items %||% list(),
+      password %||% get_pass("Keyring password: ")
+    )
   )
 
   invisible(self)
