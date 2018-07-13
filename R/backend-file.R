@@ -180,8 +180,10 @@ b_file_set_with_value <- function(self, private, service, username,
     )
   )
 
-  private$keyring_set(keyring, items = c(all_items, list(new_item)))
+  ## Order matters here, we only want to set the new items if we
+  ## could write out the file
   private$keyring_write_file(keyring)
+  private$keyring_set(keyring, items = c(all_items, list(new_item)))
 
   invisible(self)
 }
