@@ -160,15 +160,11 @@ b_file_set_with_value <- function(self, private, service, username,
 
   all_items <- private$items_get(keyring)
 
-  is_duplicate <- any(
+  existing <- which(
     vapply(all_items, `[[`, character(1L), "service_name") %in% service &
       vapply(all_items, `[[`, character(1L), "user_name") %in% username
   )
-
-  if (is_duplicate) {
-    b_file_error("cannot save secret",
-                 "The specified item is already in the keychain.")
-  }
+  if (length(existing)) all_items <- all_items[- existing]
 
   new_item <- list(
     service_name = service,
@@ -327,10 +323,10 @@ b_file_read_keyring_file <- function(self, private, keyring) {
 
   keyring <- keyring %||% private$keyring
 
-  with_lock(
-    keyring,
+  with_lock(keyring, {
+    md5 <- tools::md5sum(keyring)
     yml <- yaml::yaml.load_file(keyring)
-  )
+  })
 
   assert_that(
     is_list_with_names(yml, names = c("keyring_info", "items")),
@@ -343,7 +339,8 @@ b_file_read_keyring_file <- function(self, private, keyring) {
   list(
     nonce = sodium::hex2bin(yml[["keyring_info"]][["nonce"]]),
     items = lapply(yml[["items"]], b_file_validate_item),
-    check = yml[["keyring_info"]][["integrity_check"]]
+    check = yml[["keyring_info"]][["integrity_check"]],
+    md5 = md5
   )
 }
 

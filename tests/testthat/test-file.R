@@ -6,6 +6,7 @@ test_that("specify keyring explicitly", {
   service_1 <- random_service()
   username <- random_username()
   password <- random_password()
+  password2 <- random_password()
   keyring <- file.path(new_empty_dir(), random_keyring())
 
   kb <- backend_file$new(keyring = keyring)
@@ -15,11 +16,11 @@ test_that("specify keyring explicitly", {
   expect_false(kb$keyring_is_locked())
 
   expect_silent(kb$set_with_value(service_1, username, password))
-
   expect_equal(kb$get(service_1, username), password)
 
-  expect_error(kb$set_with_value(service_1, username, password),
-               "The specified item is already in the keychain.")
+  ## Overwrite
+  expect_silent(kb$set_with_value(service_1, username, password2))
+  expect_equal(kb$get(service_1, username), password2)
 
   expect_silent(kb$set_with_value(random_service(), username, password))
 
