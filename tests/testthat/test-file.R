@@ -7,7 +7,8 @@ test_that("specify keyring explicitly", {
   username <- random_username()
   password <- random_password()
   password2 <- random_password()
-  keyring <- file.path(new_empty_dir(), random_keyring())
+  keyring <- file.path(tmp <- new_empty_dir(), random_keyring())
+  on.exit(unlink(tmp, recursive =  TRUE), add = TRUE)
 
   kb <- backend_file$new(keyring = keyring)
 
@@ -50,7 +51,8 @@ test_that("key consistency check", {
 
   username <- random_username()
   password <- random_password()
-  keyring <- file.path(new_empty_dir(), random_keyring())
+  keyring <- file.path(tmp <- new_empty_dir(), random_keyring())
+  on.exit(unlink(tmp, recursive =  TRUE), add = TRUE)
   keyring_pwd_1 <- random_password()
   keyring_pwd_2 <- random_password()
 
@@ -82,8 +84,10 @@ test_that("use non-default keyring", {
   service <- random_service()
   username <- random_username()
   password <- random_password()
-  default_keyring <- file.path(new_empty_dir(), random_keyring())
-  keyring <- file.path(new_empty_dir(), random_keyring())
+  default_keyring <- file.path(tmp1 <- new_empty_dir(), random_keyring())
+  on.exit(unlink(tmp1, recursive =  TRUE), add = TRUE)
+  keyring <- file.path(tmp2 <- new_empty_dir(), random_keyring())
+  on.exit(unlink(tmp2, recursive =  TRUE), add = TRUE)
   default_keyring_pwd <- random_password()
   keyring_pwd <- random_password()
 
@@ -115,7 +119,8 @@ test_that("list keyring items", {
   service <- random_service()
   username <- random_username()
 
-  keyring <- file.path(new_empty_dir(), random_keyring())
+  keyring <- file.path(tmp <- new_empty_dir(), random_keyring())
+  on.exit(unlink(tmp, recursive =  TRUE), add = TRUE)
   keyring_pwd <- random_password()
 
   kb <- backend_file$new(keyring)
