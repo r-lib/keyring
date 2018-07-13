@@ -497,7 +497,7 @@ b_file_lock <- function(self, private, keyring) {
   kr_file <- private$keyring_file(keyring)
   kr_env <- b_file_keyring_env(kr_file)
 
-  kr_env$lock <- filelock::lock(paste0(kr_file, ".lck"), timeout = 0)
+  kr_env$lock <- filelock::lock(paste0(kr_file, ".lck"), timeout = 1000)
 
   if (is.null(kr_env$lock)){
     FALSE
