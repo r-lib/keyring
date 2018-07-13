@@ -8,6 +8,8 @@ void keyring_secret_service_dummy() { }
 #include <Rinternals.h>
 #include <R_ext/Rdynload.h>
 
+#ifdef HAS_LIBSECRET
+
 #define SECRET_WITH_UNSTABLE 1
 #define SECRET_API_SUBJECT_TO_CHANGE 1
 #include <libsecret/secret.h>
@@ -535,5 +537,29 @@ void R_init_keyring(DllInfo *dll) {
 void R_unload_keyring(DllInfo *dll) {
   secret_service_disconnect();
  }
+
+#else // HAS_LIBSECRET
+
+SEXP keyring_secret_service_is_available(SEXP report_error) {
+  if (LOGICAL(report_error)[0]) {
+    error("keyring build has no libsecret support");
+  } else {
+    return ScalarLogical(0);
+  }
+}
+
+static const R_CallMethodDef callMethods[]  = {
+  { "keyring_secret_service_is_available",
+    (DL_FUNC) &keyring_secret_service_is_available, 1 },
+  { NULL, NULL, 0 }
+};
+
+void R_init_keyring(DllInfo *dll) {
+  R_registerRoutines(dll, NULL, callMethods, NULL, NULL);
+  R_useDynamicSymbols(dll, FALSE);
+  R_forceSymbols(dll, TRUE);
+}
+
+#endif // HAS_LIBSECRET
 
 #endif // __linux__

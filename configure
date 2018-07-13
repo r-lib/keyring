@@ -5,11 +5,11 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 
 else
     if which pkg-config >/dev/null 2>/dev/null && pkg-config libsecret-1; then
-	echo "PKG_CFLAGS=$(pkg-config --cflags libsecret-1)" > src/Makevars
+	echo "PKG_CFLAGS=-DHAS_LIBSECRET $(pkg-config --cflags libsecret-1)" > src/Makevars
 	echo "PKG_LIBS=$(pkg-config --libs libsecret-1)" >> src/Makevars
     else
 	if [[ -n "$LIBSECRET_CFLAGS" && -n "$LIBSECRET_LIBS" ]]; then
-	    echo "PKG_CFLAGS=$LIBSECRET_CFLAGS" > src/Makevars
+	    echo "PKG_CFLAGS=-DHAS_LIBSECRET $LIBSECRET_CFLAGS" > src/Makevars
 	    echo "PKG_LIBS=$LIBSECRET_LIBS" >> src/Makevars
 	else
 	    echo "Could not find libsecret headers or libs."
@@ -17,7 +17,8 @@ else
 	    echo "On RedHat, Fedora, and CentOS, you need to install libsecret-devel via yum or dnf."
 	    echo "Note that in addition to libsecret, you either need pkg-config or set the"
 	    echo "LIBSECRET_CFLAGS and LIBSECRET_LIBS environment variables."
-	    exit 1
+	    echo
+	    echo "This keyring build will not support the libsecret backend."
 	fi
     fi
 fi
