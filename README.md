@@ -13,10 +13,12 @@
 
 Platform independent API to access the operating systems
 credential store. Currently supports:
-* Keychain on macOS,
-* Credential Store on Windows,
-* the Secret Service API on Linux, and
-* environment variables on all platforms.
+* Keychain on macOS (`backend_macos`),
+* Credential Store on Windows (`backend_wincred`),
+* the Secret Service API on Linux (`backend_secret_service`),
+* encrypted files (`backend_file`), and
+* environment variables (`backend_env`).
+The last two are available on all platforms.
 Additional storage backends can be added easily.
 
 ## Installation
@@ -27,6 +29,11 @@ Install the `libsecret` library, at least version 0.16.
 
 - Debian/Ubuntu: `libsecret-1-dev`
 - Recent RedHat, Fedora and CentOS systems: `libsecret-devel`
+
+The file backend uses the sodium package:
+
+- Debian/Ubuntu: `libsodium-dev`
+- Fedora, EPEL: `libsodium-devel`
 
 ### OS X and Windows
 
@@ -49,10 +56,14 @@ install.packages("keyring")
   manual page of `default_backend()`. In most cases you don't have
   to configure this.
 - MacOS: `backend_macos`
-- Linux: `backend_secret_service`
+- Linux: `backend_secret_service`,  if build with `libsecret`
 - Windows: `backend_wincred`
 - Or store the secrets in environment variables on other operating
   systems: `backend_env`
+
+Should you need to change the default backend, set the
+`R_KEYRING_BACKEND` environment variable or the `keyring_backend` R
+option to the backend's name (e.g. `env`, `file`, etc.).
 
 ### Query secret keys in a keyring:
 
