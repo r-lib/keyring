@@ -1,5 +1,5 @@
 
-b_file_keyrings <- new.env()
+b_file_keyrings <- new.env(parent = emptyenv())
 
 #' Store secrets in encrypted files
 #'
@@ -558,7 +558,7 @@ b_file_keyring_env <- function(keyring) {
   kr_env <- b_file_keyrings[[env_name]]
 
   if (is.null(kr_env)) {
-    kr_env <- assign(env_name, new.env(), envir = b_file_keyrings)
+    kr_env <- b_file_keyrings[[env_name]] <- new.env(parent = emptyenv())
   }
 
   kr_env
