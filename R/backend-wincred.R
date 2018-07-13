@@ -106,7 +106,7 @@ b_wincred_get_encrypted_aes <- function(str) {
 b_wincred_unlock_keyring_internal <- function(keyring, password = NULL) {
   target_lock <- b_wincred_target_lock(keyring)
   if (b_wincred_i_exists(target_lock)) {
-    base64_decode(rawToChar(b_wincred_i_get(target_lock)))
+    openssl::base64_decode(rawToChar(b_wincred_i_get(target_lock)))
   } else {
     target_keyring <- b_wincred_target_keyring(keyring)
     keyring_data <- b_wincred_parse_keyring_credential(target_keyring)
@@ -349,10 +349,10 @@ b_wincred_keyring_create_direct <- function(self, private, keyring,
   if (b_wincred_i_exists(target_keyring)) {
     stop("keyring ", sQuote(keyring), " already exists")
   }
-  salt <- base64_encode(openssl::rand_bytes(32))
+  salt <- openssl::base64_encode(openssl::rand_bytes(32))
   aes <- openssl::sha256(charToRaw(password), key = salt)
   verify <- openssl::aes_cbc_encrypt(openssl::rand_bytes(15), key = aes)
-  verify <- base64_encode(c(attr(verify, "iv"), verify))
+  verify <- openssl::base64_encode(c(attr(verify, "iv"), verify))
   dcf <- list(
     Version = b_wincred_protocol_version,
     Verify = verify,
