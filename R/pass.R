@@ -1,4 +1,4 @@
 
-get_pass <- function() {
-  getPass::getPass()
+get_pass <- function(prompt = "PASSWORD: ") {
+  getPass::getPass(msg = prompt)
 }

@@ -341,7 +341,7 @@ b_file_keyring_create_direct <- function(self, private, keyring, password,
     file_name,
     nonce %||% sodium::random(24L),
     items %||% list(),
-    password %||% get_pass()
+    password %||% get_pass("Keyring password: ")
   )
 
   invisible(self)
@@ -445,7 +445,7 @@ b_file_key_is_set <- function(self, private, keyring) {
 
 b_file_key_set <- function(self, private, key, keyring) {
 
-  key <- key %||% get_pass()
+  key <- key %||% get_pass("Keyring password: ")
   assert_that(is_string(key))
   key <- sodium::hash(charToRaw(key))
 
