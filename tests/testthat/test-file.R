@@ -15,8 +15,14 @@ test_that("specify keyring explicitly", {
   expect_silent(kb$keyring_unlock(password = random_password()))
   expect_false(kb$keyring_is_locked())
 
+  ## Missing
+  expect_error(kb$get(service_1, username), "could not be found")
+
   expect_silent(kb$set_with_value(service_1, username, password))
   expect_equal(kb$get(service_1, username), password)
+
+  ## Missing
+  expect_error(kb$get(service_1, "foobar"), "could not be found")
 
   ## Overwrite
   expect_silent(kb$set_with_value(service_1, username, password2))
@@ -29,6 +35,13 @@ test_that("specify keyring explicitly", {
 
   expect_silent(kb$set_with_value(service_2, username, long_password))
   expect_equal(kb$get(service_2, username), long_password)
+
+  ## Delete
+  expect_silent(kb$delete(service_1, username))
+  expect_error(kb$get(service_1, username), "could not be found")
+
+  ## Delete non-existent is  silent
+  expect_silent(kb$delete(service_1, username))
 
   expect_silent(kb$keyring_delete())
 })

@@ -34,6 +34,9 @@ backend_file <- R6Class(
       keyring = NULL)
       b_file_set_with_value(self, private, service, username, password,
                             keyring),
+
+    delete = function(service, username = NULL, keyring = NULL)
+      b_file_delete(self, private, service, username, keyring),
     list = function(service = NULL, keyring = NULL)
       b_file_list(self, private, service, keyring),
 
@@ -72,10 +75,10 @@ backend_file <- R6Class(
     keyring_file = function(keyring = NULL, ...)
       b_file_keyring_file(self, private, keyring, ...),
     keyring_read_file = function(keyring = NULL)
-      b_file_read_keyring_file(self, private, keyring),
+      b_file_keyring_read_file(self, private, keyring),
     keyring_write_file = function(keyring = NULL, nonce = NULL, items = NULL,
       key = NULL)
-      b_file_write_keyring_file(self, private, keyring, nonce, items, key),
+      b_file_keyring_write_file(self, private, keyring, nonce, items, key),
 
     key_get = function(keyring = NULL)
       b_file_key_get(self, private, keyring),
@@ -176,10 +179,33 @@ b_file_set_with_value <- function(self, private, service, username,
     )
   )
 
-  ## Order matters here, we only want to set the new items if we
-  ## could write out the file
-  private$keyring_write_file(keyring)
-  private$keyring_set(keyring, items = c(all_items, list(new_item)))
+  items <- c(all_items, list(new_item))
+  private$keyring_write_file(keyring, items = items)
+  private$keyring_set(keyring, items = items)
+
+  invisible(self)
+}
+
+b_file_delete <- function(self, private, service, username, keyring) {
+
+  if (self$keyring_is_locked(keyring)) {
+    self$keyring_unlock(keyring)
+  }
+
+  all_items <- private$items_get(keyring)
+
+  existing <- which(
+    vapply(all_items, `[[`, character(1L), "service_name") %in% service &
+      vapply(all_items, `[[`, character(1L), "user_name") %in% username
+  )
+
+  if (length(existing) == 0) return(invisible(self))
+
+  ## Remove
+  items <- all_items[- existing]
+
+  private$keyring_write_file(keyring, items = items)
+  private$keyring_set(keyring, items = items)
 
   invisible(self)
 }
@@ -319,7 +345,7 @@ b_file_keyring_file <- function(self, private, keyring, ...) {
   normalizePath(file_name, mustWork = TRUE)
 }
 
-b_file_read_keyring_file <- function(self, private, keyring) {
+b_file_keyring_read_file <- function(self, private, keyring) {
 
   keyring <- keyring %||% private$keyring
 
@@ -344,7 +370,7 @@ b_file_read_keyring_file <- function(self, private, keyring) {
   )
 }
 
-b_file_write_keyring_file <- function(self, private, keyring, nonce, items,
+b_file_keyring_write_file <- function(self, private, keyring, nonce, items,
   key) {
 
   nonce <- nonce %||% private$nonce_get(keyring)
