@@ -29,7 +29,7 @@ b_wincred_i_enumerate <- function(filter) {
 }
 
 b_wincred_i_escape <- function(x) {
-  URLencode(x)
+  if (is.null(x)) x else URLencode(x)
 }
 
 #' @importFrom utils URLdecode
@@ -308,14 +308,13 @@ b_wincred_list <- function(self, private, service, keyring) {
   keyring <- keyring %||% private$keyring
 
   filter <- if (is.null(service)) {
-    paste0(keyring, ":*")
+    paste0(b_wincred_i_escape(keyring), ":*")
   } else {
-    paste0(keyring, ":", service, ":*")
+    paste0(b_wincred_i_escape(keyring), ":",
+           b_wincred_i_escape(service), ":*")
   }
 
-  list <- b_wincred_i_enumerate(
-    b_wincred_i_escape(filter)
-  )
+  list <- b_wincred_i_enumerate(filter)
 
   ## Filter out the credentials that belong to the keyring or its lock
   list <- grep("(::|::unlocked)$", list, value = TRUE, invert = TRUE)
