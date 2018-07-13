@@ -33,7 +33,7 @@ test_that("creating keychains", {
   kb$.__enclos_env__$private$keyring_create_direct(keyring, "secret123!")
   expect_true(keyring %in% kb$keyring_list()$keyring)
 
-  list <- key_list()
+  list <- kb$list()
   expect_equal(nrow(list), 0)
 
   service <- random_service()
