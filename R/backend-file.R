@@ -52,7 +52,13 @@ backend_file <- R6Class(
     keyring_default = function()
       b_file_keyring_default(self, private),
     keyring_set_default = function(keyring)
-      b_file_keyring_set_default(self, private, keyring)
+      b_file_keyring_set_default(self, private, keyring),
+
+    docs = function() {
+      modifyList(super$docs(), list(. = paste0(
+        "Store secrets in encrypted files.\n",
+        private$keyring)))
+    }
   ),
 
   private = list(
