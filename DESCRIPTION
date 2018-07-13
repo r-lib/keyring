@@ -21,7 +21,11 @@ Imports:
     getPass,
     openssl,
     R6,
-    utils
+    utils,
+    sodium,
+    yaml,
+    filelock,
+    rappdirs
 Suggests:
     covr,
     mockery,
@@ -35,6 +39,7 @@ Collate:
     'assertions.R'
     'backend-class.R'
     'backend-env.R'
+    'backend-file.R'
     'backend-macos.R'
     'backend-secret-service.R'
     'backend-wincred.R'
