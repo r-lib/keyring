@@ -167,7 +167,7 @@ backend_wincred <- R6Class(
     get = function(service, username = NULL, keyring = NULL)
       b_wincred_get(self, private, service, username, keyring),
     get_raw = function(service, username = NULL, keyring = NULL)
-      b_wincred_get_raw(self, private, service, username = NULL, keyring = NULL),
+      b_wincred_get_raw(self, private, service, username, keyring),
     set = function(service, username = NULL, keyring = NULL)
       b_wincred_set(self, private, service, username, keyring),
     set_with_value = function(service, username = NULL, password = NULL,
@@ -235,6 +235,19 @@ b_wincred_init <- function(self, private, keyring) {
 #' @keywords internal
 
 b_wincred_get <- function(self, private, service, username, keyring) {
+  password <- self$get_raw(service, username, keyring)
+  if (any(password == 0)) {
+    password <- iconv(list(password), from = "UTF-16LE", to = "")
+    if (is.na(password)) {
+      stop("Key contains embedded null bytes, use get_raw()")
+    }
+    password
+  } else {
+    rawToChar(password)
+  }
+}
+
+b_wincred_get_raw <- function(self, private, service, username, keyring) {
   keyring <- keyring %||% private$keyring
   target <- b_wincred_target(keyring, service, username)
   password <- b_wincred_i_get(target)
@@ -244,10 +257,7 @@ b_wincred_get <- function(self, private, service, username, keyring) {
     enc <- b_wincred_get_encrypted_aes(rawToChar(password))
     password <- openssl::aes_cbc_decrypt(enc, key = aes)
   }
-  if (any(password == 0)) {
-    stop("Key contains embedded null bytes, use get_raw()")
-  }
-  rawToChar(password)
+  password
 }
 
 b_wincred_set <- function(self, private, service, username, keyring) {
