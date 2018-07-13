@@ -310,7 +310,7 @@ b_file_keyring_is_locked <- function(self, private, keyring) {
         if(conditionMessage(e) == "Failed to decrypt")
           TRUE
         else
-          signalCondition(e)
+          stop(e)
       }
     )
   }
