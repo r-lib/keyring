@@ -16,6 +16,7 @@ addons:
   apt:
     packages:
       - libsecret-1-dev
+      - libsodium-dev
 
 after_success:
   - test $TRAVIS_R_VERSION_STRING = "release" && Rscript -e 'covr::codecov()'
