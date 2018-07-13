@@ -82,7 +82,8 @@ b_env_get <- function(self, private, service, username, keyring) {
 b_env_set <- function(self, private, service, username, keyring) {
   warn_for_keyring(keyring)
   password <- get_pass()
-  b_env_set_with_value(self, private, service, username, password)
+  b_env_set_with_value(self, private, service, username, password,
+                       keyring = NULL)
   invisible(self)
 }
 
