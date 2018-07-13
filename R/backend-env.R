@@ -116,7 +116,7 @@ b_env_list <- function(self, private, service, keyring) {
   keys <- gsub(
     paste(service, ":", sep = ""),
     "",
-    Filter(function(e) startsWith(e, service), names(Sys.getenv()))
+    Filter(function(e) str_starts_with(e, service), names(Sys.getenv()))
   )
   
   data.frame(

@@ -28,10 +28,8 @@ b_wincred_i_enumerate <- function(filter) {
   .Call("keyring_wincred_enumerate", filter)
 }
 
-#' @importFrom utils URLencode
-
 b_wincred_i_escape <- function(x) {
-  URLencode(x, reserved = TRUE, repeated = TRUE)
+  URLencode(x)
 }
 
 #' @importFrom utils URLdecode
