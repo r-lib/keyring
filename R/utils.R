@@ -20,3 +20,7 @@ darwin_version <- function() {
   if (info[["sysname"]] != "Darwin") stop("Not macOS")
   package_version(info[["release"]])
 }
+
+file_stamp <- function(x) {
+  as.character(tools::md5sum(x))
+}

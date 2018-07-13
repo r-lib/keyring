@@ -189,14 +189,60 @@ test_that("helper functions work", {
   )
 })
 
-test_that("multiple sessions", {
-  ## TODO
-})
-
 test_that("keys updated from another session", {
-  ## TODO
+  service_1 <- random_service()
+  username <- random_username()
+  username2 <- random_username()
+  password <- random_password()
+  password2 <- random_password()
+
+  keyring <- file.path(tmp <- new_empty_dir(), random_keyring())
+  on.exit(unlink(tmp, recursive =  TRUE), add = TRUE)
+  kb <- backend_file$new(keyring = keyring)
+
+  kb$keyring_unlock(password = "foobar")
+  kb$set_with_value(service_1, username, password)
+
+  ret <- callr::r(function(s, u, p, k) {
+    kb <- keyring::backend_file$new(keyring = k)
+    kb$keyring_unlock(password = "foobar")
+    kb$set_with_value(s, u, p)
+    kb$get(s, u) },
+    args = list(s = service_1, u = username2, p = password2, k = keyring))
+
+  expect_equal(ret, password2)
+
+  expect_equal(kb$get(service_1, username), password)
+  expect_equal(kb$get(service_1, username2), password2)
+  expect_equal(kb$get(service_1, username), password)
 })
 
 test_that("locking the keyring file", {
-  ## TODO
+  service_1 <- random_service()
+  username <- random_username()
+  password <- random_password()
+
+  keyring <- file.path(tmp <- new_empty_dir(), random_keyring())
+  on.exit(unlink(tmp, recursive =  TRUE), add = TRUE)
+
+  kb <- backend_file$new(keyring = keyring)
+
+  kb$keyring_unlock(password = random_password())
+
+  rb <- callr::r_bg(function(lf) {
+    l <- filelock::lock(lf)
+    cat("done\n");
+    Sys.sleep(3) },
+    args = list(lf = paste0(normalizePath(keyring), ".lck")),
+    stdout = "|"
+  )
+  on.exit(rb$kill(), add = TRUE)
+  rb$poll_io(3000)
+
+  withr::with_options(
+    list(keyring_file_lock_timeout = 100),
+    expect_error(
+      kb$set_with_value(service_1, username, password),
+      "Cannot lock keyring file")
+  )
 })

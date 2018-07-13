@@ -161,27 +161,35 @@ b_file_set_with_value <- function(self, private, service, username,
     self$keyring_unlock(keyring)
   }
 
-  all_items <- private$items_get(keyring)
+  keyring_file <- private$keyring_file(keyring)
+  kr_env <- b_file_keyring_env(private$keyring_file(keyring))
 
-  existing <- which(
-    vapply(all_items, `[[`, character(1L), "service_name") %in% service &
+  with_lock(keyring_file, {
+    all_items <- private$items_get(keyring)
+
+    existing <- which(
+      vapply(all_items, `[[`, character(1L), "service_name") %in% service &
       vapply(all_items, `[[`, character(1L), "user_name") %in% username
-  )
-  if (length(existing)) all_items <- all_items[- existing]
-
-  new_item <- list(
-    service_name = service,
-    user_name = username,
-    secret = b_file_secret_encrypt(
-      password,
-      private$nonce_get(keyring),
-      private$key_get(keyring)
     )
-  )
+    if (length(existing)) all_items <- all_items[- existing]
 
-  items <- c(all_items, list(new_item))
-  private$keyring_write_file(keyring, items = items)
-  private$keyring_set(keyring, items = items)
+    new_item <- list(
+      service_name = service,
+      user_name = username,
+      secret = b_file_secret_encrypt(
+        password,
+        private$nonce_get(keyring),
+        private$key_get(keyring)
+      )
+    )
+
+    items <- c(all_items, list(new_item))
+    private$keyring_write_file(keyring, items = items)
+    kr_env[["stamp"]] <- file_stamp(keyring_file)
+  })
+
+  kr_env <- b_file_keyring_env(private$keyring_file(keyring))
+  kr_env$items <- items
 
   invisible(self)
 }
@@ -192,20 +200,27 @@ b_file_delete <- function(self, private, service, username, keyring) {
     self$keyring_unlock(keyring)
   }
 
-  all_items <- private$items_get(keyring)
+  keyring_file <- private$keyring_file(keyring)
+  kr_env <- b_file_keyring_env(private$keyring_file(keyring))
 
-  existing <- which(
-    vapply(all_items, `[[`, character(1L), "service_name") %in% service &
+  with_lock(keyring_file, {
+    all_items <- private$items_get(keyring)
+
+    existing <- which(
+      vapply(all_items, `[[`, character(1L), "service_name") %in% service &
       vapply(all_items, `[[`, character(1L), "user_name") %in% username
-  )
+    )
 
-  if (length(existing) == 0) return(invisible(self))
+    if (length(existing) == 0) return(invisible(self))
 
-  ## Remove
-  items <- all_items[- existing]
+    ## Remove
+    items <- all_items[- existing]
 
-  private$keyring_write_file(keyring, items = items)
-  private$keyring_set(keyring, items = items)
+    private$keyring_write_file(keyring, items = items)
+    kr_env[["stamp"]] <- file_stamp(keyring_file)
+  })
+
+  kr_env$items <- items
 
   invisible(self)
 }
@@ -350,7 +365,7 @@ b_file_keyring_read_file <- function(self, private, keyring) {
   keyring <- keyring %||% private$keyring
 
   with_lock(keyring, {
-    md5 <- tools::md5sum(keyring)
+    stamp <- file_stamp(keyring)
     yml <- yaml::yaml.load_file(keyring)
   })
 
@@ -366,7 +381,7 @@ b_file_keyring_read_file <- function(self, private, keyring) {
     nonce = sodium::hex2bin(yml[["keyring_info"]][["nonce"]]),
     items = lapply(yml[["items"]], b_file_validate_item),
     check = yml[["keyring_info"]][["integrity_check"]],
-    md5 = md5
+    stamp = stamp
   )
 }
 
@@ -443,9 +458,7 @@ b_file_keyring_set <- function(self, private, keyring, nonce, check, items) {
 
   kr_env <- b_file_keyring_env(private$keyring_file(keyring))
 
-  if (is.null(nonce) || is.null(check) || is.null(items)) {
-    kr <- private$keyring_read_file(keyring)
-  }
+  kr <- private$keyring_read_file(keyring)
 
   nonce <- nonce %||% kr[["nonce"]]
   assert_that(is.raw(nonce), length(nonce) > 0L)
@@ -456,6 +469,8 @@ b_file_keyring_set <- function(self, private, keyring, nonce, check, items) {
   kr_env$check <- check
 
   kr_env$items <- lapply(items %||% kr[["items"]], b_file_validate_item)
+
+  kr_env$stamp <- kr[["stamp"]]
 
   kr_env
 }
@@ -471,9 +486,10 @@ b_file_keyring_get <- function(self, private, keyring) {
 
 b_file_nonce_get <- function(self, private, keyring) {
 
-  kr_env <- b_file_keyring_env(private$keyring_file(keyring))
+  keyring_file <- private$keyring_file(keyring)
+  kr_env <- b_file_keyring_env(keyring_file)
 
-  if (is.null(kr_env$nonce)) {
+  if (is.null(kr_env$nonce)|| file_stamp(keyring_file) != kr_env[["stamp"]]) {
     kr_env <- private$keyring_set(keyring)
   }
 
@@ -485,9 +501,10 @@ b_file_nonce_get <- function(self, private, keyring) {
 
 b_file_items_get <- function(self, private, keyring) {
 
-  kr_env <- b_file_keyring_env(private$keyring_file(keyring))
+  keyring_file <- private$keyring_file(keyring)
+  kr_env <- b_file_keyring_env(keyring_file)
 
-  if (is.null(kr_env$items)) {
+  if (is.null(kr_env$items) || file_stamp(keyring_file) != kr_env[["stamp"]]) {
     private$keyring_set(keyring)
   }
 
@@ -496,9 +513,10 @@ b_file_items_get <- function(self, private, keyring) {
 
 b_file_check_get <- function(self, private, keyring) {
 
-  kr_env <- b_file_keyring_env(private$keyring_file(keyring))
+  keyring_file <- private$keyring_file(keyring)
+  kr_env <- b_file_keyring_env(keyring_file)
 
-  if (is.null(kr_env$check)) {
+  if (is.null(kr_env$check) || file_stamp(keyring_file) != kr_env[["stamp"]]) {
     private$keyring_set(keyring)
   }
 
@@ -588,8 +606,10 @@ b_file_merge_string <- function(string) {
 }
 
 with_lock <- function(file, expr) {
+  timeout <- getOption("keyring_file_lock_timeout", 1000)
   lockfile <- paste0(file, ".lck")
-  l <- filelock::lock(lockfile, timeout = 1000)
+  l <- filelock::lock(lockfile, timeout = timeout)
+  if (is.null(l)) stop("Cannot lock keyring file")
   on.exit(filelock::unlock(l), add = TRUE)
   expr
 }

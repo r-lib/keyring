@@ -25,7 +25,8 @@ Imports:
     sodium,
     yaml,
     filelock,
-    rappdirs
+    rappdirs,
+    tools
 Suggests:
     callr,
     covr,
