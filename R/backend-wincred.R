@@ -86,11 +86,10 @@ b_wincred_write_keyring_credential <- function(target, data) {
   b_wincred_i_set(target, password = charToRaw(value))
 }
 
-#' @importFrom openssl base64_decode
 #' @importFrom utils head tail
 
 b_wincred_get_encrypted_aes <- function(str) {
-  r <- base64_decode(str)
+  r <- openssl::base64_decode(str)
   structure(tail(r, -16), iv = head(r, 16))
 }
 
@@ -104,8 +103,6 @@ b_wincred_get_encrypted_aes <- function(str) {
 ## 7. Create a SESSION credential, with the decrypted AES key
 ## 8. Return the decrypted AES key
 
-#' @importFrom openssl sha256 aes_cbc_decrypt
-
 b_wincred_unlock_keyring_internal <- function(keyring, password = NULL) {
   target_lock <- b_wincred_target_lock(keyring)
   if (b_wincred_i_exists(target_lock)) {
@@ -117,13 +114,14 @@ b_wincred_unlock_keyring_internal <- function(keyring, password = NULL) {
       message("keyring ", sQuote(keyring), " is locked, enter password to unlock")
       password <- get_pass()
     }
-    aes <- sha256(charToRaw(password), key = keyring_data$Salt)
+    aes <- openssl::sha256(charToRaw(password), key = keyring_data$Salt)
     verify <- b_wincred_get_encrypted_aes(keyring_data$Verify)
     tryCatch(
-      aes_cbc_decrypt(verify, key = aes),
+      openssl::aes_cbc_decrypt(verify, key = aes),
       error = function(e) stop("Invalid password, cannot unlock keyring")
     )
-    b_wincred_i_set(target_lock, charToRaw(base64_encode(aes)), session = TRUE)
+    b_wincred_i_set(
+      target_lock, charToRaw(openssl::base64_encode(aes)), session = TRUE)
     aes
   }
 }
@@ -246,7 +244,7 @@ b_wincred_get <- function(self, private, service, username, keyring) {
     ## If it is encrypted, we need to decrypt it
     aes <- b_wincred_unlock_keyring_internal(keyring)
     enc <- b_wincred_get_encrypted_aes(rawToChar(password))
-    password <- aes_cbc_decrypt(enc, key = aes)
+    password <- openssl::aes_cbc_decrypt(enc, key = aes)
   }
   if (any(password == 0)) {
     stop("Key contains embedded null bytes, use get_raw()")
@@ -295,8 +293,8 @@ b_wincred_set_with_raw_value <- function(self, private, service,
   ## Not the default keyring, we need to encrypt it
   target_keyring <- b_wincred_target_keyring(keyring)
   aes <- b_wincred_unlock_keyring_internal(keyring)
-  enc <- aes_cbc_encrypt(password, key = aes)
-  password <- charToRaw(base64_encode(c(attr(enc, "iv"), enc)))
+  enc <- openssl::aes_cbc_encrypt(password, key = aes)
+  password <- charToRaw(openssl::base64_encode(c(attr(enc, "iv"), enc)))
   b_wincred_i_set(target, password = password, username = username)
   invisible(self)
 }
@@ -345,17 +343,15 @@ b_wincred_keyring_create <- function(self, private, keyring) {
 ## 5. Write metadata to the keyring credential
 ## 6. Unlock the keyring immediately, create a keyring unlock credential
 
-#' @importFrom openssl base64_encode rand_bytes aes_cbc_encrypt
-
 b_wincred_keyring_create_direct <- function(self, private, keyring,
                                             password) {
   target_keyring <- b_wincred_target_keyring(keyring)
   if (b_wincred_i_exists(target_keyring)) {
     stop("keyring ", sQuote(keyring), " already exists")
   }
-  salt <- base64_encode(rand_bytes(32))
-  aes <- sha256(charToRaw(password), key = salt)
-  verify <- aes_cbc_encrypt(rand_bytes(15), key = aes)
+  salt <- base64_encode(openssl::rand_bytes(32))
+  aes <- openssl::sha256(charToRaw(password), key = salt)
+  verify <- openssl::aes_cbc_encrypt(openssl::rand_bytes(15), key = aes)
   verify <- base64_encode(c(attr(verify, "iv"), verify))
   dcf <- list(
     Version = b_wincred_protocol_version,

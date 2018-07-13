@@ -13,7 +13,6 @@ b_file_keyrings <- new.env()
 #' @family keyring backends
 #' @export
 #' @include backend-class.R
-#' @importFrom sodium random hex2bin bin2hex hash data_encrypt data_decrypt
 #' @examples
 #' \dontrun{
 #' kb <- backend_file$new()
@@ -318,7 +317,7 @@ b_file_keyring_create_direct <- function(self, private, keyring, password,
 
   private$keyring_write_file(
     file_name,
-    nonce %||% random(24L),
+    nonce %||% sodium::random(24L),
     items %||% list(),
     password %||% get_pass()
   )
@@ -352,7 +351,7 @@ b_file_read_keyring_file <- function(self, private, keyring) {
   )
 
   list(
-    nonce = hex2bin(yml[["keyring_info"]][["nonce"]]),
+    nonce = sodium::hex2bin(yml[["keyring_info"]][["nonce"]]),
     items = lapply(yml[["items"]], b_file_validate_item),
     check = yml[["keyring_info"]][["integrity_check"]]
   )
@@ -367,9 +366,9 @@ b_file_write_keyring_file <- function(self, private, keyring, nonce, items,
     list(
       keyring_info = list(
         keyring_version = as.character(
-          utils::packageVersion(.packageName)
+          getNamespaceVersion(.packageName)
         ),
-        nonce = bin2hex(nonce),
+        nonce = sodium::bin2hex(nonce),
         integrity_check = b_file_secret_encrypt(
           paste(sample(letters, 22L, replace = TRUE), collapse = ""),
           nonce,
@@ -417,7 +416,7 @@ b_file_key_set <- function(self, private, key, keyring) {
 
   key <- key %||% get_pass()
   assert_that(is_string(key))
-  key <- hash(charToRaw(key))
+  key <- sodium::hash(charToRaw(key))
 
   kr_env <- b_file_keyring_env(private$keyring_file(keyring, password = key))
 
@@ -523,20 +522,20 @@ b_file_unlock <- function(self, private, keyring) {
 
 b_file_secret_encrypt <- function(secret, nonce, key) {
 
-  res <- data_encrypt(
+  res <- sodium::data_encrypt(
     charToRaw(secret),
     key,
     nonce
   )
 
-  b_file_split_string(bin2hex(res))
+  b_file_split_string(sodium::bin2hex(res))
 }
 
 b_file_secret_decrypt <- function(secret, nonce, key) {
 
   rawToChar(
-    data_decrypt(
-      hex2bin(b_file_merge_string(secret)),
+    sodium::data_decrypt(
+      sodium::hex2bin(b_file_merge_string(secret)),
       key,
       nonce
     )
