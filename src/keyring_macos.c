@@ -19,7 +19,7 @@ void keyring_macos_error(const char *func, OSStatus status) {
   CFIndex length = CFStringGetLength(str);
   CFIndex maxSize =
     CFStringGetMaximumSizeForEncoding(length, kCFStringEncodingUTF8) + 1;
-  char *buffer = R_alloc(1, maxSize);
+  char *buffer = R_alloc(maxSize, 1);
 
   if (CFStringGetCString(str, buffer, maxSize, kCFStringEncodingUTF8)) {
     error("keyring error (macOS Keychain), %s: %s", func, buffer);
@@ -353,7 +353,7 @@ SEXP keyring_macos_list_keyring() {
       keyring_macos_list_get(pathName, /* cservice = */ NULL);
     CFIndex numitems = CFArrayGetCount(resArray);
     CFRelease(resArray);
-    INTEGER(VECTOR_ELT(result, 1))[i] = numitems;
+    INTEGER(VECTOR_ELT(result, 1))[i] = (int) numitems;
 
     SecKeychainStatus kstatus;
     status = SecKeychainGetStatus(keychain, &kstatus);
