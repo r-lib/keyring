@@ -34,9 +34,11 @@ No additional software needed
 
 ### R package
 
+Install the package from CRAN:
+
 
 ```r
-source("https://install-github.me/r-lib/keyring")
+install.packages("keyring")
 ```
 
 ## Usage
