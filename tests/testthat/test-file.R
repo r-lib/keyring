@@ -190,6 +190,9 @@ test_that("helper functions work", {
 })
 
 test_that("keys updated from another session", {
+
+  skip_on_cran()
+
   service_1 <- random_service()
   username <- random_username()
   username2 <- random_username()
@@ -218,6 +221,9 @@ test_that("keys updated from another session", {
 })
 
 test_that("locking the keyring file", {
+
+  skip_on_cran()
+
   service_1 <- random_service()
   username <- random_username()
   password <- random_password()
