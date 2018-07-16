@@ -51,11 +51,12 @@ b_wincred_target <- function(keyring, service, username) {
 
 b_wincred_i_parse_target <- function(target) {
   parts <- lapply(strsplit(target, ":"), lapply, b_wincred_i_unescape)
+  extract <- function(x, i) x[i][[1]] %||% ""
   res <- data.frame(
     stringsAsFactors = FALSE,
-    keyring = vapply(parts, "[[", "", 1),
-    service = vapply(parts, "[[", "", 2),
-    username = vapply(parts, function(x) x[3][[1]] %||% "", "")
+    keyring = vapply(parts, extract, "", 1),
+    service = vapply(parts, extract, "", 2),
+    username = vapply(parts, extract, "", 3)
   )
 }
 
