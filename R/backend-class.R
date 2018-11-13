@@ -149,7 +149,7 @@ backend <- R6Class(
 #'    a confirmation dialog.
 #' * `keyring_lock()` locks a keyring.
 #' * `keyring_unlock()` unlocks a keyring.
-#' * `keyring_is_locked() checks whether a keyring is locked.
+#' * `keyring_is_locked()` checks whether a keyring is locked.
 #' * `keyring_default()` returns the default keyring.
 #' * `keyring_set_default()` sets the default keyring.
 #'
