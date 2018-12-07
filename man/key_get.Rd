@@ -39,6 +39,8 @@ keyring is used. See also \code{\link[=has_keyring_support]{has_keyring_support(
 \item{password}{The secret to store. For \code{key_set}, it is read from
 the console, interactively. \code{key_set_with_value} can be also used
 in non-interactive mode.}
+
+\item{prompt}{prompt message displayed in the window asking password.}
 }
 \value{
 \code{key_get} returns a character scalar, the password or other
