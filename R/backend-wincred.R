@@ -102,7 +102,7 @@ b_wincred_get_encrypted_aes <- function(str) {
 ## 7. Create a SESSION credential, with the decrypted AES key
 ## 8. Return the decrypted AES key
 
-b_wincred_unlock_keyring_internal <- function(keyring, password = NULL) {
+b_wincred_unlock_keyring_internal <- function(keyring, password = NULL, prompt = "Password: ") {
   target_lock <- b_wincred_target_lock(keyring)
   if (b_wincred_i_exists(target_lock)) {
     openssl::base64_decode(rawToChar(b_wincred_i_get(target_lock)))
@@ -111,7 +111,7 @@ b_wincred_unlock_keyring_internal <- function(keyring, password = NULL) {
     keyring_data <- b_wincred_parse_keyring_credential(target_keyring)
     if (is.null(password)) {
       message("keyring ", sQuote(keyring), " is locked, enter password to unlock")
-      password <- get_pass()
+      password <- get_pass(prompt = prompt)
     }
     aes <- openssl::sha256(charToRaw(password), key = keyring_data$Salt)
     verify <- b_wincred_get_encrypted_aes(keyring_data$Verify)
@@ -261,8 +261,8 @@ b_wincred_get_raw <- function(self, private, service, username, keyring) {
   password
 }
 
-b_wincred_set <- function(self, private, service, username, keyring) {
-  password <- get_pass()
+b_wincred_set <- function(self, private, service, username, keyring, prompt = "Password: ") {
+  password <- get_pass(prompt = prompt)
   b_wincred_set_with_value(self, private, service, username, password,
                            keyring)
   invisible(self)
@@ -338,8 +338,8 @@ b_wincred_list <- function(self, private, service, keyring) {
   )
 }
 
-b_wincred_keyring_create <- function(self, private, keyring) {
-  password <- get_pass()
+b_wincred_keyring_create <- function(self, private, keyring, prompt = "Password: ") {
+  password <- get_pass(prompt = prompt)
   private$keyring_create_direct(keyring, password)
   invisible(self)
 }
@@ -440,9 +440,9 @@ b_wincred_keyring_lock <- function(self, private, keyring) {
 }
 
 b_wincred_keyring_unlock <- function(self, private, keyring,
-                                     password = NULL) {
+                                     password = NULL, prompt = "Password: ") {
   keyring <- keyring %||% private$keyring
-  if (is.null(password)) password <- get_pass()
+  if (is.null(password)) password <- get_pass(prompt = prompt)
   if (!is.null(keyring)) {
     b_wincred_unlock_keyring_internal(keyring, password)
   }

@@ -109,8 +109,8 @@ b_ss_get <- function(self, private, service, username, keyring) {
   rawToChar(res)
 }
 
-b_ss_set <- function(self, private, service, username, keyring) {
-  password <- get_pass()
+b_ss_set <- function(self, private, service, username, keyring, prompt = "Password: ") {
+  password <- get_pass(prompt = prompt)
   b_ss_set_with_value(self, private, service, username, password, keyring)
   invisible(self)
 }
@@ -147,8 +147,8 @@ b_ss_list <- function(self, private, service, keyring) {
   )
 }
 
-b_ss_keyring_create <- function(self, private, keyring) {
-  password <- get_pass()
+b_ss_keyring_create <- function(self, private, keyring, prompt = "Password: ") {
+  password <- get_pass(prompt = prompt)
   private$keyring_create_direct(keyring, password)
   invisible(self)
 }

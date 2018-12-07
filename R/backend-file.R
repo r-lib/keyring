@@ -131,11 +131,11 @@ b_file_get <- function(self, private, service, username, keyring) {
   )
 }
 
-b_file_set <- function(self, private, service, username, keyring) {
+b_file_set <- function(self, private, service, username, keyring, prompt = "Password: ") {
 
   if (self$keyring_is_locked(keyring)) self$keyring_unlock(keyring)
 
-  password <- get_pass()
+  password <- get_pass(prompt = prompt)
 
   self$set_with_value(service, username, password, keyring)
 

@@ -103,8 +103,8 @@ b_macos_get_raw <- function(self, private, service, username, keyring) {
   .Call("keyring_macos_get", utf8(keyring), utf8(service), utf8(username))
 }
 
-b_macos_set <- function(self, private, service, username, keyring) {
-  password <- get_pass()
+b_macos_set <- function(self, private, service, username, keyring, prompt = "Password: ") {
+  password <- get_pass(prompt = prompt)
   b_macos_set_with_value(self, private, service, username, password, keyring)
   invisible(self)
 }
@@ -142,8 +142,8 @@ b_macos_list <- function(self, private, service, keyring) {
   )
 }
 
-b_macos_keyring_create <- function(self, private, keyring) {
-  password <- get_pass()
+b_macos_keyring_create <- function(self, private, keyring, prompt = "Password: ") {
+  password <- get_pass(prompt = prompt)
   private$keyring_create_direct(keyring, password)
   invisible(self)
 }
@@ -171,8 +171,8 @@ b_macos_keyring_lock <- function(self, private, keyring) {
   invisible(self)
 }
 
-b_macos_keyring_unlock <- function(self, private, keyring, password) {
-  password <- password %||% get_pass()
+b_macos_keyring_unlock <- function(self, private, keyring, password, prompt = "Password: ") {
+  password <- password %||% get_pass(prompt = prompt)
   keyring <- private$keyring_file(keyring %||% private$keyring)
   .Call("keyring_macos_unlock_keyring", utf8(keyring), password)
   invisible(self)
