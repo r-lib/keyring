@@ -75,7 +75,7 @@
 #' # Lock the keyring
 #' kb$keyring_lock(kr_name)
 #' 
-#' ## The encrypted keyring file is stored at ~/.config/r-keyring/ on Linux
+#' ## The keyring file is stored at ~/.config/r-keyring/ on Linux
 #' 
 #' ## Output the stored password
 #' keyring::backend_file$new()$get(service = kr_service,
