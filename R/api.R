@@ -61,8 +61,6 @@
 #' key_delete("R-keyring-test-service", "donaldduck")
 #'
 #' ## This is interactive using backend_file
-#' library(keyring)
-#' 
 #' ## Set variables to be used in keyring
 #' kr_name <- "my_keyring"
 #' kr_service <- "my_database"
@@ -74,11 +72,10 @@
 #' kb$keyring_create(kr_name)
 #' ## Prompt for the secret/password to be stored in the keyring
 #' kb$set(kr_service, username=kr_username, keyring=kr_name)
-#' # Encrypt the keyring
+#' # Lock the keyring
 #' kb$keyring_lock(kr_name)
 #' 
-#' ## The encrypted keyring file is now stored at ~/.config/r-keyring/ and can be
-#' ## accessed by any R program that provides the keyring password, for example:
+#' ## The encrypted keyring file is stored at ~/.config/r-keyring/ on Linux
 #' 
 #' ## Output the stored password
 #' keyring::backend_file$new()$get(service = kr_service,
