@@ -174,7 +174,7 @@ R -e 'devtools::test()'
 ### Environment variable backend
 
 When an item has a username on this backend, the service name and the
-username is separated with a color (`:`) character in the created
+username is separated with a colon (`:`) character in the created
 environment variable:
 
 ```
