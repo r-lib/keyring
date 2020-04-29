@@ -155,9 +155,9 @@ b_file_set_with_value <- function(self, private, service, username,
     all_items <- cached$items
 
     existing <- which(
-      vapply(all_items, `[[`, character(1L), "service_name") %in% service &
-      vapply(all_items, `[[`, character(1L), "user_name") %in% username
-    )
+      unlist(lapply(all_items, function(x){unlist(x$service_name)})) %in% service &
+      unlist(lapply(all_items, function(x){unlist(x$user_name)})) %in% username)
+    
     if (length(existing)) all_items <- all_items[- existing]
 
     new_item <- list(
