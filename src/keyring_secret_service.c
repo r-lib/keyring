@@ -99,7 +99,7 @@ GList* keyring_secret_service_list_collections() {
     &err);
 
   if (err || !secretservice) {
-    keyring_secret_service_handle_status("create_keyring", TRUE, err);
+    keyring_secret_service_handle_status("keyring_create", TRUE, err);
     error("Cannot connect to secret service");
   }
 
@@ -109,7 +109,7 @@ GList* keyring_secret_service_list_collections() {
     &err);
 
   if (status || err) {
-    keyring_secret_service_handle_status("create_keyring", status, err);
+    keyring_secret_service_handle_status("keyring_create", status, err);
   }
 
   GList *collections = secret_service_get_collections(secretservice);
@@ -355,7 +355,7 @@ SEXP keyring_secret_service_list(SEXP keyring, SEXP service) {
   return result;
 }
 
-SEXP keyring_secret_service_create_keyring(SEXP keyring) {
+SEXP keyring_secret_service_keyring_create(SEXP keyring) {
 
   const char *ckeyring = CHAR(STRING_ELT(keyring, 0));
 
@@ -367,7 +367,7 @@ SEXP keyring_secret_service_create_keyring(SEXP keyring) {
     &err);
 
   if (err || !secretservice) {
-    keyring_secret_service_handle_status("create_keyring", TRUE, err);
+    keyring_secret_service_handle_status("keyring_create", TRUE, err);
     error("Cannot connect to secret service");
   }
 
@@ -380,7 +380,7 @@ SEXP keyring_secret_service_create_keyring(SEXP keyring) {
     &err);
 
   g_object_unref(secretservice);
-  keyring_secret_service_handle_status("create_keyring", TRUE, err);
+  keyring_secret_service_handle_status("keyring_create", TRUE, err);
 
   if (collection) g_object_unref(collection);
 
@@ -512,8 +512,8 @@ static const R_CallMethodDef callMethods[]  = {
     (DL_FUNC) &keyring_secret_service_delete, 3 },
   { "keyring_secret_service_list",
     (DL_FUNC) &keyring_secret_service_list, 2 },
-  { "keyring_secret_service_create_keyring",
-    (DL_FUNC) &keyring_secret_service_create_keyring, 1 },
+  { "keyring_secret_service_keyring_create",
+    (DL_FUNC) &keyring_secret_service_keyring_create, 1 },
   { "keyring_secret_service_list_keyring",
     (DL_FUNC) &keyring_secret_service_list_keyring, 0 },
   { "keyring_secret_service_delete_keyring",

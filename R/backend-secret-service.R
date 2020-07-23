@@ -26,7 +26,7 @@
 #' \dontrun{
 #' ## This only works on Linux, typically desktop Linux
 #' kb <- backend_secret_service$new()
-#' kb$create_keyring("foobar")
+#' kb$keyring_create("foobar")
 #' kb$set_default_keyring("foobar")
 #' kb$set_with_value("service", password = "secret")
 #' kb$get("service")
@@ -206,6 +206,6 @@ b_ss_keyring_create_direct <- function(self, private, keyring, password) {
     warning("Password ignored, will be read interactively")
   }
   keyring <- keyring %||% private$keyring
-  .Call("keyring_secret_service_create_keyring", keyring)
+  .Call("keyring_secret_service_keyring_create", keyring)
   invisible(self)
 }
