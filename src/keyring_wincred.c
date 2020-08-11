@@ -52,6 +52,43 @@ SEXP keyring_wincred_get(SEXP target) {
   return result;
 }
 
+SEXP keyring_wincred_get_native(SEXP service, SEXP username) {
+
+  const char *cusername = CHAR(STRING_ELT(username, 0));
+  const char *cservice = CHAR(STRING_ELT(service, 0));
+  CREDENTIAL *cred;
+  BOOL status = CredRead(cservice, CRED_TYPE_GENERIC, /* Flags = */ 0, &cred);
+  keyring_wincred_handle_status("get", status);
+
+  if (strcmp(cusername, "") != 0 && strcmp(cusername, cred->UserName) != 0) {
+    CredFree(cred);
+    UNPROTECT(1);
+    error("Supplied username does not match credential's username.");
+  }
+
+  SEXP result = PROTECT(allocVector(RAWSXP, cred->CredentialBlobSize));
+  memcpy(RAW(result), cred->CredentialBlob, cred->CredentialBlobSize);
+
+  CredFree(cred);
+  UNPROTECT(1);
+  return result;
+}
+
+SEXP keyring_wincred_get_username(SEXP service) {
+
+  const char *cservice = CHAR(STRING_ELT(service, 0));
+  CREDENTIAL *cred;
+  BOOL status = CredRead(cservice, CRED_TYPE_GENERIC, /* Flags = */ 0, &cred);
+  keyring_wincred_handle_status("get", status);
+
+  SEXP result = PROTECT(allocVector(STRSXP, 1));
+  SET_STRING_ELT(result, 0, mkChar(cred->UserName));
+
+  CredFree(cred);
+  UNPROTECT(1);
+  return result;
+}
+
 SEXP keyring_wincred_exists(SEXP target) {
 
   const char *ctarget = CHAR(STRING_ELT(target, 0));
@@ -135,11 +172,13 @@ SEXP keyring_wincred_enumerate(SEXP filter) {
 }
 
 static const R_CallMethodDef callMethods[]  = {
-  { "keyring_wincred_get",       (DL_FUNC) &keyring_wincred_get,       1 },
-  { "keyring_wincred_exists",    (DL_FUNC) &keyring_wincred_exists,    1 },
-  { "keyring_wincred_set",       (DL_FUNC) &keyring_wincred_set,       4 },
-  { "keyring_wincred_delete",    (DL_FUNC) &keyring_wincred_delete,    1 },
-  { "keyring_wincred_enumerate", (DL_FUNC) &keyring_wincred_enumerate, 1 },
+  { "keyring_wincred_get",          (DL_FUNC) &keyring_wincred_get,         1 },
+  { "keyring_wincred_get_native",   (DL_FUNC) &keyring_wincred_get_native,  2 },
+  { "keyring_wincred_get_username", (DL_FUNC) &keyring_wincred_get_username,1 },
+  { "keyring_wincred_exists",       (DL_FUNC) &keyring_wincred_exists,      1 },
+  { "keyring_wincred_set",          (DL_FUNC) &keyring_wincred_set,         4 },
+  { "keyring_wincred_delete",       (DL_FUNC) &keyring_wincred_delete,      1 },
+  { "keyring_wincred_enumerate",    (DL_FUNC) &keyring_wincred_enumerate,   1 },
   { NULL, NULL, 0 }
 };
 

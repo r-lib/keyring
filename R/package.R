@@ -33,6 +33,17 @@
 #' - Listing secrets: [key_list()]
 #' - Deleting a secret: [key_delete()]
 #'
+#' @section Query the Windows Credential Manager (WCM) directly:
+#'
+#' Unlike other credential stores, the WCM only allows one username per service, and no separate keyrings. The high-level API works around this restriction by giving WCM credentials a service name of `keyring:service:username`, but this can make the saved credentials difficult to read by other keyring managers. These functions allow you to set and get WCM credentials directly.
+#'
+#' [wincred_set()]
+#' [wincred_set_with_value()]
+#' [wincred_get()]
+#' [wincred_get_username()]
+#' [wincred_list()]
+#' [wincred_delete()]
+#'
 #' @section Managing keyrings:
 #'
 #' A keyring is a collection of keys that can be treated as a unit.
