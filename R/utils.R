@@ -40,3 +40,31 @@ URLencode <- function(URL) {
   if (length(bad)) x[bad] <- vapply(x[bad], tr, character(1))
   paste(x, collapse = "")
 }
+
+get_encoding_opt <- function() {
+  encoding <- tolower(getOption('keyring.encoding.windows'))
+  if (length(encoding) == 0) encoding = 'auto'
+  env_encoding <- tolower(Sys.getenv("KEYRING_ENCODING_WINDOWS"))
+  if (env_encoding == '') env_encoding = 'auto'
+  # Handle differing values if both are not auto -- stop in this case
+  if (encoding != env_encoding & !(encoding == 'auto' | env_encoding == 'auto')) {
+    message(sprintf("Sys.getenv('KEYRING_ENCODING_WINDOWS'):\t'%s'", env_encoding))
+    message(sprintf("getOption(keyring.encoding.windows):\t'%s'", encoding))
+    stop("Mismatch in keyring encoding settings; value set with both an environment variable and R option.\nChange environment variable with Sys.setenv('KEYRING_ENCODING_WINDOWS' = 'encoding_type'),\nand R option with options(keyring.encoding.windows = 'encoding_type') to match.")
+  }
+  # If one and only one is auto, then one of these was set deliberately; respect this
+  if (xor(encoding == 'auto', env_encoding == 'auto')) {
+    # Encoding is whichever one that is not auto.
+    encodings <- c(encoding, env_encoding)
+    encoding  <- encodings[ encodings != 'auto' ]
+  }
+  # Confirm valid encoding. Suggest closest match if not found.
+  if (encoding != 'auto' & !(encoding %in% tolower(iconvlist()))) {
+    closest_match <- iconvlist()[
+      which.min(adist(encoding, tolower(iconvlist())))
+    ]
+    message(sprintf("Encoding not found in iconvlist(). Did you mean %s?", closest_match))
+    stop("Supplied invalid encoding.")
+  }
+  encoding
+}
