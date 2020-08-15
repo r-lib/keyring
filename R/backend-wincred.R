@@ -261,6 +261,42 @@ b_wincred_get_raw <- function(self, private, service, username, keyring) {
   password
 }
 
+#' Decode a raw password obtained by b_wincred_get_raw
+#'
+#' Defaults to 'auto' encoding, which uses \code{b_wincred_decode_auto} to
+#' accomplish the decoding (this works with decoding either UTF-8 or UTF-16LE
+#' encodings). In the case where an encoding is specified, use that to convert
+#' the raw password.
+#'
+#' @param password A raw byte string returned from b_wincred_get_raw.
+#' @param encoding A character value, specifying an encoding to use. Defaults to
+#'    'auto', which will decode either of UTF-8 or UTF-16LE.
+#' @return A character value containing a password.
+b_wincred_decode <- function(password, encoding = 'auto') {
+  if (encoding == 'auto') {
+    b_wincred_decode_auto(password)
+  } else {
+    password <- iconv(list(password), from = encoding, to = "")
+    password
+  }
+}
+
+#' Decode a raw password obtained by b_wincred_get_raw (utf-8 and utf-16le only)
+#'
+#' This is established functionality moved out of \code{b_wincred_get} and
+#' wrapped into a function. It attempts to use UTF-16LE conversion if there are 0 values in the password
+b_wincred_decode_auto <- function(password) {
+  if (any(password == 0)) {
+    password <- iconv(list(password), from = "UTF-16LE", to = "")
+    if (is.na(password)) {
+      stop("Key contains embedded null bytes, use get_raw()")
+    }
+    password
+  } else {
+    rawToChar(password)
+  }
+}
+
 b_wincred_set <- function(self, private, service, username, keyring) {
   password <- get_pass()
   b_wincred_set_with_value(self, private, service, username, password,
