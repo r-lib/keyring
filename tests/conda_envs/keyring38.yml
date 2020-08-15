@@ -1,0 +1,19 @@
+name: keyring38
+channels:
+  - defaults
+dependencies:
+  - ca-certificates=2020.6.24=0
+  - certifi=2020.6.20=py38_0
+  - entrypoints=0.3=py38_0
+  - keyring=21.2.1=py38_0
+  - openssl=1.1.1g=he774522_1
+  - pip=20.2.2=py38_0
+  - python=3.8.3=he1778fa_2
+  - pywin32-ctypes=0.2.0=py38_1000
+  - setuptools=49.6.0=py38_0
+  - sqlite=3.32.3=h2a8f88b_0
+  - vc=14.1=h0510ff6_4
+  - vs2015_runtime=14.16.27012=hf0eaf9b_3
+  - wheel=0.34.2=py38_0
+  - wincertstore=0.2=py38_0
+  - zlib=1.2.11=h62dcd97_4
