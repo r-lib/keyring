@@ -233,19 +233,16 @@ b_wincred_init <- function(self, private, keyring) {
 #' 5. Get the AES key from the keyring.
 #' 6. Decrypt the key with the AES key.
 #'
+#' Additionally, users may specify an encoding to use when converting the
+#' password from a byte-string, for compatibility with other software such as
+#' python's keyring package. This is done via an option, or an environment variable.
+#'
 #' @keywords internal
 
 b_wincred_get <- function(self, private, service, username, keyring) {
   password <- self$get_raw(service, username, keyring)
-  if (any(password == 0)) {
-    password <- iconv(list(password), from = "UTF-16LE", to = "")
-    if (is.na(password)) {
-      stop("Key contains embedded null bytes, use get_raw()")
-    }
-    password
-  } else {
-    rawToChar(password)
-  }
+  encoding <- get_encoding_opt()
+  b_wincred_decode(password, encoding = encoding)
 }
 
 b_wincred_get_raw <- function(self, private, service, username, keyring) {
