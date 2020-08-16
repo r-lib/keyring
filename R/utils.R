@@ -46,8 +46,8 @@ get_encoding_opt <- function() {
   if (length(opt_encoding) == 0) opt_encoding = 'auto'
   env_encoding <- tolower(Sys.getenv("KEYRING_ENCODING_WINDOWS"))
   if (env_encoding == '') env_encoding = 'auto'
-  # Handle differing values if both are not auto -- stop in this case
-  if (opt_encoding != env_encoding & !(opt_encoding == 'auto' & env_encoding == 'auto')) {
+  # Handle differing values if one or the other is not auto -- stop in this case
+  if (opt_encoding != env_encoding & !(opt_encoding == 'auto' | env_encoding == 'auto')) {
     message(sprintf("Sys.getenv('KEYRING_ENCODING_WINDOWS'):\t'%s'", env_encoding))
     message(sprintf("getOption(keyring.encoding.windows):\t'%s'", opt_encoding))
     stop("Mismatch in keyring encoding settings; value set with both an environment variable and R option.\nChange environment variable with Sys.setenv('KEYRING_ENCODING_WINDOWS' = 'encoding_type'),\nand R option with options(keyring.encoding.windows = 'encoding_type') to match.")
@@ -57,6 +57,16 @@ get_encoding_opt <- function() {
     # Encoding is whichever one that is not auto.
     encodings <- c(opt_encoding, env_encoding)
     encoding  <- encodings[ encodings != 'auto' ]
+  }
+  # If both the same:
+  if (opt_encoding == env_encoding) {
+    # And they're auto, then auto
+    if (opt_encoding == 'auto') {
+      encoding = 'auto'
+    } else {
+      # Otherwise, the encoding is either one
+      encoding = opt_encoding
+    }
   }
   # Confirm valid encoding. Suggest closest match if not found.
   if (encoding != 'auto' & !(encoding %in% tolower(iconvlist()))) {
