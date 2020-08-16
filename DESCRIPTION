@@ -14,7 +14,7 @@ License: MIT + file LICENSE
 LazyData: true
 URL: https://github.com/r-lib/keyring#readme
 BugReports: https://github.com/r-lib/keyring/issues
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.0
 Roxygen: list(markdown = TRUE)
 Imports:
     assertthat,
