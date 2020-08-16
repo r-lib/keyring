@@ -74,6 +74,27 @@ vector.
 
 \code{key_list} lists all keys of a keyring, or the keys for a certain
 service (if \code{service} is not \code{NULL}).
+\subsection{Encoding}{
+
+If required, an encoding can be specified using either an R option
+(\code{keyring.encoding.windows}) or environment variable
+(\code{KEYRING_ENCODING_WINDOWS}). These will be applied when both getting
+and setting keys. To set, use one of:
+
+\code{options(keyring.encoding.windows = 'encoding-type')}
+
+\code{Sys.setenv("KEYRING_ENCODING_WINDOWS" = 'encoding-type')}
+
+To reset these values, restart your R session or use:
+
+\code{options(keyring.encoding.windows = NULL)}
+
+\code{Sys.setenv("KEYRING_ENCODING_WINDOWS" = '')}
+
+This is reserved primarily for compatibility with keys set with other
+software, such as Python's implementation of keyring. For a list of valid
+encodings, use \code{iconvlist()}.
+}
 }
 \examples{
 # These examples use the default keyring, and they are interactive,
