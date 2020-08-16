@@ -158,4 +158,11 @@ test_that("R can read from UTF-16LE encoded key set with R", {
   # R should also still be able to read from this.
 })
 
-key_delete(service = "testService", username = "testUser")
+# Clean up ---------------------------------------------------------------------
+try (
+  {
+    key_delete(service = "testService", username = "testUser")
+    pyring$delete_password(service_name = "testPython", username = "testUser")
+    pyring$delete_password(service_name = ":testPython:testUser", username = "testUser")
+  }
+)
