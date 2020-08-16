@@ -21,7 +21,16 @@ b_wincred_set_with_raw_value(self, private, service, username, password,
 \item If yes, check if it is locked.
 \item If yes, unlock it.
 \item Encrypt the key with the AES key, and store it.
-}}
+}
+
+If required, an encoding can be specified using either an R option
+(\code{keyring.encoding.windows}) or environment variable
+(\code{KEYRING_ENCODING_WINDOWS}). To set, use one of:
+
+\code{options(keyring.encoding.windows = 'encoding-type')}
+\code{Sys.setenv("KEYRING_ENCODING_WINDOWS" = 'encoding-type')}
+
+For a list of valid encodings, use \code{iconvlist()}}
 }
 \description{
 Set a key on a Wincred keyring

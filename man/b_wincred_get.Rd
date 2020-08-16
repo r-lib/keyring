@@ -17,7 +17,11 @@ b_wincred_get(self, private, service, username, keyring)
 \item If locked, then unlock it.
 \item Get the AES key from the keyring.
 \item Decrypt the key with the AES key.
-}}
+}
+
+Additionally, users may specify an encoding to use when converting the
+password from a byte-string, for compatibility with other software such as
+python's keyring package. This is done via an option, or an environment variable.}
 
 \item{backend}{Backend object.}
 }
