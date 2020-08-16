@@ -3,10 +3,66 @@
 library(reticulate)
 library(keyring)
 
-reticulate::use_condaenv('keyring', required = TRUE)
-pyring <- reticulate::import('keyring')
+context("Testing encoding retrieval function")
+
+test_that("No option/env var set returns auto", {
+  encoding = get_encoding_opt()
+  expect_equal(encoding, 'auto')
+})
+
+test_that("Option encoding set and env unset returns option encoding", {
+  options(keyring.encoding.windows = 'utf-16le')
+  encoding = get_encoding_opt()
+  expect_equal(encoding, 'utf-16le')
+  options(keyring.encoding.windows = NULL)
+})
+
+test_that("Option encoding unset and env set returns env encoding", {
+  Sys.setenv("KEYRING_ENCODING_WINDOWS" = 'utf-8')
+  encoding = get_encoding_opt()
+  expect_equal(encoding, 'utf-8')
+  Sys.setenv("KEYRING_ENCODING_WINDOWS" = '')
+})
+
+test_that("Option encoding set and env var set and EQUAL returns expected value", {
+  options(keyring.encoding.windows = 'utf-16le')
+  Sys.setenv("KEYRING_ENCODING_WINDOWS" = 'utf-16le')
+  encoding = get_encoding_opt()
+  expect_equal(encoding, 'utf-16le')
+  options(keyring.encoding.windows = NULL)
+  Sys.setenv("KEYRING_ENCODING_WINDOWS" = '')
+})
+
+test_that("Invalid encoding (not in iconvlist) returns error", {
+  options(keyring.encoding.windows = 'Omicron Persei 8')
+  Sys.setenv("KEYRING_ENCODING_WINDOWS" = 'Omicron Persei 8')
+  expect_error(get_encoding_opt())
+  options(keyring.encoding.windows = NULL)
+  Sys.setenv("KEYRING_ENCODING_WINDOWS" = '')
+})
+
+test_that("iconv suggestion works as expected", {
+  options(keyring.encoding.windows = 'utf-16lp')
+  expect_message(
+    object = expect_error(get_encoding_opt()),
+    regexp = "Encoding not found in iconvlist(). Did you mean UTF-16LE?",
+    fixed = TRUE
+  )
+  options(keyring.encoding.windows = NULL)
+})
+
+test_that("Having two different encodings set between opt and env return error", {
+  options(keyring.encoding.windows = 'x_Chinese-Eten')
+  Sys.setenv("KEYRING_ENCODING_WINDOWS" = 'latin9')
+  expect_error(get_encoding_opt())
+  options(keyring.encoding.windows = NULL)
+  Sys.setenv("KEYRING_ENCODING_WINDOWS" = '')
+})
 
 context("Testing compatibility with python keyring package")
+
+reticulate::use_condaenv('keyring', required = TRUE)
+pyring <- reticulate::import('keyring')
 
 test_that("Setting key with R cannot be read using python under default settings (encoding mismatches)", {
   # Set with R, default settings
