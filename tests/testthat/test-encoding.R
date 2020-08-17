@@ -87,6 +87,8 @@ test_that("Set key with UTF-16LE encoding", {
 })
 
 test_that("Set key with UTF-16LE encoding plus a keyring", {
+  skip_if_not_win()
+  skip_on_cran()
   Sys.setenv("KEYRING_ENCODING_WINDOWS" = "utf-16le")
   keyring <- random_keyring()
   kb <- backend_wincred$new(keyring = keyring)
