@@ -110,3 +110,38 @@ test_that("Set key with UTF-16LE encoding plus a keyring", {
   expect_false(keyring %in% kb$keyring_list()$keyring)
   Sys.setenv("KEYRING_ENCODING_WINDOWS" = "")
 })
+
+test_that("Test all encodings") {
+  test_encoding = function(encoding) {
+    skip_if_not_win()
+    # skip_on_cran()
+    SERVICE <- "testService"
+    USER <- "testUser"
+    PASS <- random_password()
+    # Now, set a key with UTF-16LE encoding using new options
+    Sys.setenv("KEYRING_ENCODING_WINDOWS" = encoding)
+    keyring::key_set_with_value(service = SERVICE, username = USER, password = PASS)
+    # Get the password
+    expect_equal(keyring::key_get(service = SERVICE, username = USER), PASS)
+    # Show that it is UTF-16LE
+    raw_password <- keyring:::b_wincred_i_get(target = paste0(":", SERVICE, ":", USER))
+    expect_equal(iconv(list(raw_password), from = encoding, to = ""), PASS)
+    Sys.setenv("KEYRING_ENCODING_WINDOWS" = "")
+    key_delete(service = SERVICE, username = USER)
+  }
+
+  if (interactive()) {
+    n = length(iconvlist())
+    bad = 0
+    bad_encodings = c(character(0))
+    for (e in iconvlist()) {
+      print(e)
+      res = try(test_encoding(e))
+      if (inherits(res, 'try-error')) {
+        bad = bad + 1
+        bad_encodings = c(bad_encodings, e)
+      }
+    }
+    cat(100 * bad / n, "% encodings (", bad, "out of", n, ") not compatible")
+  }
+}

@@ -92,8 +92,14 @@ To reset these values, restart your R session or use:
 \code{Sys.setenv("KEYRING_ENCODING_WINDOWS" = '')}
 
 This is reserved primarily for compatibility with keys set with other
-software, such as Python's implementation of keyring. For a list of valid
-encodings, use \code{iconvlist()}.
+software, such as Python's implementation of keyring. For a list of
+encodings, use \code{iconvlist()}, although it should be noted that not
+\emph{every} encoding can be properly converted, even for trivial cases. These may
+include CP-GR, CP-IS, cp1025, CP1125, CP1133, CP154, CP367, CP819, CP853,
+CSPTCP154, CYRILLIC-ASIAN, EUC-CN, EUCCN, hz-gb-2312, IBM-CP1133,
+iso-2022-kr, iso2022-kr, PT154, PTCP154, x-cp50227, x-Europa, x-iscii-as,
+x-iscii-be, x-iscii-de, x-iscii-gu, x-iscii-ka, x-iscii-ma, x-iscii-or,
+x-iscii-pa, x-iscii-ta, and x-iscii-te.
 }
 }
 \examples{
