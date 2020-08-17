@@ -105,10 +105,14 @@ test_that("Any arbitrary key set by python can be read using R, not necessarily 
   expect_equal(iconv(list(pass), from = 'UTF-16LE', to = ''), "test123")
 })
 
-test_that("Set key with UTF-16LE encoding", {
+test_that("Python can read from UTF-16LE encoded key set with R", {
   skip_if_not_win()
   skip_on_cran()
-  # Now, set a key with UTF-16LE encoding using new options
+  Sys.setenv("KEYRING_ENCODING_WINDOWS" = 'utf-16le')
+  keyring::key_set_with_value(service = "testEncoding", username = "testUser", password = "test123")
+  # Python should be able to read from this.
+  expect_equal(pyring$get_password(service_name = ":testEncoding:testUser", username = "testUser"), 'test123')
+  Sys.setenv("KEYRING_ENCODING_WINDOWS" = '')
 })
 
 test_that("Python can read from UTF-16LE encoded key set with R", {
