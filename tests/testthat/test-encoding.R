@@ -111,7 +111,7 @@ test_that("Set key with UTF-16LE encoding plus a keyring", {
   Sys.setenv("KEYRING_ENCODING_WINDOWS" = "")
 })
 
-test_that("Test all encodings") {
+test_that("Test all encodings", {
   test_encoding = function(encoding) {
     skip_if_not_win()
     # skip_on_cran()
@@ -143,5 +143,6 @@ test_that("Test all encodings") {
       }
     }
     cat(100 * bad / n, "% encodings (", bad, "out of", n, ") not compatible")
+    Sys.setenv("KEYRING_ENCODING_WINDOWS" = "")
   }
-}
+})
