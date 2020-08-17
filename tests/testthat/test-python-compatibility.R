@@ -14,6 +14,8 @@ reticulate::use_condaenv('keyring37', required = TRUE)
 pyring <- reticulate::import('keyring')
 
 test_that("Setting key with R cannot be read using python under default settings (encoding mismatches)", {
+  skip_if_not_win()
+  skip_on_cran()
   # Set with R, default settings
   keyring::key_set_with_value(service = "testService", username = "testUser", password = "test123")
   keyring::key_get(service = "testService", username = "testUser")
@@ -23,12 +25,16 @@ test_that("Setting key with R cannot be read using python under default settings
 })
 
 test_that("Setting key with python can be read using R", {
+  skip_if_not_win()
+  skip_on_cran()
   # Python sets keys UTF-16LE encoded by default, but the R keyring package can handle that.
   pyring$set_password(":testPython:testUser", "testUser", "test123")
   expect_equal(keyring::key_get(service = "testPython", username = "testUser"), 'test123')
 })
 
 test_that("Reading UTF-16LE with encoding specified as UTF-8 will fail", {
+  skip_if_not_win()
+  skip_on_cran()
   # This shows that the encoding options are working, and being applied. The
   # repeated lines below use various casing to ensure that casing doesn't
   # matter.
@@ -61,6 +67,8 @@ test_that("Reading UTF-16LE with encoding specified as UTF-8 will fail", {
 })
 
 test_that("Reading UTF-16LE with encoding specified as UTF-16LE will work", {
+  skip_if_not_win()
+  skip_on_cran()
   # This shows that the encoding options are working, and being applied. The
   # repeated lines below use various casing to ensure that casing doesn't
   # matter.
@@ -90,16 +98,22 @@ test_that("Reading UTF-16LE with encoding specified as UTF-16LE will work", {
 })
 
 test_that("Any arbitrary key set by python can be read using R, not necessarily of the same form of this keyring API", {
+  skip_if_not_win()
+  skip_on_cran()
   pyring$set_password("testPython", "testUser", "test123")
   pass <- keyring:::b_wincred_i_get(target = "testPython")
   expect_equal(iconv(list(pass), from = 'UTF-16LE', to = ''), "test123")
 })
 
 test_that("Set key with UTF-16LE encoding", {
+  skip_if_not_win()
+  skip_on_cran()
   # Now, set a key with UTF-16LE encoding using new options
 })
 
 test_that("Python can read from UTF-16LE encoded key set with R", {
+  skip_if_not_win()
+  skip_on_cran()
   # Python should be able to read from this.
 })
 
