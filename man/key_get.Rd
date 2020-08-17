@@ -76,8 +76,8 @@ vector.
 service (if \code{service} is not \code{NULL}).
 \subsection{Encoding}{
 
-If required, an encoding can be specified using either an R option
-(\code{keyring.encoding.windows}) or environment variable
+On Windows, if required, an encoding can be specified using either an R
+option (\code{keyring.encoding.windows}) or environment variable
 (\code{KEYRING_ENCODING_WINDOWS}). These will be applied when both getting
 and setting keys. To set, use one of:
 
