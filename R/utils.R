@@ -42,34 +42,34 @@ URLencode <- function(URL) {
 }
 
 get_encoding_opt <- function() {
-  opt_encoding <- tolower(getOption('keyring.encoding.windows'))
-  if (length(opt_encoding) == 0) opt_encoding = 'auto'
+  opt_encoding <- tolower(getOption("keyring.encoding.windows"))
+  if (length(opt_encoding) == 0) opt_encoding <- "auto"
   env_encoding <- tolower(Sys.getenv("KEYRING_ENCODING_WINDOWS"))
-  if (env_encoding == '') env_encoding = 'auto'
+  if (env_encoding == "") env_encoding <- "auto"
   # Handle differing values if one or the other is not auto -- stop in this case
-  if (opt_encoding != env_encoding & !(opt_encoding == 'auto' | env_encoding == 'auto')) {
+  if (opt_encoding != env_encoding & !(opt_encoding == "auto" | env_encoding == "auto")) {
     message(sprintf("Sys.getenv('KEYRING_ENCODING_WINDOWS'):\t'%s'", env_encoding))
     message(sprintf("getOption(keyring.encoding.windows):\t'%s'", opt_encoding))
     stop("Mismatch in keyring encoding settings; value set with both an environment variable and R option.\nChange environment variable with Sys.setenv('KEYRING_ENCODING_WINDOWS' = 'encoding_type'),\nand R option with options(keyring.encoding.windows = 'encoding_type') to match.")
   }
   # If one and only one is auto, then one of these was set deliberately; respect this
-  if (xor(opt_encoding == 'auto', env_encoding == 'auto')) {
+  if (xor(opt_encoding == "auto", env_encoding == "auto")) {
     # Encoding is whichever one that is not auto.
     encodings <- c(opt_encoding, env_encoding)
-    encoding  <- encodings[ encodings != 'auto' ]
+    encoding <- encodings[encodings != "auto"]
   }
   # If both the same:
   if (opt_encoding == env_encoding) {
     # And they're auto, then auto
-    if (opt_encoding == 'auto') {
-      encoding = 'auto'
+    if (opt_encoding == "auto") {
+      encoding <- "auto"
     } else {
       # Otherwise, the encoding is either one
-      encoding = opt_encoding
+      encoding <- opt_encoding
     }
   }
   # Confirm valid encoding. Suggest closest match if not found.
-  if (encoding != 'auto' & !(encoding %in% tolower(iconvlist()))) {
+  if (encoding != "auto" & !(encoding %in% tolower(iconvlist()))) {
     closest_match <- iconvlist()[
       which.min(adist(encoding, tolower(iconvlist())))
     ]
