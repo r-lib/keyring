@@ -303,8 +303,7 @@ b_wincred_set <- function(self, private, service, username, keyring) {
 
 b_wincred_set_with_value <- function(self, private, service,
                                      username, password, keyring) {
-  b_wincred_set_with_raw_value(self, private, service, username,
-                               charToRaw(password), keyring)
+  b_wincred_set_with_raw_value(self, private, service, username, password, keyring)
 }
 
 #' Set a key on a Wincred keyring
@@ -337,11 +336,16 @@ b_wincred_set_with_raw_value <- function(self, private, service,
 
   keyring <- keyring %||% private$keyring
   target <- b_wincred_target(keyring, service, username)
+  encoding <- get_encoding_opt()
   if (is.null(keyring)) {
+    if (encoding != 'auto') {
+      password = iconv(x = password, from = '', to = encoding, toRaw = TRUE)[[1]]
+    } else {
+      password = charToRaw(password)
+    }
     b_wincred_i_set(target, password, username = username)
     return(invisible(self))
   }
-
   ## Not the default keyring, we need to encrypt it
   target_keyring <- b_wincred_target_keyring(keyring)
   aes <- b_wincred_unlock_keyring_internal(keyring)
