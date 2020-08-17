@@ -14,7 +14,7 @@ License: MIT + file LICENSE
 LazyData: true
 URL: https://github.com/r-lib/keyring#readme
 BugReports: https://github.com/r-lib/keyring/issues
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.0
 Roxygen: list(markdown = TRUE)
 Imports:
     assertthat,
@@ -32,7 +32,8 @@ Suggests:
     covr,
     mockery,
     testthat,
-    withr
+    withr,
+    reticulate
 Encoding: UTF-8
 SystemRequirements: Optional: libsecret on Linux (libsecret-1-dev on
     Debian/Ubuntu, libsecret-devel on Fedora/CentOS)

@@ -1,4 +1,4 @@
-name: keyring
+name: keyring37
 channels:
   - defaults
 dependencies:

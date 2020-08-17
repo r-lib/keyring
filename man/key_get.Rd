@@ -74,6 +74,33 @@ vector.
 
 \code{key_list} lists all keys of a keyring, or the keys for a certain
 service (if \code{service} is not \code{NULL}).
+\subsection{Encoding}{
+
+On Windows, if required, an encoding can be specified using either an R
+option (\code{keyring.encoding.windows}) or environment variable
+(\code{KEYRING_ENCODING_WINDOWS}). These will be applied when both getting
+and setting keys. To set, use one of:
+
+\code{options(keyring.encoding.windows = 'encoding-type')}
+
+\code{Sys.setenv("KEYRING_ENCODING_WINDOWS" = 'encoding-type')}
+
+To reset these values, restart your R session or use:
+
+\code{options(keyring.encoding.windows = NULL)}
+
+\code{Sys.setenv("KEYRING_ENCODING_WINDOWS" = '')}
+
+This is reserved primarily for compatibility with keys set with other
+software, such as Python's implementation of keyring. For a list of
+encodings, use \code{iconvlist()}, although it should be noted that not
+\emph{every} encoding can be properly converted, even for trivial cases. These may
+include CP-GR, CP-IS, cp1025, CP1125, CP1133, CP154, CP367, CP819, CP853,
+CSPTCP154, CYRILLIC-ASIAN, EUC-CN, EUCCN, hz-gb-2312, IBM-CP1133,
+iso-2022-kr, iso2022-kr, PT154, PTCP154, x-cp50227, x-Europa, x-iscii-as,
+x-iscii-be, x-iscii-de, x-iscii-gu, x-iscii-ka, x-iscii-ma, x-iscii-or,
+x-iscii-pa, x-iscii-ta, and x-iscii-te.
+}
 }
 \examples{
 # These examples use the default keyring, and they are interactive,

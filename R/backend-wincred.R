@@ -303,8 +303,13 @@ b_wincred_set <- function(self, private, service, username, keyring) {
 
 b_wincred_set_with_value <- function(self, private, service,
                                      username, password, keyring) {
-  b_wincred_set_with_raw_value(self, private, service, username,
-                               charToRaw(password), keyring)
+  encoding <- get_encoding_opt()
+  if (encoding != 'auto') {
+    password = iconv(x = password, from = '', to = encoding, toRaw = TRUE)[[1]]
+  } else {
+    password = charToRaw(password)
+  }
+  b_wincred_set_with_raw_value(self, private, service, username, password, keyring)
 }
 
 #' Set a key on a Wincred keyring
@@ -321,17 +326,26 @@ b_wincred_set_with_value <- function(self, private, service,
 #' 6. If yes, unlock it.
 #' 7. Encrypt the key with the AES key, and store it.
 #'
+#' If required, an encoding can be specified using either an R option
+#' (\code{keyring.encoding.windows}) or environment variable
+#' (\code{KEYRING_ENCODING_WINDOWS}). To set, use one of:
+#'
+#' \code{options(keyring.encoding.windows = 'encoding-type')}
+#' \code{Sys.setenv("KEYRING_ENCODING_WINDOWS" = 'encoding-type')}
+#'
+#' For a list of valid encodings, use \code{iconvlist()}
+#'
 #' @keywords internal
 
 b_wincred_set_with_raw_value <- function(self, private, service,
                                          username, password, keyring) {
+
   keyring <- keyring %||% private$keyring
   target <- b_wincred_target(keyring, service, username)
   if (is.null(keyring)) {
     b_wincred_i_set(target, password, username = username)
     return(invisible(self))
   }
-
   ## Not the default keyring, we need to encrypt it
   target_keyring <- b_wincred_target_keyring(keyring)
   aes <- b_wincred_unlock_keyring_internal(keyring)

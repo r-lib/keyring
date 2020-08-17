@@ -27,6 +27,33 @@
 #' `key_list` lists all keys of a keyring, or the keys for a certain
 #' service (if `service` is not `NULL`).
 #'
+#' ## Encoding
+#'
+#' On Windows, if required, an encoding can be specified using either an R
+#' option (\code{keyring.encoding.windows}) or environment variable
+#' (\code{KEYRING_ENCODING_WINDOWS}). These will be applied when both getting
+#' and setting keys. To set, use one of:
+#'
+#' \code{options(keyring.encoding.windows = 'encoding-type')}
+#'
+#' \code{Sys.setenv("KEYRING_ENCODING_WINDOWS" = 'encoding-type')}
+#'
+#' To reset these values, restart your R session or use:
+#'
+#' \code{options(keyring.encoding.windows = NULL)}
+#'
+#' \code{Sys.setenv("KEYRING_ENCODING_WINDOWS" = '')}
+#'
+#' This is reserved primarily for compatibility with keys set with other
+#' software, such as Python's implementation of keyring. For a list of
+#' encodings, use \code{iconvlist()}, although it should be noted that not
+#' _every_ encoding can be properly converted, even for trivial cases. These may
+#' include CP-GR, CP-IS, cp1025, CP1125, CP1133, CP154, CP367, CP819, CP853,
+#' CSPTCP154, CYRILLIC-ASIAN, EUC-CN, EUCCN, hz-gb-2312, IBM-CP1133,
+#' iso-2022-kr, iso2022-kr, PT154, PTCP154, x-cp50227, x-Europa, x-iscii-as,
+#' x-iscii-be, x-iscii-de, x-iscii-gu, x-iscii-ka, x-iscii-ma, x-iscii-or,
+#' x-iscii-pa, x-iscii-ta, and x-iscii-te.
+#'
 #' @param service Service name, a character scalar.
 #' @param username Username, a character scalar, or `NULL` if the key
 #'   is not associated with a username.
@@ -65,7 +92,7 @@
 #' kr_name <- "my_keyring"
 #' kr_service <- "my_database"
 #' kr_username <- "my_username"
-#' 
+#'
 #' ## Create a keyring and add an entry using the variables above
 #' kb <- keyring::backend_file$new()
 #' ## Prompt for the keyring password, used to unlock keyring
@@ -74,9 +101,9 @@
 #' kb$set(kr_service, username=kr_username, keyring=kr_name)
 #' # Lock the keyring
 #' kb$keyring_lock(kr_name)
-#' 
+#'
 #' ## The keyring file is stored at ~/.config/r-keyring/ on Linux
-#' 
+#'
 #' ## Output the stored password
 #' keyring::backend_file$new()$get(service = kr_service,
 #'   user = kr_username,
