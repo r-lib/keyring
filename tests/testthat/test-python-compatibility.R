@@ -10,7 +10,7 @@ library(keyring)
 
 context("Testing compatibility with python keyring package")
 
-reticulate::use_condaenv('keyring', required = TRUE)
+reticulate::use_condaenv('keyring37', required = TRUE)
 pyring <- reticulate::import('keyring')
 
 test_that("Setting key with R cannot be read using python under default settings (encoding mismatches)", {
