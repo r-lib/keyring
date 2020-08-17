@@ -148,13 +148,9 @@ if (interactive()) {
 }
 
 # Clean up ---------------------------------------------------------------------
-try(
-  {
-    key_delete(service = "testService", username = "testUser")
-    key_delete(service = "testEncoding", username = "testUser")
-    keyring:::b_wincred_i_delete()
-    pyring$delete_password(service_name = "testPython", username = "testUser")
-    pyring$delete_password(service_name = ":testPython:testUser", username = "testUser")
-  },
-  silent = TRUE
-)
+{
+  key_delete(service = "testService", username = "testUser")
+  key_delete(service = "testEncoding", username = "testUser")
+  pyring$delete_password(service_name = "testPython", username = "testUser")
+  pyring$delete_password(service_name = ":testPython:testUser", username = "testUser")
+}
