@@ -11,7 +11,11 @@ library(keyring)
 context("Testing compatibility with python keyring package")
 
 KEYRING_ENV <- "keyring37"
-ENVS <- reticulate::conda_list()$name
+if (reticulate::py_available()) {
+  ENVS <- reticulate::conda_list()$name
+} else {
+  ENVS <- NA
+}
 
 skip_if_no_conda <- function() {
   if (!reticulate::py_available()) {
@@ -148,7 +152,8 @@ if (interactive()) {
 }
 
 # Clean up ---------------------------------------------------------------------
-{
+# Only run if tests were run
+if (KEYRING_ENV %in% ENVS) {
   key_delete(service = "testService", username = "testUser")
   key_delete(service = "testEncoding", username = "testUser")
   pyring$delete_password(service_name = "testPython", username = "testUser")
