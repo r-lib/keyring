@@ -112,9 +112,8 @@ test_that("Set key with UTF-16LE encoding plus a keyring", {
 })
 
 test_that("Test all encodings", {
+  skip_if_not_win()
   test_encoding = function(encoding) {
-    skip_if_not_win()
-    # skip_on_cran()
     SERVICE <- "testService"
     USER <- "testUser"
     PASS <- random_password()
