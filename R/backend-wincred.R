@@ -303,6 +303,12 @@ b_wincred_set <- function(self, private, service, username, keyring) {
 
 b_wincred_set_with_value <- function(self, private, service,
                                      username, password, keyring) {
+  encoding <- get_encoding_opt()
+  if (encoding != 'auto') {
+    password = iconv(x = password, from = '', to = encoding, toRaw = TRUE)[[1]]
+  } else {
+    password = charToRaw(password)
+  }
   b_wincred_set_with_raw_value(self, private, service, username, password, keyring)
 }
 
@@ -336,12 +342,6 @@ b_wincred_set_with_raw_value <- function(self, private, service,
 
   keyring <- keyring %||% private$keyring
   target <- b_wincred_target(keyring, service, username)
-  encoding <- get_encoding_opt()
-  if (encoding != 'auto') {
-    password = iconv(x = password, from = '', to = encoding, toRaw = TRUE)[[1]]
-  } else {
-    password = charToRaw(password)
-  }
   if (is.null(keyring)) {
     b_wincred_i_set(target, password, username = username)
     return(invisible(self))
