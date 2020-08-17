@@ -71,9 +71,9 @@ test_that("Having two different encodings set between opt and env return error",
 test_that("Set key with UTF-16LE encoding", {
   skip_if_not_win()
   skip_on_cran()
-  SERVICE = random_service()
-  USER    = random_username()
-  PASS    = random_password()
+  SERVICE <- random_service()
+  USER <- random_username()
+  PASS <- random_password()
   # Now, set a key with UTF-16LE encoding using new options
   Sys.setenv("KEYRING_ENCODING_WINDOWS" = "utf-16le")
   keyring::key_set_with_value(service = SERVICE, username = USER, password = PASS)
@@ -96,7 +96,7 @@ test_that("Set key with UTF-16LE encoding plus a keyring", {
   list <- kb$list()
   expect_equal(nrow(list), 0)
 
-  service  <- "testService"
+  service <- "testService"
   username <- "testUser"
   password <- random_password()
 
