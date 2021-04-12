@@ -83,6 +83,9 @@ default_backend_auto <- function() {
   } else if (sysname == "linux" && "secret_service" %in% names(known_backends) &&
              backend_secret_service$new()$is_available()) {
     backend_secret_service
+    
+  } else if (sysname == "linux" && "file" %in% names(known_backends)) {
+    backend_file
 
   } else {
     if (getOption("keyring_warn_for_env_fallback", TRUE)) {
