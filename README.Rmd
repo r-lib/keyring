@@ -1,3 +1,6 @@
+---
+output: github_document
+---
 
 ```{r, setup, echo = FALSE, message = FALSE}
 knitr::opts_chunk$set(
@@ -12,11 +15,12 @@ knitr::opts_chunk$set(
 
 > Access the System Credential Store from R
 
-[![Linux Build Status](https://travis-ci.org/r-lib/keyring.svg?branch=master)](https://travis-ci.org/r-lib/keyring)
-[![Windows Build status](https://ci.appveyor.com/api/projects/status/github/r-lib/keyring?svg=true)](https://ci.appveyor.com/project/gaborcsardi/keyring)
+<!-- badges: start -->
+[![R build status](https://github.com/r-lib/keyring/workflows/R-CMD-check/badge.svg)](https://github.com/r-lib/keyring/actions)
 [![](https://www.r-pkg.org/badges/version/keyring)](https://www.r-pkg.org/pkg/keyring)
 [![CRAN RStudio mirror downloads](https://cranlogs.r-pkg.org/badges/keyring)](https://www.r-pkg.org/pkg/keyring)
 [![Coverage Status](https://img.shields.io/codecov/c/github/r-lib/keyring/master.svg)](https://codecov.io/github/r-lib/keyring?branch=master)
+<!-- badges: end -->
 
 Platform independent API to access the operating systems
 credential store. Currently supports:
