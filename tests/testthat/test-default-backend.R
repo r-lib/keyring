@@ -65,7 +65,7 @@ test_that("auto macos", {
 test_that("auto linux", {
   skip_if_not_linux()  
   kb <- default_backend()
-  expect_true(kb$name == "env" || kb$name == "secret service")
+  expect_true(kb$name == "env" || kb$name == "secret service" || kb$name == "file")
 })
 
 test_that("auto other", {
