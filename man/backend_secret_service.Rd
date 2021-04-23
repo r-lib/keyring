@@ -27,7 +27,7 @@ not available.
 \dontrun{
 ## This only works on Linux, typically desktop Linux
 kb <- backend_secret_service$new()
-kb$create_keyring("foobar")
+kb$keyring_create("foobar")
 kb$set_default_keyring("foobar")
 kb$set_with_value("service", password = "secret")
 kb$get("service")
