@@ -84,7 +84,7 @@ default_backend_auto <- function() {
              backend_secret_service$new()$is_available()) {
     backend_secret_service
     
-  } else if (sysname == "linux" && "file" %in% names(known_backends)) {
+  } else if ("file" %in% names(known_backends)) {
     backend_file
 
   } else {

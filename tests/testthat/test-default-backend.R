@@ -70,5 +70,5 @@ test_that("auto linux", {
 
 test_that("auto other", {
   mockery::stub(default_backend_auto, "Sys.info", c(sysname = "Solaris"))
-  expect_equal(suppressWarnings(default_backend_auto()), backend_env)
+  expect_equal(suppressWarnings(default_backend_auto()), backend_file)
 })
