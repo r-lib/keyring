@@ -73,15 +73,17 @@ warn_for_keyring <- function(keyring) {
 
 b_env_get <- function(self, private, service, username, keyring) {
   warn_for_keyring(keyring)
+  username <- username %||% getOption("keyring_username")
   var <- private$env_to_var(service, username)
   res <- Sys.getenv(var, NA_character_)
   if (is.na(res)) stop("Cannot find password")
-  res  
+  res
 }
 
 b_env_set <- function(self, private, service, username, keyring) {
   warn_for_keyring(keyring)
   password <- get_pass()
+  username <- username %||% getOption("keyring_username")
   b_env_set_with_value(self, private, service, username, password,
                        keyring = NULL)
   invisible(self)
@@ -90,6 +92,7 @@ b_env_set <- function(self, private, service, username, keyring) {
 b_env_set_with_value <- function(self, private, service, username,
                                  password, keyring) {
   warn_for_keyring(keyring)
+  username <- username %||% getOption("keyring_username")
   var <- private$env_to_var(service, username)
   do.call(Sys.setenv, structure(list(password), names = var))
   invisible(self)
@@ -97,6 +100,7 @@ b_env_set_with_value <- function(self, private, service, username,
 
 b_env_delete <- function(self, private, service, username, keyring) {
   warn_for_keyring(keyring)
+  username <- username %||% getOption("keyring_username")
   var <- private$env_to_var(service, username)
   Sys.unsetenv(var)
   invisible(self)
@@ -113,13 +117,13 @@ b_env_to_var <- function(self, private, service, username, keyring) {
 b_env_list <- function(self, private, service, keyring) {
   if (is.null(service))
     stop("'service' is required for 'env' backend.")
-  
+
   keys <- gsub(
     paste(service, ":", sep = ""),
     "",
     Filter(function(e) str_starts_with(e, service), names(Sys.getenv()))
   )
-  
+
   data.frame(
     service = rep(service, length(keys)),
     username = keys,

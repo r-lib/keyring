@@ -6,6 +6,9 @@
 
 * The file backend now works with keys that do not have a username.
 
+* All backends use the value of the `keyring_username` option, if set,
+  as the default username (#60).
+
 # 1.1.0
 
 * File based backend (#53, @nbenn).

@@ -44,7 +44,8 @@ abstract_method <- function() {
 #' * `service` String, the name of a service. This is used to find the
 #'   secret later.
 #' * `username` String, the username associated with a secret. It can be
-#'   `NULL`, if no username belongs to the secret.
+#'   `NULL`, if no username belongs to the secret. It uses the value of
+#'   the `keyring_username`, if set.
 #' * `keyring` String, the name of the keyring to work with. This only makes
 #'   sense if the platform supports multiple keyrings. `NULL` selects the
 #'   default (and maybe only) keyring.

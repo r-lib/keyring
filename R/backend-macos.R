@@ -89,6 +89,7 @@ b_macos_init <- function(self, private, keyring) {
 }
 
 b_macos_get <- function(self, private, service, username, keyring) {
+  username <- username %||% getOption("keyring_username")
   keyring <- private$keyring_file(keyring %||% private$keyring)
   res <- .Call("keyring_macos_get", utf8(keyring), utf8(service),
                utf8(username))
@@ -99,11 +100,13 @@ b_macos_get <- function(self, private, service, username, keyring) {
 }
 
 b_macos_get_raw <- function(self, private, service, username, keyring) {
+  username <- username %||% getOption("keyring_username")
   keyring <- private$keyring_file(keyring %||% private$keyring)
   .Call("keyring_macos_get", utf8(keyring), utf8(service), utf8(username))
 }
 
 b_macos_set <- function(self, private, service, username, keyring) {
+  username <- username %||% getOption("keyring_username")
   password <- get_pass()
   b_macos_set_with_value(self, private, service, username, password, keyring)
   invisible(self)
@@ -111,6 +114,7 @@ b_macos_set <- function(self, private, service, username, keyring) {
 
 b_macos_set_with_value <- function(self, private, service, username,
                                    password, keyring) {
+  username <- username %||% getOption("keyring_username")
   keyring <- private$keyring_file(keyring %||% private$keyring)
   .Call("keyring_macos_set", utf8(keyring), utf8(service),
         utf8(username), charToRaw(password))
@@ -119,6 +123,7 @@ b_macos_set_with_value <- function(self, private, service, username,
 
 b_macos_set_with_raw_value <- function(self, private, service, username,
                                        password, keyring) {
+  username <- username %||% getOption("keyring_username")
   keyring <- private$keyring_file(keyring %||% private$keyring)
   .Call("keyring_macos_set", utf8(keyring), utf8(service),
         utf8(username), password)
@@ -126,6 +131,7 @@ b_macos_set_with_raw_value <- function(self, private, service, username,
 }
 
 b_macos_delete <- function(self, private, service, username, keyring) {
+  username <- username %||% getOption("keyring_username")
   keyring <- private$keyring_file(keyring %||% private$keyring)
   .Call("keyring_macos_delete", utf8(keyring), utf8(service),
         utf8(username))

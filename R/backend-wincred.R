@@ -13,6 +13,7 @@ b_wincred_i_get <- function(target) {
 
 b_wincred_i_set <- function(target, password, username = NULL,
 		                  session = FALSE) {
+  username <- username %||% getOption("keyring_username")
   .Call("keyring_wincred_set", target, password, username, session)
 }
 
@@ -39,6 +40,7 @@ b_wincred_i_unescape <- function(x) {
 }
 
 b_wincred_target <- function(keyring, service, username) {
+  username <- username %||% getOption("keyring_username")
   keyring <- if (is.null(keyring)) "" else b_wincred_i_escape(keyring)
   service <- b_wincred_i_escape(service)
   username <- if (is.null(username)) "" else b_wincred_i_escape(username)
