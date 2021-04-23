@@ -73,6 +73,11 @@ jobs:
           pak::pkg_system_requirements("rcmdcheck", execute = TRUE)
         shell: Rscript {0}
 
+      - name: Install libsecret-dev on Linux
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get install libsodium-dev
+
       - name: Install dependencies
         run: |
           pak::local_install_dev_deps(upgrade = TRUE)
