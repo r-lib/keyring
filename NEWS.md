@@ -1,6 +1,9 @@
 
 # development version
 
+* Now the file backend is selected by default on Unix systems if
+  Secret Service is not available or does not work (#95, @nwstephens).
+
 # 1.1.0
 
 * File based backend (#53, @nbenn).
