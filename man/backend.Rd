@@ -50,5 +50,7 @@ credential.
 }
 }
 \seealso{
-Other keyring backend base classes: \code{\link{backend_keyrings}}
+Other keyring backend base classes: 
+\code{\link{backend_keyrings}}
 }
+\concept{keyring backend base classes}

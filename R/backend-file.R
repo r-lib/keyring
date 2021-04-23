@@ -113,7 +113,7 @@ b_file_get <- function(self, private, service, username, keyring) {
   item_matches <- all_services %in% service
 
   if (!is.null(username)) {
-    all_users <- vapply(all_items, `[[`, character(1L), "user_name")
+    all_users <- vapply(all_items, function(x) x$user_name %||% NA_character_, character(1L))
     item_matches <- item_matches & all_users %in% username
   }
 
@@ -154,11 +154,14 @@ b_file_set_with_value <- function(self, private, service, username,
     cached <- private$get_cache(keyring)
     all_items <- cached$items
 
-    existing <- which(
-      vapply(all_items, `[[`, character(1L), "service_name") %in% service &
-      vapply(all_items, `[[`, character(1L), "user_name") %in% username
-    )
-    if (length(existing)) all_items <- all_items[- existing]
+    services <- vapply(all_items, `[[`, character(1L), "service_name")
+    users <- vapply(all_items, function(x) x$user_name %||% NA_character_, character(1))
+    existing <- if (!is.null(username)) {
+      services %in% service & users %in% username
+    } else {
+      services %in% service & is.na(users)
+    }
+    if (length(existing)) all_items <- all_items[!existing]
 
     new_item <- list(
       service_name = service,
@@ -192,15 +195,17 @@ b_file_delete <- function(self, private, service, username, keyring) {
     cached <- private$get_cache(keyring)
     all_items <- cached$items
 
-    existing <- which(
-      vapply(all_items, `[[`, character(1L), "service_name") %in% service &
-      vapply(all_items, `[[`, character(1L), "user_name") %in% username
-    )
-
+    services <- vapply(all_items, `[[`, character(1L), "service_name")
+    users <- vapply(all_items, function(x) x$user_name %||% NA_character_, character(1))
+    existing <- if (!is.null(username)) {
+      services %in% service & users %in% username
+    } else {
+      services %in% service & is.na(users)
+    }
     if (length(existing) == 0) return(invisible(self))
 
     ## Remove
-    items <- all_items[- existing]
+    items <- all_items[!existing]
 
     private$keyring_write_file(keyring, items = items)
     kr_env$stamp <- file_stamp(keyring_file)
@@ -218,7 +223,7 @@ b_file_list <- function(self, private, service, keyring) {
 
   res <- data.frame(
     service = vapply(all_items, `[[`, character(1L), "service_name"),
-    username = vapply(all_items, `[[`, character(1L), "user_name"),
+    username = vapply(all_items, function(x) x$user_name %||% NA_character_, character(1)),
     stringsAsFactors = FALSE
   )
 

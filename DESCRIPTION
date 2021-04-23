@@ -13,8 +13,8 @@ Description: Platform independent 'API' to access the operating system's
 License: MIT + file LICENSE
 URL: https://github.com/r-lib/keyring#readme
 BugReports: https://github.com/r-lib/keyring/issues
-RoxygenNote: 6.1.1
-Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1.9001
+Roxygen: list(markdown = TRUE, r6 = FALSE)
 Imports:
     assertthat,
     askpass,

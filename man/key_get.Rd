@@ -16,11 +16,14 @@ key_get_raw(service, username = NULL, keyring = NULL)
 
 key_set(service, username = NULL, keyring = NULL)
 
-key_set_with_value(service, username = NULL, password = NULL,
-  keyring = NULL)
+key_set_with_value(service, username = NULL, password = NULL, keyring = NULL)
 
-key_set_with_raw_value(service, username = NULL, password = NULL,
-  keyring = NULL)
+key_set_with_raw_value(
+  service,
+  username = NULL,
+  password = NULL,
+  keyring = NULL
+)
 
 key_delete(service, username = NULL, keyring = NULL)
 
@@ -91,5 +94,27 @@ key_set_with_value("R-keyring-test-service", "donaldduck",
 key_get("R-keyring-test-service", "donaldduck")
 if (has_keyring_support()) key_list(service = "R-keyring-test-service")
 key_delete("R-keyring-test-service", "donaldduck")
+
+## This is interactive using backend_file
+## Set variables to be used in keyring
+kr_name <- "my_keyring"
+kr_service <- "my_database"
+kr_username <- "my_username"
+
+## Create a keyring and add an entry using the variables above
+kb <- keyring::backend_file$new()
+## Prompt for the keyring password, used to unlock keyring
+kb$keyring_create(kr_name)
+## Prompt for the secret/password to be stored in the keyring
+kb$set(kr_service, username=kr_username, keyring=kr_name)
+# Lock the keyring
+kb$keyring_lock(kr_name)
+
+## The keyring file is stored at ~/.config/r-keyring/ on Linux
+
+## Output the stored password
+keyring::backend_file$new()$get(service = kr_service,
+  user = kr_username,
+  keyring = kr_name)
 }
 }

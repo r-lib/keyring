@@ -4,8 +4,14 @@
 \alias{b_wincred_set_with_raw_value}
 \title{Set a key on a Wincred keyring}
 \usage{
-b_wincred_set_with_raw_value(self, private, service, username, password,
-  keyring)
+b_wincred_set_with_raw_value(
+  self,
+  private,
+  service,
+  username,
+  password,
+  keyring
+)
 }
 \arguments{
 \item{service}{Service name. Must not be empty.}
