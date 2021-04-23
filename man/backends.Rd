@@ -30,6 +30,7 @@ automatically, based on the OS:
 \item Linux uses the Secret Service API (\code{"secret_service"}),
 and it also checks that the service is available. It is typically
 only available on systems with a GUI.
+\item If the file backend (\code{"file"}) is available, it is selected.
 \item On other operating systems, secrets are stored in environment
 variables (\code{"env"}).
 }

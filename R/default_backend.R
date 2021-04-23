@@ -14,6 +14,7 @@
 #'    1. Linux uses the Secret Service API (`"secret_service"`),
 #'       and it also checks that the service is available. It is typically
 #'       only available on systems with a GUI.
+#'    1. If the file backend (`"file"`) is available, it is selected.
 #'    1. On other operating systems, secrets are stored in environment
 #'       variables (`"env"`).
 #'
