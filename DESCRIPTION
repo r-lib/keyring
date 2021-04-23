@@ -11,7 +11,6 @@ Description: Platform independent 'API' to access the operating system's
     platform independent store implemented with environment variables.
     Additional storage back-ends can be added easily.
 License: MIT + file LICENSE
-LazyData: true
 URL: https://github.com/r-lib/keyring#readme
 BugReports: https://github.com/r-lib/keyring/issues
 RoxygenNote: 6.1.1
