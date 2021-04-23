@@ -7,3 +7,4 @@
 ^src/keyring\.so$
 ^src/*\.o$
 ^src/Makevars$
+^\.github$
