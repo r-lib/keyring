@@ -101,6 +101,7 @@ b_ss_init <- function(self, private, keyring) {
 }
 
 b_ss_get <- function(self, private, service, username, keyring) {
+  username <- username %||% getOption("keyring_username")
   keyring <- keyring %||% private$keyring
   res <- .Call("keyring_secret_service_get", keyring, service, username)
   if (any(res == 0)) {
@@ -110,6 +111,7 @@ b_ss_get <- function(self, private, service, username, keyring) {
 }
 
 b_ss_set <- function(self, private, service, username, keyring) {
+  username <- username %||% getOption("keyring_username")
   password <- get_pass()
   b_ss_set_with_value(self, private, service, username, password, keyring)
   invisible(self)
@@ -117,6 +119,7 @@ b_ss_set <- function(self, private, service, username, keyring) {
 
 b_ss_set_with_value <- function(self, private, service, username, password,
                                 keyring) {
+  username <- username %||% getOption("keyring_username")
   keyring <- keyring %||% private$keyring
   .Call("keyring_secret_service_set", keyring, service, username,
         charToRaw(password))
@@ -125,6 +128,7 @@ b_ss_set_with_value <- function(self, private, service, username, password,
 
 b_ss_set_with_raw_value <- function(self, private, service, username, password,
                                     keyring) {
+  username <- username %||% getOption("keyring_username")
   keyring <- keyring %||% private$keyring
   .Call("keyring_secret_service_set", keyring, service, username,
         password)
@@ -132,6 +136,7 @@ b_ss_set_with_raw_value <- function(self, private, service, username, password,
 }
 
 b_ss_delete <- function(self, private, service, username, keyring) {
+  username <- username %||% getOption("keyring_username")
   keyring <- keyring %||% private$keyring
   .Call("keyring_secret_service_delete", keyring, service, username)
   invisible(self)

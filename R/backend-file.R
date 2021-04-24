@@ -105,6 +105,7 @@ b_file_init <- function(self, private, keyring) {
 
 b_file_get <- function(self, private, service, username, keyring) {
 
+  username <- username %||% getOption("keyring_username")
   if (self$keyring_is_locked(keyring)) self$keyring_unlock(keyring)
 
   cached <- private$get_cache(keyring)
@@ -133,6 +134,7 @@ b_file_get <- function(self, private, service, username, keyring) {
 
 b_file_set <- function(self, private, service, username, keyring) {
 
+  username <- username %||% getOption("keyring_username")
   if (self$keyring_is_locked(keyring)) self$keyring_unlock(keyring)
 
   password <- get_pass()
@@ -145,6 +147,7 @@ b_file_set <- function(self, private, service, username, keyring) {
 b_file_set_with_value <- function(self, private, service, username,
                                   password, keyring) {
 
+  username <- username %||% getOption("keyring_username")
   if (self$keyring_is_locked(keyring)) self$keyring_unlock(keyring)
 
   keyring_file <- private$keyring_file(keyring)
@@ -186,6 +189,7 @@ b_file_set_with_value <- function(self, private, service, username,
 
 b_file_delete <- function(self, private, service, username, keyring) {
 
+  username <- username %||% getOption("keyring_username")
   if (self$keyring_is_locked(keyring)) self$keyring_unlock(keyring)
 
   keyring_file <- private$keyring_file(keyring)
