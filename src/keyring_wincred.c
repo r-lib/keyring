@@ -134,19 +134,36 @@ SEXP keyring_wincred_enumerate(SEXP filter) {
   }
 }
 
-static const R_CallMethodDef callMethods[]  = {
-  { "keyring_wincred_get",       (DL_FUNC) &keyring_wincred_get,       1 },
-  { "keyring_wincred_exists",    (DL_FUNC) &keyring_wincred_exists,    1 },
-  { "keyring_wincred_set",       (DL_FUNC) &keyring_wincred_set,       4 },
-  { "keyring_wincred_delete",    (DL_FUNC) &keyring_wincred_delete,    1 },
-  { "keyring_wincred_enumerate", (DL_FUNC) &keyring_wincred_enumerate, 1 },
-  { NULL, NULL, 0 }
-};
+#else
 
-void R_init_keyring(DllInfo *dll) {
-  R_registerRoutines(dll, NULL, callMethods, NULL, NULL);
-  R_useDynamicSymbols(dll, FALSE);
-  R_forceSymbols(dll, TRUE);
+#include <R.h>
+#include <Rinternals.h>
+#include <R_ext/Rdynload.h>
+
+SEXP keyring_wincred_get(SEXP target) {
+  error("only works on Windows");
+  return R_NilValue;
+}
+
+SEXP keyring_wincred_exists(SEXP target) {
+  error("only works on Windows");
+  return R_NilValue;
+}
+
+SEXP keyring_wincred_set(SEXP target, SEXP password, SEXP username,
+                         SEXP session) {
+  error("only works on Windows");
+  return R_NilValue;
+}
+
+SEXP keyring_wincred_delete(SEXP target) {
+  error("only works on Windows");
+  return R_NilValue;
+}
+
+SEXP keyring_wincred_enumerate(SEXP filter) {
+  error("only works on Windows");
+  return R_NilValue;
 }
 
 #endif // _WIN32

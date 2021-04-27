@@ -53,6 +53,6 @@
 #' functions if you want to use a different keyring.
 #'
 #' @docType package
-#' @useDynLib keyring, .registration = TRUE, .fixes = "c_"
+#' @useDynLib keyring, .registration = TRUE
 #' @name keyring
 NULL

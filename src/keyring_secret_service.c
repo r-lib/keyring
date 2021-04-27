@@ -2,13 +2,11 @@
 /* Avoid warning about empty compilation unit. */
 void keyring_secret_service_dummy() { }
 
-#ifdef __linux__
+#if defined(__linux__) && defined(HAS_LIBSECRET)
 
 #include <R.h>
 #include <Rinternals.h>
 #include <R_ext/Rdynload.h>
-
-#ifdef HAS_LIBSECRET
 
 #define SECRET_WITH_UNSTABLE 1
 #define SECRET_API_SUBJECT_TO_CHANGE 1
@@ -501,65 +499,80 @@ SEXP keyring_secret_service_is_locked_keyring(SEXP keyring) {
   return ScalarLogical(locked);
 }
 
-static const R_CallMethodDef callMethods[]  = {
-  { "keyring_secret_service_is_available",
-    (DL_FUNC) &keyring_secret_service_is_available, 1 },
-  { "keyring_secret_service_get",
-    (DL_FUNC) &keyring_secret_service_get, 3 },
-  { "keyring_secret_service_set",
-    (DL_FUNC) &keyring_secret_service_set, 4 },
-  { "keyring_secret_service_delete",
-    (DL_FUNC) &keyring_secret_service_delete, 3 },
-  { "keyring_secret_service_list",
-    (DL_FUNC) &keyring_secret_service_list, 2 },
-  { "keyring_secret_service_create_keyring",
-    (DL_FUNC) &keyring_secret_service_create_keyring, 1 },
-  { "keyring_secret_service_list_keyring",
-    (DL_FUNC) &keyring_secret_service_list_keyring, 0 },
-  { "keyring_secret_service_delete_keyring",
-    (DL_FUNC) &keyring_secret_service_delete_keyring, 1 },
-  { "keyring_secret_service_lock_keyring",
-    (DL_FUNC) &keyring_secret_service_lock_keyring, 1 },
-  { "keyring_secret_service_unlock_keyring",
-    (DL_FUNC) &keyring_secret_service_unlock_keyring, 2 },
-  { "keyring_secret_service_is_locked_keyring",
-    (DL_FUNC) &keyring_secret_service_is_locked_keyring, 1 },
-  { NULL, NULL, 0 }
-};
-
-void R_init_keyring(DllInfo *dll) {
-  R_registerRoutines(dll, NULL, callMethods, NULL, NULL);
-  R_useDynamicSymbols(dll, FALSE);
-  R_forceSymbols(dll, TRUE);
-  g_type_ensure (G_TYPE_OBJECT);
-}
-
 void R_unload_keyring(DllInfo *dll) {
   secret_service_disconnect();
- }
+}
 
-#else // HAS_LIBSECRET
+#else
+
+#include <R.h>
+#include <Rinternals.h>
+#include <R_ext/Rdynload.h>
 
 SEXP keyring_secret_service_is_available(SEXP report_error) {
+#ifdef __linux__
   if (LOGICAL(report_error)[0]) {
     error("keyring build has no libsecret support");
   } else {
     return ScalarLogical(0);
   }
+#else
+  error("only works on Linux");
+  return R_NilValue;
+#endif
 }
 
-static const R_CallMethodDef callMethods[]  = {
-  { "keyring_secret_service_is_available",
-    (DL_FUNC) &keyring_secret_service_is_available, 1 },
-  { NULL, NULL, 0 }
-};
-
-void R_init_keyring(DllInfo *dll) {
-  R_registerRoutines(dll, NULL, callMethods, NULL, NULL);
-  R_useDynamicSymbols(dll, FALSE);
-  R_forceSymbols(dll, TRUE);
+SEXP keyring_secret_service_get(SEXP keyring, SEXP service,
+                                SEXP username) {
+  error("only works on Linux with Secret Service support");
+  return R_NilValue;
 }
 
-#endif // HAS_LIBSECRET
+SEXP keyring_secret_service_set(SEXP keyring, SEXP service,
+                                SEXP username, SEXP password) {
+  error("only works on Linux with Secret Service support");
+  return R_NilValue;
+}
+
+SEXP keyring_secret_service_delete(SEXP keyring, SEXP service,
+                                   SEXP username) {
+  error("only works on Linux with Secret Service support");
+  return R_NilValue;
+}
+
+SEXP keyring_secret_service_list(SEXP keyring, SEXP service) {
+  error("only works on Linux with Secret Service support");
+  return R_NilValue;
+}
+
+SEXP keyring_secret_service_create_keyring(SEXP keyring) {
+  error("only works on Linux with Secret Service support");
+  return R_NilValue;
+}
+
+SEXP keyring_secret_service_list_keyring() {
+  error("only works on Linux with Secret Service support");
+  return R_NilValue;
+}
+
+SEXP keyring_secret_service_delete_keyring(SEXP keyring) {
+  error("only works on Linux with Secret Service support");
+  return R_NilValue;
+}
+
+SEXP keyring_secret_service_lock_keyring(SEXP keyring) {
+  error("only works on Linux with Secret Service support");
+  return R_NilValue;
+}
+
+SEXP keyring_secret_service_unlock_keyring(SEXP keyring, SEXP password) {
+  error("only works on Linux with Secret Service support");
+  return R_NilValue;
+}
+
+SEXP keyring_secret_service_is_locked_keyring(SEXP keyring) {
+  error("only works on Linux with Secret Service support");
+  return R_NilValue;
+}
 
 #endif // __linux__
