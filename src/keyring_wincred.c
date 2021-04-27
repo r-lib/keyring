@@ -136,27 +136,32 @@ SEXP keyring_wincred_enumerate(SEXP filter) {
 
 #else
 
+#include <R.h>
+#include <Rinternals.h>
+#include <R_ext/Rdynload.h>
+
 SEXP keyring_wincred_get(SEXP target) {
   error("only works on Windows");
   return R_NilValue;
 }
 
-SEXP keyring_wincred_exists(SEXP) {
+SEXP keyring_wincred_exists(SEXP target) {
   error("only works on Windows");
   return R_NilValue;
 }
 
-SEXP keyring_wincred_set(SEXP, SEXP, SEXP, SEXP) {
+SEXP keyring_wincred_set(SEXP target, SEXP password, SEXP username,
+                         SEXP session) {
   error("only works on Windows");
   return R_NilValue;
 }
 
-SEXP keyring_wincred_delete(SEXP) {
+SEXP keyring_wincred_delete(SEXP target) {
   error("only works on Windows");
   return R_NilValue;
 }
 
-SEXP keyring_wincred_enumerate(SEXP) {
+SEXP keyring_wincred_enumerate(SEXP filter) {
   error("only works on Windows");
   return R_NilValue;
 }

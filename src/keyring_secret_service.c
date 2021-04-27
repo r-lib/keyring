@@ -499,18 +499,9 @@ SEXP keyring_secret_service_is_locked_keyring(SEXP keyring) {
   return ScalarLogical(locked);
 }
 
-};
-
-void R_init_keyring(DllInfo *dll) {
-  R_registerRoutines(dll, NULL, callMethods, NULL, NULL);
-  R_useDynamicSymbols(dll, FALSE);
-  R_forceSymbols(dll, TRUE);
-  g_type_ensure (G_TYPE_OBJECT);
-}
-
 void R_unload_keyring(DllInfo *dll) {
   secret_service_disconnect();
- }
+}
 
 #else
 
