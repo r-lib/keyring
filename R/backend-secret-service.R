@@ -45,7 +45,7 @@ backend_secret_service <- R6Class(
     get = function(service, username = NULL, keyring = NULL)
       b_ss_get(self, private, service, username, keyring),
     get_raw = function(service, username = NULL, keyring = NULL)
-      b_ss_get_raw(self, private, service, username = NULL, keyring = NULL),
+      b_ss_get_raw(self, private, service, username, keyring),
     set = function(service, username = NULL, keyring = NULL)
       b_ss_set(self, private, service, username, keyring),
     set_with_value = function(service, username = NULL, password = NULL,
