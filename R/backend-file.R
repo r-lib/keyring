@@ -71,8 +71,10 @@ backend_file <- R6Class(
   private = list(
     keyring = NULL,
 
-    keyring_create_direct = function(keyring = NULL, password = NULL)
-      b__file_keyring_create_direct(self, private, keyring, password),
+    keyring_create_direct = function(keyring = NULL, password = NULL, prompt = NULL)
+      b__file_keyring_create_direct(self, private, keyring, password, prompt),
+    keyring_autocreate = function(keyring = NULL)
+      b__file_keyring_autocreate(self, private, keyring),
     keyring_file = function(keyring = NULL)
       b__file_keyring_file(self, private, keyring),
     keyring_read_file = function(keyring = NULL)
@@ -105,6 +107,8 @@ b_file_init <- function(self, private, keyring) {
 
 b_file_get <- function(self, private, service, username, keyring) {
 
+  private$keyring_autocreate(keyring)
+
   username <- username %||% getOption("keyring_username")
   if (self$keyring_is_locked(keyring)) self$keyring_unlock(keyring)
 
@@ -134,6 +138,8 @@ b_file_get <- function(self, private, service, username, keyring) {
 
 b_file_set <- function(self, private, service, username, keyring) {
 
+  private$keyring_autocreate(keyring)
+
   username <- username %||% getOption("keyring_username")
   if (self$keyring_is_locked(keyring)) self$keyring_unlock(keyring)
 
@@ -146,6 +152,8 @@ b_file_set <- function(self, private, service, username, keyring) {
 
 b_file_set_with_value <- function(self, private, service, username,
                                   password, keyring) {
+
+  private$keyring_autocreate(keyring)
 
   username <- username %||% getOption("keyring_username")
   if (self$keyring_is_locked(keyring)) self$keyring_unlock(keyring)
@@ -222,6 +230,8 @@ b_file_delete <- function(self, private, service, username, keyring) {
 
 b_file_list <- function(self, private, service, keyring) {
 
+  private$keyring_autocreate(keyring)
+
   cached <- private$get_cache(keyring)
   all_items <- cached$items
 
@@ -254,6 +264,7 @@ b_file_keyring_delete <- function(self, private, keyring) {
 }
 
 b_file_keyring_lock <- function(self, private, keyring) {
+  private$keyring_autocreate(keyring)
   private$unset_keyring_pass(keyring)
   invisible(self)
 }
@@ -280,6 +291,8 @@ b_file_keyring_unlock <- function(self, private, keyring, password) {
 }
 
 b_file_keyring_is_locked <- function(self, private, keyring) {
+
+  private$keyring_autocreate(keyring)
 
   keyring <- keyring %||% private$keyring
   file_name <- private$keyring_file(keyring)
@@ -338,9 +351,10 @@ b_file_keyring_set_default <- function(self, private, keyring) {
 ## --------------------------------------------------------------------
 ## Private
 
-b__file_keyring_create_direct <- function(self, private, keyring, password) {
+b__file_keyring_create_direct <- function(self, private, keyring, password, prompt) {
 
   keyring <- keyring %||% private$keyring
+  prompt <- prompt %||% "Keyring password: "
   file_name <- private$keyring_file(keyring)
 
   if (file.exists(file_name)) {
@@ -348,7 +362,7 @@ b__file_keyring_create_direct <- function(self, private, keyring, password) {
                        "(type `yes` if so)"), "yes")
   }
 
-  password <- password %||% get_pass("Keyring password: ")
+  password <- password %||% get_pass(prompt)
 
   ## File need to exist for $set_keyring_pass() ...
   dir.create(dirname(file_name), recursive = TRUE, showWarnings = FALSE)
@@ -587,6 +601,25 @@ b_file_split_string <- function(string, width = 78L) {
 b_file_merge_string <- function(string) {
   assert_that(is_string(string))
   paste(strsplit(string, "\n")[[1L]], collapse = "")
+}
+
+b__file_keyring_autocreate <- function(self, private, keyring) {
+  keyring <- keyring %||% private$keyring
+  file <- private$keyring_file(keyring)
+  if (!file.exists(file)) {
+    if (is_interactive()) {
+      private$keyring_create_direct(
+        keyring,
+        password = NULL,
+        prompt = paste0(
+          "The '", keyring,
+          "' keyring does not exist, enter a keyring password to create it: "
+        )
+      )
+    } else {
+      stop("The '", keyring, "' keyring does not exists, create it first!")
+    }
+  }
 }
 
 with_lock <- function(file, expr) {
