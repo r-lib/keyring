@@ -111,7 +111,7 @@ b_ss_get <- function(self, private, service, username, keyring) {
 b_ss_get_raw <- function(self, private, service, username, keyring) {
   username <- username %||% getOption("keyring_username")
   keyring <- keyring %||% private$keyring
-  res <- .Call("keyring_secret_service_get", keyring, service, username)
+  res <- .Call(keyring_secret_service_get, keyring, service, username)
   res
 }
 
@@ -126,7 +126,7 @@ b_ss_set_with_value <- function(self, private, service, username, password,
                                 keyring) {
   username <- username %||% getOption("keyring_username")
   keyring <- keyring %||% private$keyring
-  .Call("keyring_secret_service_set", keyring, service, username,
+  .Call(keyring_secret_service_set, keyring, service, username,
         charToRaw(password))
   invisible(self)
 }
@@ -135,7 +135,7 @@ b_ss_set_with_raw_value <- function(self, private, service, username, password,
                                     keyring) {
   username <- username %||% getOption("keyring_username")
   keyring <- keyring %||% private$keyring
-  .Call("keyring_secret_service_set", keyring, service, username,
+  .Call(keyring_secret_service_set, keyring, service, username,
         password)
   invisible(self)
 }
@@ -143,13 +143,13 @@ b_ss_set_with_raw_value <- function(self, private, service, username, password,
 b_ss_delete <- function(self, private, service, username, keyring) {
   username <- username %||% getOption("keyring_username")
   keyring <- keyring %||% private$keyring
-  .Call("keyring_secret_service_delete", keyring, service, username)
+  .Call(keyring_secret_service_delete, keyring, service, username)
   invisible(self)
 }
 
 b_ss_list <- function(self, private, service, keyring) {
   keyring <- keyring %||% private$keyring
-  res <- .Call("keyring_secret_service_list", keyring, service)
+  res <- .Call(keyring_secret_service_list, keyring, service)
   data.frame(
     service = res[[1]],
     username = res[[2]],
@@ -164,7 +164,7 @@ b_ss_keyring_create <- function(self, private, keyring) {
 }
 
 b_ss_keyring_list <- function(self, private) {
-  res <- .Call("keyring_secret_service_list_keyring")
+  res <- .Call(keyring_secret_service_list_keyring)
   data.frame(
     keyring = res[[1]],
     num_secrets = res[[2]],
@@ -176,26 +176,26 @@ b_ss_keyring_list <- function(self, private) {
 b_ss_keyring_delete <- function(self, private, keyring) {
   self$confirm_delete_keyring(keyring)
   keyring <- keyring %||% private$keyring
-  .Call("keyring_secret_service_delete_keyring", keyring)
+  .Call(keyring_secret_service_delete_keyring, keyring)
   invisible()
 }
 
 b_ss_keyring_lock <- function(self, private, keyring) {
   keyring <- keyring %||% private$keyring
-  .Call("keyring_secret_service_lock_keyring", keyring)
+  .Call(keyring_secret_service_lock_keyring, keyring)
   invisible()
 }
 
 b_ss_keyring_unlock <- function(self, private, keyring, password) {
   keyring <- keyring %||% private$keyring
   if (! is.null(password)) warning("password ignored, will be read interactively")
-  .Call("keyring_secret_service_unlock_keyring", keyring, password)
+  .Call(keyring_secret_service_unlock_keyring, keyring, password)
   invisible()
 }
 
 b_ss_keyring_is_locked <- function(self, private, keyring) {
   keyring <- keyring %||% private$keyring
-  .Call("keyring_secret_service_is_locked_keyring", keyring)
+  .Call(keyring_secret_service_is_locked_keyring, keyring)
 }
 
 b_ss_keyring_default <- function(self, private) {
@@ -208,7 +208,7 @@ b_ss_keyring_set_default <- function(self, private, keyring) {
 }
 
 b_ss_is_available <- function(self, private, report_error) {
-  .Call("keyring_secret_service_is_available", report_error)
+  .Call(keyring_secret_service_is_available, report_error)
 }
 
 b_ss_keyring_create_direct <- function(self, private, keyring, password) {
@@ -216,6 +216,6 @@ b_ss_keyring_create_direct <- function(self, private, keyring, password) {
     warning("Password ignored, will be read interactively")
   }
   keyring <- keyring %||% private$keyring
-  .Call("keyring_secret_service_create_keyring", keyring)
+  .Call(keyring_secret_service_create_keyring, keyring)
   invisible(self)
 }
