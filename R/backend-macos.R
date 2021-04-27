@@ -227,6 +227,6 @@ b_macos_keyring_file <- function(self, private, name) {
 
 b_macos_keyring_create_direct <- function(self, private, keyring, password) {
   keyring <- private$keyring_file(keyring)
-  # .Call(keyring_macos_create, utf8(keyring), password)
+  .Call(keyring_macos_create, utf8(keyring), password)
   invisible(self)
 }
