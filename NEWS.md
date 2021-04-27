@@ -1,6 +1,8 @@
 
 # development version
 
+* The `get_raw()` method of the Secret Service backend works now (#87).
+
 * Now the file backend is selected by default on Unix systems if
   Secret Service is not available or does not work (#95, @nwstephens).
 
