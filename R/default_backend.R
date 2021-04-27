@@ -14,6 +14,7 @@
 #'    1. Linux uses the Secret Service API (`"secret_service"`),
 #'       and it also checks that the service is available. It is typically
 #'       only available on systems with a GUI.
+#'    1. If the file backend (`"file"`) is available, it is selected.
 #'    1. On other operating systems, secrets are stored in environment
 #'       variables (`"env"`).
 #'
@@ -83,6 +84,9 @@ default_backend_auto <- function() {
   } else if (sysname == "linux" && "secret_service" %in% names(known_backends) &&
              backend_secret_service$new()$is_available()) {
     backend_secret_service
+    
+  } else if ("file" %in% names(known_backends)) {
+    backend_file
 
   } else {
     if (getOption("keyring_warn_for_env_fallback", TRUE)) {

@@ -1,4 +1,16 @@
 
+# development version
+
+* The `get_raw()` method of the Secret Service backend works now (#87).
+
+* Now the file backend is selected by default on Unix systems if
+  Secret Service is not available or does not work (#95, @nwstephens).
+
+* The file backend now works with keys that do not have a username.
+
+* All backends use the value of the `keyring_username` option, if set,
+  as the default username (#60).
+
 # 1.1.0
 
 * File based backend (#53, @nbenn).

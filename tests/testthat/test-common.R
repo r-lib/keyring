@@ -1,8 +1,20 @@
 
 context("Common API")
 
-opts <- options(keyring_warn_for_env_fallback = FALSE)
-on.exit(options(opts), add = TRUE)
+withr::local_options(
+  keyring_warn_for_env_fallback = FALSE,
+  keyring_file_dir = file.path(tempdir(), "keyrings")
+)
+on.exit(unlink(file.path(tempdir(), "keyrings"), recursive = TRUE), add = TRUE)
+
+# The file backend needs a default keyring currently
+kb <- default_backend()
+if (kb$name == "file") {
+  if (! "system" %in% kb$keyring_list()$keyring) {
+    kb$.__enclos_env__$private$keyring_create_direct("system", "master")
+  }
+  kb$keyring_unlock("system", "master")
+}
 
 test_that("set, get, delete", {
 

@@ -41,7 +41,8 @@ The arguments:
 \item \code{service} String, the name of a service. This is used to find the
 secret later.
 \item \code{username} String, the username associated with a secret. It can be
-\code{NULL}, if no username belongs to the secret.
+\code{NULL}, if no username belongs to the secret. It uses the value of
+the \code{keyring_username}, if set.
 \item \code{keyring} String, the name of the keyring to work with. This only makes
 sense if the platform supports multiple keyrings. \code{NULL} selects the
 default (and maybe only) keyring.
@@ -50,5 +51,7 @@ credential.
 }
 }
 \seealso{
-Other keyring backend base classes: \code{\link{backend_keyrings}}
+Other keyring backend base classes: 
+\code{\link{backend_keyrings}}
 }
+\concept{keyring backend base classes}

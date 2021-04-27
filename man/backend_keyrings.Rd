@@ -30,7 +30,7 @@ the default keyring, and/or a non-empty keyring with a password or
 a confirmation dialog.
 \item \code{keyring_lock()} locks a keyring.
 \item \code{keyring_unlock()} unlocks a keyring.
-\item `keyring_is_locked() checks whether a keyring is locked.
+\item \code{keyring_is_locked()} checks whether a keyring is locked.
 \item \code{keyring_default()} returns the default keyring.
 \item \code{keyring_set_default()} sets the default keyring.
 }
@@ -43,5 +43,7 @@ methods in can be \code{NULL} to select the default keyring.
 }
 }
 \seealso{
-Other keyring backend base classes: \code{\link{backend}}
+Other keyring backend base classes: 
+\code{\link{backend}}
 }
+\concept{keyring backend base classes}

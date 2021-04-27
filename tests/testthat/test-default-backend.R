@@ -65,10 +65,10 @@ test_that("auto macos", {
 test_that("auto linux", {
   skip_if_not_linux()  
   kb <- default_backend()
-  expect_true(kb$name == "env" || kb$name == "secret service")
+  expect_true(kb$name == "env" || kb$name == "secret service" || kb$name == "file")
 })
 
 test_that("auto other", {
   mockery::stub(default_backend_auto, "Sys.info", c(sysname = "Solaris"))
-  expect_equal(suppressWarnings(default_backend_auto()), backend_env)
+  expect_equal(suppressWarnings(default_backend_auto()), backend_file)
 })

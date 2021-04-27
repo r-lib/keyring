@@ -1,6 +1,6 @@
 Package: keyring
 Title: Access the System Credential Store from R
-Version: 1.1.0
+Version: 1.1.0.9000
 Authors@R:
     c(person(given = "Gábor", family = "Csárdi", role = c("aut", "cre"),
              email = "csardi.gabor@gmail.com"),
@@ -11,11 +11,10 @@ Description: Platform independent 'API' to access the operating system's
     platform independent store implemented with environment variables.
     Additional storage back-ends can be added easily.
 License: MIT + file LICENSE
-LazyData: true
 URL: https://github.com/r-lib/keyring#readme
 BugReports: https://github.com/r-lib/keyring/issues
-RoxygenNote: 7.1.0
-Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1.9001
+Roxygen: list(markdown = TRUE, r6 = FALSE)
 Imports:
     assertthat,
     askpass,

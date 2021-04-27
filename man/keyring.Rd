@@ -3,7 +3,6 @@
 \docType{package}
 \name{keyring}
 \alias{keyring}
-\alias{keyring-package}
 \title{Access the System Credential Store from R}
 \description{
 Platform independent API to many system credential store
@@ -64,7 +63,7 @@ will use that automatically. The default keyring is also convenient,
 because the OS unlocks it automatically when you log in, so secrets
 are available immediately.
 
-You only need to explicitly deal with keyrings and the \code{keyring_*}
+You only need to explicitly deal with keyrings and the \verb{keyring_*}
 functions if you want to use a different keyring.
 }
 
