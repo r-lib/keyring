@@ -1,0 +1,27 @@
+url: https://r-lib.github.io/keyring
+
+destination: docs
+
+development:
+  mode: auto
+
+reference:
+- title: Common API
+  contents:
+  - keyring-package
+  - key_get
+  - has_keyring_support
+
+- title: Backends
+  contents:
+  - default_backend
+  - backend_wincred
+  - backend_macos
+  - backend_secret_service
+  - backend_file
+  - backend_env
+
+- title: Implementing new backends
+  contents:
+  - backend
+  - backend_keyrings

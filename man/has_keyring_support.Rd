@@ -8,7 +8,7 @@
 \alias{keyring_lock}
 \alias{keyring_unlock}
 \alias{keyring_is_locked}
-\title{Manage keyrings}
+\title{Operations on keyrings}
 \usage{
 has_keyring_support()
 

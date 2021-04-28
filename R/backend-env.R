@@ -1,5 +1,5 @@
 
-#' Store secrets in environment variables
+#' Environment variable keyring backend
 #'
 #' This is a simple keyring backend, that stores/uses secrets in
 #' environment variables of the R session.

@@ -2,7 +2,7 @@
 % Please edit documentation in R/backend-wincred.R
 \name{backend_wincred}
 \alias{backend_wincred}
-\title{Create a Windows Credential Store keyring backend}
+\title{Windows Credential Store keyring backend}
 \description{
 This backend is the default on Windows. It uses the native Windows
 Credential API, and needs at least Windows XP to run.

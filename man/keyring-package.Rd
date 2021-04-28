@@ -4,7 +4,7 @@
 \name{keyring-package}
 \alias{keyring}
 \alias{keyring-package}
-\title{Access the System Credential Store from R}
+\title{About the keyring package}
 \description{
 Platform independent API to many system credential store
 implementations. Currently supported:
@@ -71,6 +71,7 @@ functions if you want to use a different keyring.
 \seealso{
 Useful links:
 \itemize{
+  \item \url{https://r-lib.github.io/keyring}
   \item \url{https://github.com/r-lib/keyring#readme}
   \item Report bugs at \url{https://github.com/r-lib/keyring/issues}
 }

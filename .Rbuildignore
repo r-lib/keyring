@@ -8,3 +8,6 @@
 ^src/*\.o$
 ^src/Makevars$
 ^\.github$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$

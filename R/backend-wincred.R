@@ -134,7 +134,7 @@ b_wincred_is_locked_keyring_internal <- function(keyring) {
 
 ## -----------------------------------------------------------------------
 
-#' Create a Windows Credential Store keyring backend
+#' Windows Credential Store keyring backend
 #'
 #' This backend is the default on Windows. It uses the native Windows
 #' Credential API, and needs at least Windows XP to run.

@@ -1,7 +1,7 @@
 
 b_file_keyrings <- new.env(parent = emptyenv())
 
-#' Store secrets in encrypted files
+#' Encrypted file keyring backend
 #'
 #' This is a simple keyring backend, that stores/uses secrets in encrypted
 #' files.

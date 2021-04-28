@@ -2,7 +2,7 @@
 % Please edit documentation in R/backend-secret-service.R
 \name{backend_secret_service}
 \alias{backend_secret_service}
-\title{Create a Secret Service keyring backend}
+\title{Linux Secret Service keyring backend}
 \description{
 This backend is the default on Linux. It uses the libsecret library,
 and needs a secret service daemon running (e.g. Gnome Keyring, or

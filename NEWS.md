@@ -1,5 +1,5 @@
 
-# development version
+# keyring (development version)
 
 * It is now possible to specify the encoding of secrets on Windows
   (#88, @awong234).
@@ -14,7 +14,7 @@
 * All backends use the value of the `keyring_username` option, if set,
   as the default username (#60).
 
-# 1.1.0
+# keyring 1.1.0
 
 * File based backend (#53, @nbenn).
 
@@ -40,6 +40,6 @@
 * Windows: fix `list()` when some secrets have no `:` at all
   (these were probably set externally) (#44).
 
-# 1.0.0
+# keyring 1.0.0
 
 First public release.

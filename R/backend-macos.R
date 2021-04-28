@@ -1,5 +1,5 @@
 
-#' Create a macOS Keychain backend
+#' macOS Keychain keyring backend
 #'
 #' This backend is the default on macOS. It uses the macOS native Keychain
 #' Service API.

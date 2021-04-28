@@ -1,5 +1,5 @@
 
-#' Query, set, delete list keys in a keyring
+#' Operations on keys
 #'
 #' These functions manipulate keys in a keyring. You can think of a keyring
 #' as a secure key-value store.
@@ -160,7 +160,7 @@ key_list <- function(service = NULL, keyring = NULL) {
   default_backend()$list(service, keyring = keyring)
 }
 
-#' Manage keyrings
+#' Operations on keyrings
 #'
 #' On most platforms `keyring` supports multiple keyrings. This includes
 #' Windows, macOS and Linux (Secret Service) as well. A keyring is a

@@ -1,5 +1,5 @@
 
-#' Create a Secret Service keyring backend
+#' Linux Secret Service keyring backend
 #'
 #' This backend is the default on Linux. It uses the libsecret library,
 #' and needs a secret service daemon running (e.g. Gnome Keyring, or

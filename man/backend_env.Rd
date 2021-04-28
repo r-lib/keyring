@@ -2,7 +2,7 @@
 % Please edit documentation in R/backend-env.R
 \name{backend_env}
 \alias{backend_env}
-\title{Store secrets in environment variables}
+\title{Environment variable keyring backend}
 \description{
 This is a simple keyring backend, that stores/uses secrets in
 environment variables of the R session.

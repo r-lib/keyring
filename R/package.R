@@ -1,5 +1,5 @@
 
-#' Access the System Credential Store from R
+#' About the keyring package
 #'
 #' Platform independent API to many system credential store
 #' implementations. Currently supported:

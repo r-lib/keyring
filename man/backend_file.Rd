@@ -2,7 +2,7 @@
 % Please edit documentation in R/backend-file.R
 \name{backend_file}
 \alias{backend_file}
-\title{Store secrets in encrypted files}
+\title{Encrypted file keyring backend}
 \description{
 This is a simple keyring backend, that stores/uses secrets in encrypted
 files.

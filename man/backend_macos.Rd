@@ -2,7 +2,7 @@
 % Please edit documentation in R/backend-macos.R
 \name{backend_macos}
 \alias{backend_macos}
-\title{Create a macOS Keychain backend}
+\title{macOS Keychain keyring backend}
 \description{
 This backend is the default on macOS. It uses the macOS native Keychain
 Service API.

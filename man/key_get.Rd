@@ -8,7 +8,7 @@
 \alias{key_set_with_raw_value}
 \alias{key_delete}
 \alias{key_list}
-\title{Query, set, delete list keys in a keyring}
+\title{Operations on keys}
 \usage{
 key_get(service, username = NULL, keyring = NULL)
 
