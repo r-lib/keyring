@@ -41,6 +41,29 @@ URLencode <- function(URL) {
   paste(x, collapse = "")
 }
 
+get_encoding_opt <- function() {
+  chk <- function(x) is.character(x) && length(x) == 1 && !is.na(x)
+
+  enc <- getOption("keyring.encoding_windows")
+  if (!is.null(enc) && !chk(enc)) {
+    stop("Invalid 'keyring.encoding_windows' option, must be an ",
+         "encoding name or 'auto'")
+  }
+
+  enc <- enc %||% Sys.getenv("KEYRING_ENCODING_WINDOWS", "auto")
+
+  # Confirm valid encoding. Suggest closest match if not found.
+  if (enc != "auto" & !(tolower(enc) %in% tolower(iconvlist()))) {
+    icl <- iconvlist()
+    closest <- icl[which.min(utils::adist(enc, icl))]
+    stop(sprintf(
+      "Encoding not found in iconvlist(). Did you mean %s?",
+      closest
+    ))
+  }
+  enc
+}
+
 is_interactive <- function() {
   opt <- getOption("rlib_interactive")
   if (isTRUE(opt)) {

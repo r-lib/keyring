@@ -235,19 +235,16 @@ b_wincred_init <- function(self, private, keyring) {
 #' 5. Get the AES key from the keyring.
 #' 6. Decrypt the key with the AES key.
 #'
+#' Additionally, users may specify an encoding to use when converting the
+#' password from a byte-string, for compatibility with other software such as
+#' python's keyring package. This is done via an option, or an environment variable.
+#'
 #' @keywords internal
 
 b_wincred_get <- function(self, private, service, username, keyring) {
   password <- self$get_raw(service, username, keyring)
-  if (any(password == 0)) {
-    password <- iconv(list(password), from = "UTF-16LE", to = "")
-    if (is.na(password)) {
-      stop("Key contains embedded null bytes, use get_raw()")
-    }
-    password
-  } else {
-    rawToChar(password)
-  }
+  encoding <- get_encoding_opt()
+  b_wincred_decode(password, encoding = encoding)
 }
 
 b_wincred_get_raw <- function(self, private, service, username, keyring) {
@@ -263,6 +260,51 @@ b_wincred_get_raw <- function(self, private, service, username, keyring) {
   password
 }
 
+#' Decode a raw password obtained by b_wincred_get_raw
+#'
+#' Defaults to 'auto' encoding, which uses `b_wincred_decode_auto` to
+#' accomplish the decoding (this works with decoding either UTF-8 or
+#' UTF-16LE encodings). In the case where an encoding is specified,
+#' use that to convert the raw password.
+#'
+#' @param password A raw byte string returned from `b_wincred_get_raw`.
+#' @param encoding A character value, specifying an encoding to use.
+#'   Defaults to 'auto', which will decode either of UTF-8 or UTF-16LE.
+#' @return A character value containing a password.
+#'
+#' @keywords internal
+
+b_wincred_decode <- function(password, encoding = 'auto') {
+  if (encoding == 'auto') {
+    b_wincred_decode_auto(password)
+  } else {
+    password <- iconv(list(password), from = encoding, to = "")
+    password
+  }
+}
+
+#' Decode a raw password obtained by b_wincred_get_raw
+#' (UTF-8 and UTF-16LE only)
+#'
+#' It attempts to use UTF-16LE conversion if there are 0 values in
+#' the password.
+#'
+#' @param password Raw vector coming from the keyring.
+#'
+#' @keywords internal
+
+b_wincred_decode_auto <- function(password) {
+  if (any(password == 0)) {
+    password <- iconv(list(password), from = "UTF-16LE", to = "")
+    if (is.na(password)) {
+      stop("Key contains embedded null bytes, use get_raw()")
+    }
+    password
+  } else {
+    rawToChar(password)
+  }
+}
+
 b_wincred_set <- function(self, private, service, username, keyring) {
   password <- get_pass()
   b_wincred_set_with_value(self, private, service, username, password,
@@ -272,8 +314,14 @@ b_wincred_set <- function(self, private, service, username, keyring) {
 
 b_wincred_set_with_value <- function(self, private, service,
                                      username, password, keyring) {
-  b_wincred_set_with_raw_value(self, private, service, username,
-                               charToRaw(password), keyring)
+  encoding <- get_encoding_opt()
+  if (encoding != 'auto') {
+    password <- enc2utf8(password)
+    password <- iconv(x = password, from = 'UTF-8', to = encoding, toRaw = TRUE)[[1]]
+  } else {
+    password <- charToRaw(password)
+  }
+  b_wincred_set_with_raw_value(self, private, service, username, password, keyring)
 }
 
 #' Set a key on a Wincred keyring
@@ -290,17 +338,26 @@ b_wincred_set_with_value <- function(self, private, service,
 #' 6. If yes, unlock it.
 #' 7. Encrypt the key with the AES key, and store it.
 #'
+#' If required, an encoding can be specified using either an R option
+#' (\code{keyring.encoding_windows}) or environment variable
+#' (\code{KEYRING_ENCODING_WINDOWS}). To set, use one of:
+#'
+#' \code{options(keyring.encoding_windows = 'encoding-type')}
+#' \code{Sys.setenv("KEYRING_ENCODING_WINDOWS" = 'encoding-type')}
+#'
+#' For a list of valid encodings, use \code{iconvlist()}
+#'
 #' @keywords internal
 
 b_wincred_set_with_raw_value <- function(self, private, service,
                                          username, password, keyring) {
+
   keyring <- keyring %||% private$keyring
   target <- b_wincred_target(keyring, service, username)
   if (is.null(keyring)) {
     b_wincred_i_set(target, password, username = username)
     return(invisible(self))
   }
-
   ## Not the default keyring, we need to encrypt it
   target_keyring <- b_wincred_target_keyring(keyring)
   aes <- b_wincred_unlock_keyring_internal(keyring)

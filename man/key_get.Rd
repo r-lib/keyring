@@ -77,6 +77,20 @@ vector.
 
 \code{key_list} lists all keys of a keyring, or the keys for a certain
 service (if \code{service} is not \code{NULL}).
+\subsection{Encodings}{
+
+On Windows, if required, an encoding can be specified using either
+an R option (\code{keyring.encoding_windows}) or environment variable
+(\code{KEYRING_ENCODING_WINDOWS}). This will be applied when both
+getting and setting keys. The option takes precedence over the
+environment variable, if both are set.
+
+This is reserved primarily for compatibility with keys set with
+other software, such as Python's implementation of keyring. For a
+list of encodings, use \code{\link[=iconvlist]{iconvlist()}}, although it should be noted
+that not \emph{every} encoding can be properly converted, even for
+trivial cases. For best results, use UTF-8 if you can.
+}
 }
 \examples{
 # These examples use the default keyring, and they are interactive,

@@ -27,6 +27,20 @@
 #' `key_list` lists all keys of a keyring, or the keys for a certain
 #' service (if `service` is not `NULL`).
 #'
+#' ## Encodings
+#'
+#' On Windows, if required, an encoding can be specified using either
+#' an R option (`keyring.encoding_windows`) or environment variable
+#' (`KEYRING_ENCODING_WINDOWS`). This will be applied when both
+#' getting and setting keys. The option takes precedence over the
+#' environment variable, if both are set.
+#'
+#' This is reserved primarily for compatibility with keys set with
+#' other software, such as Python's implementation of keyring. For a
+#' list of encodings, use [iconvlist()], although it should be noted
+#' that not _every_ encoding can be properly converted, even for
+#' trivial cases. For best results, use UTF-8 if you can.
+#'
 #' @param service Service name, a character scalar.
 #' @param username Username, a character scalar, or `NULL` if the key
 #'   is not associated with a username.
@@ -65,7 +79,7 @@
 #' kr_name <- "my_keyring"
 #' kr_service <- "my_database"
 #' kr_username <- "my_username"
-#' 
+#'
 #' ## Create a keyring and add an entry using the variables above
 #' kb <- keyring::backend_file$new()
 #' ## Prompt for the keyring password, used to unlock keyring
@@ -74,9 +88,9 @@
 #' kb$set(kr_service, username=kr_username, keyring=kr_name)
 #' # Lock the keyring
 #' kb$keyring_lock(kr_name)
-#' 
+#'
 #' ## The keyring file is stored at ~/.config/r-keyring/ on Linux
-#' 
+#'
 #' ## Output the stored password
 #' keyring::backend_file$new()$get(service = kr_service,
 #'   user = kr_username,
