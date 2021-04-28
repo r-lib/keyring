@@ -14,7 +14,7 @@ test_that("specify keyring explicitly", {
   keyring <- random_keyring()
 
   kb <- backend_file$new(keyring = keyring)
-  kb$.__enclos_env__$private$keyring_create_direct(keyring, "secret123!")
+  kb$keyring_create(keyring, "secret123!")
 
   expect_false(kb$keyring_is_locked(keyring))
   kb$keyring_lock(keyring)
@@ -66,7 +66,7 @@ test_that("key consistency check", {
   keyring_pwd_2 <- random_password()
 
   kb <- backend_file$new(keyring = keyring)
-  kb$.__enclos_env__$private$keyring_create_direct(keyring, keyring_pwd_1)
+  kb$keyring_create(keyring, keyring_pwd_1)
 
   expect_silent(kb$keyring_unlock(password = keyring_pwd_1))
   expect_silent(kb$set_with_value(random_service(), username, password))
@@ -104,8 +104,8 @@ test_that("use non-default keyring", {
   keyring_pwd <- random_password()
 
   kb <- backend_file$new(keyring = default_keyring)
-  kb$.__enclos_env__$private$keyring_create_direct(password = default_keyring_pwd)
-  kb$.__enclos_env__$private$keyring_create_direct(keyring, keyring_pwd)
+  kb$keyring_create(password = default_keyring_pwd)
+  kb$keyring_create(keyring, keyring_pwd)
 
   expect_silent(kb$keyring_unlock(password = default_keyring_pwd))
   expect_false(kb$keyring_is_locked())
@@ -142,7 +142,7 @@ test_that("list keyring items", {
   keyring_pwd <- random_password()
 
   kb <- backend_file$new(keyring)
-  kb$.__enclos_env__$private$keyring_create_direct(keyring, keyring_pwd)
+  kb$keyring_create(keyring, keyring_pwd)
   expect_silent(kb$keyring_unlock(password = keyring_pwd))
 
   expect_silent(kb$set_with_value(random_service(),
@@ -224,7 +224,7 @@ test_that("keys updated from another session", {
 
   keyring <- random_keyring()
   kb <- backend_file$new(keyring = keyring)
-  kb$.__enclos_env__$private$keyring_create_direct(keyring, "foobar")
+  kb$keyring_create(keyring, "foobar")
 
   kb$keyring_unlock(password = "foobar")
   kb$set_with_value(service_1, username, password)
@@ -260,7 +260,7 @@ test_that("locking the keyring file", {
   keyring <- random_keyring()
 
   kb <- backend_file$new(keyring = keyring)
-  kb$.__enclos_env__$private$keyring_create_direct(password = "foobar")
+  kb$keyring_create(password = "foobar")
 
   lockfile <- paste0(kb$.__enclos_env__$private$keyring_file(), ".lck")
 

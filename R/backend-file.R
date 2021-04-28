@@ -42,8 +42,8 @@ backend_file <- R6Class(
     list = function(service = NULL, keyring = NULL)
       b_file_list(self, private, service, keyring),
 
-    keyring_create = function(keyring = NULL)
-      b_file_keyring_create(self, private, keyring),
+    keyring_create = function(keyring = NULL, password = NULL)
+      b_file_keyring_create(self, private, keyring, password),
     keyring_delete = function(keyring = NULL)
       b_file_keyring_delete(self, private, keyring),
 
@@ -248,8 +248,8 @@ b_file_list <- function(self, private, service, keyring) {
   }
 }
 
-b_file_keyring_create <- function(self, private, keyring) {
-  private$keyring_create_direct(keyring)
+b_file_keyring_create <- function(self, private, keyring, password) {
+  private$keyring_create_direct(keyring, password)
 }
 
 b_file_keyring_delete <- function(self, private, keyring) {
