@@ -1,4 +1,6 @@
 
+# keyring (development version)
+
 # keyring 1.2.0
 
 * It is now possible to specify the encoding of secrets on Windows
