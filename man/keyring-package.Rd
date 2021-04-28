@@ -71,7 +71,7 @@ functions if you want to use a different keyring.
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://r-lib.github.io/keyring}
+  \item \url{https://r-lib.github.io/keyring/index.html}
   \item \url{https://github.com/r-lib/keyring#readme}
   \item Report bugs at \url{https://github.com/r-lib/keyring/issues}
 }
