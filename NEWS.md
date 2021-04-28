@@ -1,6 +1,9 @@
 
 # development version
 
+* It is now possible to specify the encoding of secrets on Windows
+  (#88, @awong234).
+
 * The `get_raw()` method of the Secret Service backend works now (#87).
 
 * Now the file backend is selected by default on Unix systems if
