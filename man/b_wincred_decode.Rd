@@ -7,17 +7,18 @@
 b_wincred_decode(password, encoding = "auto")
 }
 \arguments{
-\item{password}{A raw byte string returned from b_wincred_get_raw.}
+\item{password}{A raw byte string returned from \code{b_wincred_get_raw}.}
 
-\item{encoding}{A character value, specifying an encoding to use. Defaults to
-'auto', which will decode either of UTF-8 or UTF-16LE.}
+\item{encoding}{A character value, specifying an encoding to use.
+Defaults to 'auto', which will decode either of UTF-8 or UTF-16LE.}
 }
 \value{
 A character value containing a password.
 }
 \description{
 Defaults to 'auto' encoding, which uses \code{b_wincred_decode_auto} to
-accomplish the decoding (this works with decoding either UTF-8 or UTF-16LE
-encodings). In the case where an encoding is specified, use that to convert
-the raw password.
+accomplish the decoding (this works with decoding either UTF-8 or
+UTF-16LE encodings). In the case where an encoding is specified,
+use that to convert the raw password.
 }
+\keyword{internal}

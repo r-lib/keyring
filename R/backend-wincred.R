@@ -262,15 +262,18 @@ b_wincred_get_raw <- function(self, private, service, username, keyring) {
 
 #' Decode a raw password obtained by b_wincred_get_raw
 #'
-#' Defaults to 'auto' encoding, which uses \code{b_wincred_decode_auto} to
-#' accomplish the decoding (this works with decoding either UTF-8 or UTF-16LE
-#' encodings). In the case where an encoding is specified, use that to convert
-#' the raw password.
+#' Defaults to 'auto' encoding, which uses `b_wincred_decode_auto` to
+#' accomplish the decoding (this works with decoding either UTF-8 or
+#' UTF-16LE encodings). In the case where an encoding is specified,
+#' use that to convert the raw password.
 #'
-#' @param password A raw byte string returned from b_wincred_get_raw.
-#' @param encoding A character value, specifying an encoding to use. Defaults to
-#'    'auto', which will decode either of UTF-8 or UTF-16LE.
+#' @param password A raw byte string returned from `b_wincred_get_raw`.
+#' @param encoding A character value, specifying an encoding to use.
+#'   Defaults to 'auto', which will decode either of UTF-8 or UTF-16LE.
 #' @return A character value containing a password.
+#'
+#' @keywords internal
+
 b_wincred_decode <- function(password, encoding = 'auto') {
   if (encoding == 'auto') {
     b_wincred_decode_auto(password)
@@ -280,10 +283,16 @@ b_wincred_decode <- function(password, encoding = 'auto') {
   }
 }
 
-#' Decode a raw password obtained by b_wincred_get_raw (utf-8 and utf-16le only)
+#' Decode a raw password obtained by b_wincred_get_raw
+#' (UTF-8 and UTF-16LE only)
 #'
-#' This is established functionality moved out of \code{b_wincred_get} and
-#' wrapped into a function. It attempts to use UTF-16LE conversion if there are 0 values in the password
+#' It attempts to use UTF-16LE conversion if there are 0 values in
+#' the password.
+#'
+#' @param password Raw vector coming from the keyring.
+#'
+#' @keywords internal
+
 b_wincred_decode_auto <- function(password) {
   if (any(password == 0)) {
     password <- iconv(list(password), from = "UTF-16LE", to = "")

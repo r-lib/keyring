@@ -2,11 +2,16 @@
 % Please edit documentation in R/backend-wincred.R
 \name{b_wincred_decode_auto}
 \alias{b_wincred_decode_auto}
-\title{Decode a raw password obtained by b_wincred_get_raw (utf-8 and utf-16le only)}
+\title{Decode a raw password obtained by b_wincred_get_raw
+(UTF-8 and UTF-16LE only)}
 \usage{
 b_wincred_decode_auto(password)
 }
-\description{
-This is established functionality moved out of \code{b_wincred_get} and
-wrapped into a function. It attempts to use UTF-16LE conversion if there are 0 values in the password
+\arguments{
+\item{password}{Raw vector coming from the keyring.}
 }
+\description{
+It attempts to use UTF-16LE conversion if there are 0 values in
+the password.
+}
+\keyword{internal}
