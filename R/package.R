@@ -52,7 +52,5 @@
 #' You only need to explicitly deal with keyrings and the `keyring_*`
 #' functions if you want to use a different keyring.
 #'
-#' @docType package
 #' @useDynLib keyring, .registration = TRUE
-#' @name keyring
-NULL
+"_PACKAGE"
