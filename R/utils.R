@@ -44,9 +44,9 @@ URLencode <- function(URL) {
 get_encoding_opt <- function() {
   chk <- function(x) is.character(x) && length(x) == 1 && !is.na(x)
 
-  enc <- getOption("keyring.encoding.windows")
+  enc <- getOption("keyring.encoding_windows")
   if (!is.null(enc) && !chk(enc)) {
-    stop("Invalid 'keyring.encoding.windows' option, must be an ",
+    stop("Invalid 'keyring.encoding_windows' option, must be an ",
          "encoding name or 'auto'")
   }
 

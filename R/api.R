@@ -30,17 +30,17 @@
 #' ## Encoding
 #'
 #' On Windows, if required, an encoding can be specified using either an R
-#' option (\code{keyring.encoding.windows}) or environment variable
+#' option (\code{keyring.encoding_windows}) or environment variable
 #' (\code{KEYRING_ENCODING_WINDOWS}). These will be applied when both getting
 #' and setting keys. To set, use one of:
 #'
-#' \code{options(keyring.encoding.windows = 'encoding-type')}
+#' \code{options(keyring.encoding_windows = 'encoding-type')}
 #'
 #' \code{Sys.setenv("KEYRING_ENCODING_WINDOWS" = 'encoding-type')}
 #'
 #' To reset these values, restart your R session or use:
 #'
-#' \code{options(keyring.encoding.windows = NULL)}
+#' \code{options(keyring.encoding_windows = NULL)}
 #'
 #' \code{Sys.setenv("KEYRING_ENCODING_WINDOWS" = '')}
 #'
