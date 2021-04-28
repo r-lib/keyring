@@ -55,7 +55,7 @@ get_encoding_opt <- function() {
   # Confirm valid encoding. Suggest closest match if not found.
   if (enc != "auto" & !(tolower(enc) %in% tolower(iconvlist()))) {
     icl <- iconvlist()
-    closest <- icl[which.min(adist(enc, icl))]
+    closest <- icl[which.min(utils::adist(enc, icl))]
     stop(sprintf(
       "Encoding not found in iconvlist(). Did you mean %s?",
       closest
