@@ -10,38 +10,38 @@ test_that("No option/env var set returns auto", {
 
 test_that("Option encoding set and env unset returns option encoding", {
   skip_if_not_win()
-  withr::local_options(keyring.encoding.windows = "utf-16le")
+  withr::local_options(keyring.encoding.windows = "UTF-16LE")
   withr::local_envvar(KEYRING_ENCODING_WINDOWS = NA_character_)
   encoding <- get_encoding_opt()
-  expect_equal(encoding, "utf-16le")
+  expect_equal(encoding, "UTF-16LE")
 })
 
 test_that("Option encoding unset and env set returns env encoding", {
   skip_if_not_win()
   withr::local_options(keyring.encoding.windows = NULL)
-  withr::local_envvar("KEYRING_ENCODING_WINDOWS" = "utf-8")
+  withr::local_envvar("KEYRING_ENCODING_WINDOWS" = "UTF-8")
   encoding <- get_encoding_opt()
-  expect_equal(encoding, "utf-8")
+  expect_equal(encoding, "UTF-8")
 })
 
 test_that("Option encoding set and env var set and EQUAL returns expected value", {
   skip_if_not_win()
-  withr::local_options(keyring.encoding.windows = "utf-16le")
-  withr::local_envvar("KEYRING_ENCODING_WINDOWS" = "utf-16le")
+  withr::local_options(keyring.encoding.windows = "UTF-16LE")
+  withr::local_envvar("KEYRING_ENCODING_WINDOWS" = "UTF-16LE")
   encoding <- get_encoding_opt()
-  expect_equal(encoding, "utf-16le")
+  expect_equal(encoding, "UTF-16LE")
 })
 
 test_that("Invalid encoding (not in iconvlist) returns error", {
   skip_if_not_win()
-  withr::local_options(keyring.encoding.windows = "Omicron Persei 8")
-  withr::local_envvar("KEYRING_ENCODING_WINDOWS" = "Omicron Persei 8")
+  withr::local_options(keyring.encoding.windows = "doesnotexist")
+  withr::local_envvar("KEYRING_ENCODING_WINDOWS" = "doesnotexist")
   expect_error(get_encoding_opt())
 })
 
 test_that("iconv suggestion works as expected", {
   skip_if_not_win()
-  withr::local_options(keyring.encoding.windows = "utf-16lp")
+  withr::local_options(keyring.encoding.windows = "UTF-16LP")
   withr::local_envvar("KEYRING_ENCODING_WINDOWS" = NA_character_)
   expect_message(
     object = expect_error(get_encoding_opt()),
@@ -53,8 +53,8 @@ test_that("iconv suggestion works as expected", {
 # TODO: this should not error
 test_that("Having two different encodings set between opt and env return error", {
   skip_if_not_win()
-  withr::local_options(keyring.encoding.windows = "x_Chinese-Eten")
-  withr::local_envvar("KEYRING_ENCODING_WINDOWS" = "latin9")
+  withr::local_options(keyring.encoding.windows = iconvlist()[1])
+  withr::local_envvar("KEYRING_ENCODING_WINDOWS" = iconvlist()[2])
   expect_error(get_encoding_opt())
 })
 
@@ -66,7 +66,7 @@ test_that("Set key with UTF-16LE encoding", {
   pass <- random_password()
   # Now, set a key with UTF-16LE encoding using new options
   withr::local_options(keyring.encoding.windows = NULL)
-  withr::local_envvar("KEYRING_ENCODING_WINDOWS" = "utf-16le")
+  withr::local_envvar("KEYRING_ENCODING_WINDOWS" = "UTF-16LE")
   keyring::key_set_with_value(service = service, username = user, password = pass)
   # Get the password
   expect_equal(keyring::key_get(service = service, username = user), pass)
@@ -80,7 +80,7 @@ test_that("Set key with UTF-16LE encoding plus a keyring", {
   skip_if_not_win()
   skip_on_cran()
   withr::local_options(keyring.encoding.windows = NULL)
-  withr::local_envvar("KEYRING_ENCODING_WINDOWS" = "utf-16le")
+  withr::local_envvar("KEYRING_ENCODING_WINDOWS" = "UTF-16LE")
   keyring <- random_keyring()
   kb <- backend_wincred$new(keyring = keyring)
   kb$.__enclos_env__$private$keyring_create_direct(keyring, "secret123!")

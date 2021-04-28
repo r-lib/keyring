@@ -42,9 +42,9 @@ URLencode <- function(URL) {
 }
 
 get_encoding_opt <- function() {
-  opt_encoding <- tolower(getOption("keyring.encoding.windows"))
+  opt_encoding <- getOption("keyring.encoding.windows")
   if (length(opt_encoding) == 0) opt_encoding <- "auto"
-  env_encoding <- tolower(Sys.getenv("KEYRING_ENCODING_WINDOWS"))
+  env_encoding <- Sys.getenv("KEYRING_ENCODING_WINDOWS")
   if (env_encoding == "") env_encoding <- "auto"
   # Handle differing values if one or the other is not auto -- stop in this case
   if (opt_encoding != env_encoding & !(opt_encoding == "auto" | env_encoding == "auto")) {
@@ -69,9 +69,9 @@ get_encoding_opt <- function() {
     }
   }
   # Confirm valid encoding. Suggest closest match if not found.
-  if (encoding != "auto" & !(encoding %in% tolower(iconvlist()))) {
+  if (encoding != "auto" & !(tolower(encoding) %in% tolower(iconvlist()))) {
     closest_match <- iconvlist()[
-      which.min(adist(encoding, tolower(iconvlist())))
+      which.min(adist(encoding, iconvlist()))
     ]
     message(sprintf("Encoding not found in iconvlist(). Did you mean %s?", closest_match))
     stop("Supplied invalid encoding.")
