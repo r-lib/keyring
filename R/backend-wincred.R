@@ -316,9 +316,10 @@ b_wincred_set_with_value <- function(self, private, service,
                                      username, password, keyring) {
   encoding <- get_encoding_opt()
   if (encoding != 'auto') {
-    password = iconv(x = password, from = '', to = encoding, toRaw = TRUE)[[1]]
+    password <- enc2utf8(password)
+    password <- iconv(x = password, from = 'UTF-8', to = encoding, toRaw = TRUE)[[1]]
   } else {
-    password = charToRaw(password)
+    password <- charToRaw(password)
   }
   b_wincred_set_with_raw_value(self, private, service, username, password, keyring)
 }

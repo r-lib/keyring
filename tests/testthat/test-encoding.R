@@ -101,3 +101,20 @@ test_that("Set key with UTF-16LE encoding plus a keyring", {
   expect_silent(kb$keyring_delete(keyring = keyring))
   expect_false(keyring %in% kb$keyring_list()$keyring)
 })
+
+test_that("marked UTF-8 strings work", {
+  skip_if_not_win()
+  skip_on_cran()
+  withr::local_options(keyring.encoding_windows = "UTF-8")
+
+  service <- random_service()
+  user <- random_username()
+  pass <- "this is ok: \u00bc"
+
+  keyring::key_set_with_value(service = service, username = user, password = pass)
+
+  # Get the password
+  expect_equal(keyring::key_get(service = service, username = user), pass)
+
+  key_delete(service = service, username = user)
+})
