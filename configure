@@ -1,6 +1,8 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
-if [[ "$OSTYPE" == "darwin"* ]]; then
+UNAME=`uname`
+
+if [ "$UNAME" = "Darwin" ]; then
     echo "PKG_LIBS=-framework Security" > src/Makevars
 
 else
@@ -8,7 +10,7 @@ else
 	echo "PKG_CFLAGS=-DHAS_LIBSECRET $(pkg-config --cflags libsecret-1)" > src/Makevars
 	echo "PKG_LIBS=$(pkg-config --libs libsecret-1)" >> src/Makevars
     else
-	if [[ -n "$LIBSECRET_CFLAGS" && -n "$LIBSECRET_LIBS" ]]; then
+	if [ -n "$LIBSECRET_CFLAGS" && -n "$LIBSECRET_LIBS" ]; then
 	    echo "PKG_CFLAGS=-DHAS_LIBSECRET $LIBSECRET_CFLAGS" > src/Makevars
 	    echo "PKG_LIBS=$LIBSECRET_LIBS" >> src/Makevars
 	else
