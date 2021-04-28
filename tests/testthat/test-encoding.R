@@ -43,19 +43,18 @@ test_that("iconv suggestion works as expected", {
   skip_if_not_win()
   withr::local_options(keyring.encoding.windows = "UTF-16LP")
   withr::local_envvar("KEYRING_ENCODING_WINDOWS" = NA_character_)
-  expect_message(
-    object = expect_error(get_encoding_opt()),
-    regexp = "Encoding not found in iconvlist(). Did you mean UTF-16LE?",
+  expect_error(
+    get_encoding_opt(),
+    "Encoding not found in iconvlist(). Did you mean UTF-16LE?",
     fixed = TRUE
   )
 })
 
-# TODO: this should not error
-test_that("Having two different encodings set between opt and env return error", {
+test_that("Option has precedence", {
   skip_if_not_win()
   withr::local_options(keyring.encoding.windows = iconvlist()[1])
   withr::local_envvar("KEYRING_ENCODING_WINDOWS" = iconvlist()[2])
-  expect_error(get_encoding_opt())
+  expect_identical(get_encoding_opt(), iconvlist()[1])
 })
 
 test_that("Set key with UTF-16LE encoding", {

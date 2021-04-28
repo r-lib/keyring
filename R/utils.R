@@ -42,41 +42,26 @@ URLencode <- function(URL) {
 }
 
 get_encoding_opt <- function() {
-  opt_encoding <- getOption("keyring.encoding.windows")
-  if (length(opt_encoding) == 0) opt_encoding <- "auto"
-  env_encoding <- Sys.getenv("KEYRING_ENCODING_WINDOWS")
-  if (env_encoding == "") env_encoding <- "auto"
-  # Handle differing values if one or the other is not auto -- stop in this case
-  if (opt_encoding != env_encoding & !(opt_encoding == "auto" | env_encoding == "auto")) {
-    message(sprintf("Sys.getenv('KEYRING_ENCODING_WINDOWS'):\t'%s'", env_encoding))
-    message(sprintf("getOption(keyring.encoding.windows):\t'%s'", opt_encoding))
-    stop("Mismatch in keyring encoding settings; value set with both an environment variable and R option.\nChange environment variable with Sys.setenv('KEYRING_ENCODING_WINDOWS' = 'encoding_type'),\nand R option with options(keyring.encoding.windows = 'encoding_type') to match.")
+  chk <- function(x) is.character(x) && length(x) == 1 && !is.na(x)
+
+  enc <- getOption("keyring.encoding.windows")
+  if (!is.null(enc) && !chk(enc)) {
+    stop("Invalid 'keyring.encoding.windows' option, must be an ",
+         "encoding name or 'auto'")
   }
-  # If one and only one is auto, then one of these was set deliberately; respect this
-  if (xor(opt_encoding == "auto", env_encoding == "auto")) {
-    # Encoding is whichever one that is not auto.
-    encodings <- c(opt_encoding, env_encoding)
-    encoding <- encodings[encodings != "auto"]
-  }
-  # If both the same:
-  if (opt_encoding == env_encoding) {
-    # And they're auto, then auto
-    if (opt_encoding == "auto") {
-      encoding <- "auto"
-    } else {
-      # Otherwise, the encoding is either one
-      encoding <- opt_encoding
-    }
-  }
+
+  enc <- enc %||% Sys.getenv("KEYRING_ENCODING_WINDOWS", "auto")
+
   # Confirm valid encoding. Suggest closest match if not found.
-  if (encoding != "auto" & !(tolower(encoding) %in% tolower(iconvlist()))) {
-    closest_match <- iconvlist()[
-      which.min(adist(encoding, iconvlist()))
-    ]
-    message(sprintf("Encoding not found in iconvlist(). Did you mean %s?", closest_match))
-    stop("Supplied invalid encoding.")
+  if (enc != "auto" & !(tolower(enc) %in% tolower(iconvlist()))) {
+    icl <- iconvlist()
+    closest <- icl[which.min(adist(enc, icl))]
+    stop(sprintf(
+      "Encoding not found in iconvlist(). Did you mean %s?",
+      closest
+    ))
   }
-  encoding
+  enc
 }
 
 is_interactive <- function() {
