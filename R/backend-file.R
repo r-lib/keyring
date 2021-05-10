@@ -138,13 +138,31 @@ b_file_get <- function(self, private, service, username, keyring) {
 
 b_file_set <- function(self, private, service, username, keyring) {
 
-  private$keyring_autocreate(keyring)
-
   username <- username %||% getOption("keyring_username")
-  if (self$keyring_is_locked(keyring)) self$keyring_unlock(keyring)
 
-  password <- get_pass()
+  keyring <- keyring %||% private$keyring
+  file <- private$keyring_file(keyring)
+  ex <- file.exists(file)
+
+  # We use a different prompt in this case, to give a heads up
+  prompt <- if (!ex && interactive()) {
+    paste0(
+      "Note: the specified keyring does not exist, you'll have to ",
+      "create it in the next step. Key password: "
+    )
+  }
+
+  # Only check if locked if it exists, otherwise auto-create kicks in
+  if (ex && self$keyring_is_locked(keyring)) self$keyring_unlock(keyring)
+
+  if (!is.null(prompt)) {
+    password <- get_pass(prompt)
+  } else {
+    password <- get_pass()
+  }
   if (is.null(password)) stop("Aborted setting keyring key")
+
+  private$keyring_autocreate()
 
   self$set_with_value(service, username, password, keyring)
 
