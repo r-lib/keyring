@@ -108,6 +108,7 @@ b_macos_get_raw <- function(self, private, service, username, keyring) {
 b_macos_set <- function(self, private, service, username, keyring) {
   username <- username %||% getOption("keyring_username")
   password <- get_pass()
+  if (is.null(password)) stop("Aborted setting keyring key")
   b_macos_set_with_value(self, private, service, username, password, keyring)
   invisible(self)
 }
@@ -150,6 +151,7 @@ b_macos_list <- function(self, private, service, keyring) {
 
 b_macos_keyring_create <- function(self, private, keyring) {
   password <- get_pass()
+  if (is.null(password)) stop("Aborted creating keyring")
   private$keyring_create_direct(keyring, password)
   invisible(self)
 }
@@ -179,6 +181,7 @@ b_macos_keyring_lock <- function(self, private, keyring) {
 
 b_macos_keyring_unlock <- function(self, private, keyring, password) {
   password <- password %||% get_pass()
+  if (is.null(password)) stop("Aborted unlocking keyring")
   keyring <- private$keyring_file(keyring %||% private$keyring)
   .Call(keyring_macos_unlock_keyring, utf8(keyring), password)
   invisible(self)

@@ -144,6 +144,7 @@ b_file_set <- function(self, private, service, username, keyring) {
   if (self$keyring_is_locked(keyring)) self$keyring_unlock(keyring)
 
   password <- get_pass()
+  if (is.null(password)) stop("Aborted setting keyring key")
 
   self$set_with_value(service, username, password, keyring)
 
@@ -363,6 +364,7 @@ b__file_keyring_create_direct <- function(self, private, keyring, password, prom
   }
 
   password <- password %||% get_pass(prompt)
+  if (is.null(password)) stop("Aborted creating keyring")
 
   ## File need to exist for $set_keyring_pass() ...
   dir.create(dirname(file_name), recursive = TRUE, showWarnings = FALSE)
@@ -475,6 +477,7 @@ b__file_is_set_keyring_pass <- function(self, private, keyring) {
 b__file_set_keyring_pass <- function(self, private, key, keyring) {
 
   key <- key %||% get_pass("Keyring password: ")
+  if (is.null(key)) stop("Aborted setting keyring password")
   assert_that(is_string(key))
   key <- sodium::hash(charToRaw(key))
 

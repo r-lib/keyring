@@ -118,6 +118,7 @@ b_ss_get_raw <- function(self, private, service, username, keyring) {
 b_ss_set <- function(self, private, service, username, keyring) {
   username <- username %||% getOption("keyring_username")
   password <- get_pass()
+  if (is.null(password)) stop("Aborted setting keyring key")
   b_ss_set_with_value(self, private, service, username, password, keyring)
   invisible(self)
 }
@@ -159,6 +160,7 @@ b_ss_list <- function(self, private, service, keyring) {
 
 b_ss_keyring_create <- function(self, private, keyring) {
   password <- get_pass()
+  if (is.null(password)) stop("Aborted creating keyring")
   private$keyring_create_direct(keyring, password)
   invisible(self)
 }
