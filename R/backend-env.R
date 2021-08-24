@@ -40,8 +40,9 @@ backend_env <- R6Class(
     name = "env",
     get = function(service, username = NULL, keyring = NULL)
       b_env_get(self, private, service, username, keyring),
-    set = function(service, username = NULL, keyring = NULL)
-      b_env_set(self, private, service, username, keyring),
+    set = function(service, username = NULL, keyring = NULL,
+                   prompt = "Password: ")
+      b_env_set(self, private, service, username, keyring, prompt),
     set_with_value = function(service, username = NULL, password = NULL,
                               keyring = NULL)
       b_env_set_with_value(self, private, service, username, password,
@@ -80,9 +81,9 @@ b_env_get <- function(self, private, service, username, keyring) {
   res
 }
 
-b_env_set <- function(self, private, service, username, keyring) {
+b_env_set <- function(self, private, service, username, keyring, prompt) {
   warn_for_keyring(keyring)
-  password <- get_pass()
+  password <- get_pass(prompt)
   if (is.null(password)) stop("Aborted setting keyring key")
   username <- username %||% getOption("keyring_username")
   b_env_set_with_value(self, private, service, username, password,
