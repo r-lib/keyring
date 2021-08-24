@@ -17,7 +17,7 @@ abstract_method <- function() {
 #' ```
 #' get(service, username = NULL, keyring = NULL)
 #' get_raw(service, username = NULL, keyring = NULL)
-#' set(service, username = NULL, keyring = NULL)
+#' set(service, username = NULL, keyring = NULL, prompt = "Password: ")
 #' set_with_value(service, username = NULL, password = NULL,
 #'                keyring = NULL)
 #' set_with_raw_value(service, username = NULL, password = NULL,
@@ -25,7 +25,7 @@ abstract_method <- function() {
 #' delete(service, username = NULL, keyring = NULL)
 #' list(service = NULL, keyring = NULL)
 #' ```
-#' 
+#'
 #' What these functions do:
 #'
 #' * `get()` queries the secret in a keyring item.
@@ -51,6 +51,7 @@ abstract_method <- function() {
 #'   default (and maybe only) keyring.
 #' * `password` The value of the secret, typically a password, or other
 #'   credential.
+#' * `prompt` String, the text to be displayed above the textbox.
 #'
 #' @family keyring backend base classes
 #' @importFrom R6 R6Class
@@ -70,7 +71,8 @@ backend <- R6Class(
       abstract_method(),
     get_raw = function(service, username = NULL, keyring = NULL)
       charToRaw(self$get(service, username, keyring)),
-    set = function(service, username = NULL, keyring = NULL)
+    set = function(service, username = NULL, keyring = NULL,
+                   prompt = "Password: ")
       abstract_method(),
     set_with_value = function(service, username = NULL, password = NULL,
       keyring = NULL) abstract_method(),
