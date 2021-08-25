@@ -14,7 +14,7 @@ key_get(service, username = NULL, keyring = NULL)
 
 key_get_raw(service, username = NULL, keyring = NULL)
 
-key_set(service, username = NULL, keyring = NULL)
+key_set(service, username = NULL, keyring = NULL, prompt = "Password: ")
 
 key_set_with_value(service, username = NULL, password = NULL, keyring = NULL)
 
@@ -38,6 +38,8 @@ is not associated with a username.}
 \item{keyring}{For systems that support multiple keyrings, specify
 the name of the keyring to use here. If \code{NULL}, then the default
 keyring is used. See also \code{\link[=has_keyring_support]{has_keyring_support()}}.}
+
+\item{prompt}{The character string displayed when requesting the secret}
 
 \item{password}{The secret to store. For \code{key_set}, it is read from
 the console, interactively. \code{key_set_with_value} can be also used
