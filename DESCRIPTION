@@ -18,7 +18,7 @@ RoxygenNote: 7.1.1.9001
 Roxygen: list(markdown = TRUE, r6 = FALSE)
 Imports:
     assertthat,
-    askpass,
+    getPass,
     openssl,
     R6,
     utils,
