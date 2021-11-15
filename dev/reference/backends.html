@@ -177,10 +177,10 @@ or <code>NULL</code> for the default keyring.</p></td>
 selected from:</p><ol>
 <li><p>the supplied <code>keyring</code> argument (if not <code>NULL</code>), or</p></li>
 <li><p>the <code>keyring_keyring</code> option.</p><ul>
-<li><p>You can change this by using <code><a href='https://rdrr.io/r/base/options.html'>options(keyring_keyring = "NEWVALUE")</a></code></p></li>
+<li><p>You can change this by using <code>options(keyring_keyring = "NEWVALUE")</code></p></li>
 </ul></li>
 <li><p>If this is not set, the <code>R_KEYRING_KEYRING</code> environment variable.</p><ul>
-<li><p>Change this value with <code><a href='https://rdrr.io/r/base/Sys.setenv.html'>Sys.setenv(R_KEYRING_KEYRING = "NEWVALUE")</a></code>,
+<li><p>Change this value with <code>Sys.setenv(R_KEYRING_KEYRING = "NEWVALUE")</code>,
 either in your script or in your <code>.Renviron</code> file.
 See <a href='https://rdrr.io/r/base/Startup.html'>base::Startup</a> for information about using <code>.Renviron</code></p></li>
 </ul></li>

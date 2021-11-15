@@ -144,7 +144,7 @@
 <li><p>libsecret is now optional on Linux. If not available, keyring is built without the Secret Service backend (<a href='https://github.com/r-lib/keyring/issues/55'>#55</a>).</p></li>
 <li><p>Fix the <code>get_raw()</code> method on Windows.</p></li>
 <li><p>Windows: <code><a href="https://rdrr.io/r/base/get.html">get()</a></code> tries the UTF-16LE encoding if the sting has embedded zero bytes. This allows getting secrets that were set in Credential Manager (<a href='https://github.com/r-lib/keyring/issues/56'>#56</a>).</p></li>
-<li><p>Windows: fix <code><a href="https://rdrr.io/r/base/list.html">list()</a></code> when some secrets have no <code><a href="https://rdrr.io/r/base/Colon.html">:</a></code> at all (these were probably set externally) (<a href='https://github.com/r-lib/keyring/issues/44'>#44</a>).</p></li>
+<li><p>Windows: fix <code><a href="https://rdrr.io/r/base/list.html">list()</a></code> when some secrets have no <code>:</code> at all (these were probably set externally) (<a href='https://github.com/r-lib/keyring/issues/44'>#44</a>).</p></li>
 </ul>
 </div>
     <div id="keyring-100" class="section level1">

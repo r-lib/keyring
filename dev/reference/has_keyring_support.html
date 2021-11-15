@@ -184,38 +184,41 @@ it will be read in interactively.</p>
 <p><code>keyring_is_locked</code> queries whether a keyring is locked.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='backends.html'>default_backend</a></span><span class='op'>(</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; &lt;keyring backend: ‘file’&gt;
-#&gt; Store secrets in encrypted files.
-#&gt; system
-#&gt; 
-#&gt;  $get                  query a key from the keyring
-#&gt;  $set                  set a key in the keyring (interactive)
-#&gt;  $set_with_value       set a key in the keyring
-#&gt;  $delete               delete a key
-#&gt;  $list                 list keys in a keyring
-#&gt;  $has_keyring_support  TRUE if multiple keyrings are supported
-#&gt;  $keyring_create       create new keyring
-#&gt;  $keyring_list         list all keyrings
-#&gt;  $keyring_delete       delete a keyring
-#&gt;  $keyring_lock         lock a keyring
-#&gt;  $keyring_unlock       unlock a keyring
-#&gt;  $keyring_is_locked    check if a keyring is locked
-#&gt;  $keyring_default      query the default keyring
-#&gt;  $keyring_set_default  set the default keyring</div><div class='input'><span class='fu'>has_keyring_support</span><span class='op'>(</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; [1] TRUE</div><div class='input'><span class='va'><a href='backend_env.html'>backend_env</a></span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span><span class='op'>)</span><span class='op'>$</span><span class='fu'>has_keyring_support</span><span class='op'>(</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; [1] FALSE</div><div class='input'>
-<span class='co'>## This might ask for a password, so we do not run it by default</span>
-<span class='co'>## It only works if the default backend supports multiple keyrings</span>
-<span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>
-<span class='fu'>keyring_create</span><span class='op'>(</span><span class='st'>"foobar"</span><span class='op'>)</span>
-<span class='fu'><a href='key_get.html'>key_set_with_value</a></span><span class='op'>(</span><span class='st'>"R-test-service"</span>, <span class='st'>"donaldduck"</span>, password <span class='op'>=</span> <span class='st'>"secret"</span>,
-                   keyring <span class='op'>=</span> <span class='st'>"foobar"</span><span class='op'>)</span>
-<span class='fu'><a href='key_get.html'>key_get</a></span><span class='op'>(</span><span class='st'>"R-test-service"</span>, <span class='st'>"donaldduck"</span>, keyring <span class='op'>=</span> <span class='st'>"foobar"</span><span class='op'>)</span>
-<span class='fu'><a href='key_get.html'>key_list</a></span><span class='op'>(</span>keyring <span class='op'>=</span> <span class='st'>"foobar"</span><span class='op'>)</span>
-<span class='fu'>keyring_delete</span><span class='op'>(</span>keyring <span class='op'>=</span> <span class='st'>"foobar"</span><span class='op'>)</span>
-<span class='op'>}</span>
-</div></pre>
+    <pre class="examples"><span class='r-in'><span class='fu'><a href='backends.html'>default_backend</a></span><span class='op'>(</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> &lt;keyring backend: ‘file’&gt;</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> Store secrets in encrypted files.</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> system</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $get                  query a key from the keyring</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $set                  set a key in the keyring (interactive)</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $set_with_value       set a key in the keyring</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $delete               delete a key</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $list                 list keys in a keyring</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $has_keyring_support  TRUE if multiple keyrings are supported</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $keyring_create       create new keyring</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $keyring_list         list all keyrings</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $keyring_delete       delete a keyring</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $keyring_lock         lock a keyring</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $keyring_unlock       unlock a keyring</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $keyring_is_locked    check if a keyring is locked</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $keyring_default      query the default keyring</span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>  $keyring_set_default  set the default keyring</span>
+<span class='r-in'><span class='fu'>has_keyring_support</span><span class='op'>(</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] TRUE</span>
+<span class='r-in'><span class='va'><a href='backend_env.html'>backend_env</a></span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span><span class='op'>)</span><span class='op'>$</span><span class='fu'>has_keyring_support</span><span class='op'>(</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> [1] FALSE</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'>## This might ask for a password, so we do not run it by default</span></span>
+<span class='r-in'><span class='co'>## It only works if the default backend supports multiple keyrings</span></span>
+<span class='r-in'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span></span>
+<span class='r-in'><span class='fu'>keyring_create</span><span class='op'>(</span><span class='st'>"foobar"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='key_get.html'>key_set_with_value</a></span><span class='op'>(</span><span class='st'>"R-test-service"</span>, <span class='st'>"donaldduck"</span>, password <span class='op'>=</span> <span class='st'>"secret"</span>,</span>
+<span class='r-in'>                   keyring <span class='op'>=</span> <span class='st'>"foobar"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='key_get.html'>key_get</a></span><span class='op'>(</span><span class='st'>"R-test-service"</span>, <span class='st'>"donaldduck"</span>, keyring <span class='op'>=</span> <span class='st'>"foobar"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'><a href='key_get.html'>key_list</a></span><span class='op'>(</span>keyring <span class='op'>=</span> <span class='st'>"foobar"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='fu'>keyring_delete</span><span class='op'>(</span>keyring <span class='op'>=</span> <span class='st'>"foobar"</span><span class='op'>)</span></span>
+<span class='r-in'><span class='op'>}</span></span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
