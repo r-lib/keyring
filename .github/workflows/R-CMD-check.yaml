@@ -54,5 +54,6 @@ jobs:
       - uses: r-lib/actions/setup-r-dependencies@pak2
         with:
           extra-packages: rcmdcheck
+          pak-version: devel
 
       - uses: r-lib/actions/check-r-package@v1
