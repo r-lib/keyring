@@ -20,6 +20,8 @@ knitr::opts_chunk$set(
 [![](https://www.r-pkg.org/badges/version/keyring)](https://www.r-pkg.org/pkg/keyring)
 [![CRAN RStudio mirror downloads](https://cranlogs.r-pkg.org/badges/keyring)](https://www.r-pkg.org/pkg/keyring)
 [![Coverage Status](https://img.shields.io/codecov/c/github/r-lib/keyring/master.svg)](https://codecov.io/github/r-lib/keyring?branch=master)
+[![Codecov test coverage](https://codecov.io/gh/r-lib/keyring/branch/main/graph/badge.svg)](https://app.codecov.io/gh/r-lib/keyring?branch=main)
+[![R-CMD-check](https://github.com/r-lib/keyring/workflows/R-CMD-check/badge.svg)](https://github.com/r-lib/keyring/actions)
 <!-- badges: end -->
 
 Platform independent API to access the operating systems
