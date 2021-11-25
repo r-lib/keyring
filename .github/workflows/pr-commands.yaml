@@ -27,7 +27,6 @@ jobs:
       - uses: r-lib/actions/setup-r-dependencies@pak2
         with:
           extra-packages: roxygen2
-          pak-version: devel
 
       - name: Document
         run: Rscript -e 'roxygen2::roxygenise()'

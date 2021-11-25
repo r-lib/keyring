@@ -25,7 +25,6 @@ jobs:
         with:
           extra-packages: pkgdown
           needs: website
-          pak-version: devel
 
 #      - name: Deploy package
 #        run: |
