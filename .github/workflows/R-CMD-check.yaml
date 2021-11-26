@@ -25,6 +25,8 @@ jobs:
           - {os: macOS-latest,   r: 'release'}
 
           - {os: windows-latest, r: 'release'}
+          - {os: windows-2022,   r: 'devel-ucrt'}
+
           # Use 3.6 to trigger usage of RTools35
           - {os: windows-latest, r: '3.6'}
 
