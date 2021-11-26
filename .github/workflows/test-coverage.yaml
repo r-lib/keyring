@@ -23,7 +23,7 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@pak2
         with:
-          extra-packages: covr
+          extra-packages: any::covr
 
       - name: Test coverage
         run: covr::codecov()
