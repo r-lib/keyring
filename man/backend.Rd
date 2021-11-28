@@ -12,7 +12,7 @@ can be defined as well.
 \details{
 These are the semantics of the various methods:\preformatted{get(service, username = NULL, keyring = NULL)
 get_raw(service, username = NULL, keyring = NULL)
-set(service, username = NULL, keyring = NULL)
+set(service, username = NULL, keyring = NULL, prompt = "Password: ")
 set_with_value(service, username = NULL, password = NULL,
                keyring = NULL)
 set_with_raw_value(service, username = NULL, password = NULL,
@@ -48,6 +48,7 @@ sense if the platform supports multiple keyrings. \code{NULL} selects the
 default (and maybe only) keyring.
 \item \code{password} The value of the secret, typically a password, or other
 credential.
+\item \code{prompt} String, the text to be displayed above the textbox.
 }
 }
 \seealso{

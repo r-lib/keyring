@@ -30,8 +30,9 @@ backend_file <- R6Class(
       b_file_get(self, private, service, username, keyring),
     get_raw = function(service, username = NULL, keyring = NULL)
       b_file_get_raw(self, private, service, username, keyring),
-    set = function(service, username = NULL, keyring = NULL)
-      b_file_set(self, private, service, username, keyring),
+    set = function(service, username = NULL, keyring = NULL,
+                   prompt = "Password: ")
+      b_file_set(self, private, service, username, keyring, prompt),
     set_with_value = function(service, username = NULL, password = NULL,
       keyring = NULL)
       b_file_set_with_value(self, private, service, username, password,
@@ -136,14 +137,14 @@ b_file_get <- function(self, private, service, username, keyring) {
   )
 }
 
-b_file_set <- function(self, private, service, username, keyring) {
+b_file_set <- function(self, private, service, username, keyring, prompt) {
 
   private$keyring_autocreate(keyring)
 
   username <- username %||% getOption("keyring_username")
   if (self$keyring_is_locked(keyring)) self$keyring_unlock(keyring)
 
-  password <- get_pass()
+  password <- get_pass(prompt)
   if (is.null(password)) stop("Aborted setting keyring key")
 
   self$set_with_value(service, username, password, keyring)

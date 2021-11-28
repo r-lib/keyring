@@ -50,6 +50,8 @@
 #' @param keyring For systems that support multiple keyrings, specify
 #'   the name of the keyring to use here. If `NULL`, then the default
 #'   keyring is used. See also [has_keyring_support()].
+#' @param prompt The character string displayed when requesting the secret
+#'
 #' @return `key_get` returns a character scalar, the password or other
 #'   confidential information that was stored in the key.
 #'
@@ -115,10 +117,11 @@ key_get_raw <- function(service, username = NULL, keyring = NULL) {
 #' @export
 #' @rdname key_get
 
-key_set <- function(service, username = NULL, keyring = NULL) {
+key_set <- function(service, username = NULL, keyring = NULL,
+                    prompt = "Password: ") {
   assert_that(is_non_empty_string(service))
   assert_that(is_string_or_null(username))
-  default_backend()$set(service, username, keyring = keyring)
+  default_backend()$set(service, username, keyring = keyring, prompt = prompt)
 }
 
 #' @export

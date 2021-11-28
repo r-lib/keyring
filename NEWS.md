@@ -1,6 +1,8 @@
 
 # keyring (development version)
 
+* `key_set()` can now use a custom prompt (@pnacht, #112).
+
 * keyring now handled better the 'Cancel' button when requesting a password
   in RStudio, and an error is thrown in this case (#106).
 
