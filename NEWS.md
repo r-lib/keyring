@@ -1,6 +1,9 @@
 
 # keyring (development version)
 
+* keyring now handled better the 'Cancel' button when requesting a password
+  in RStudio, and an error is thrown in this case (#106).
+
 # keyring 1.2.0
 
 * It is now possible to specify the encoding of secrets on Windows
