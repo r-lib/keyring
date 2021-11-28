@@ -156,11 +156,7 @@ b_file_set <- function(self, private, service, username, keyring,
     "Password: "
   }
 
-  # Only check if locked if it exists, otherwise auto-create kicks in
-  if (ex && self$keyring_is_locked(keyring)) self$keyring_unlock(keyring)
-
   password <- get_pass(prompt)
-
   if (is.null(password)) stop("Aborted setting keyring key")
 
   private$keyring_autocreate()
