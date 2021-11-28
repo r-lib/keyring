@@ -283,7 +283,11 @@ b_file_keyring_delete <- function(self, private, keyring) {
 }
 
 b_file_keyring_lock <- function(self, private, keyring) {
-  private$keyring_autocreate(keyring)
+  keyring <- keyring %||% private$keyring
+  file <- private$keyring_file(keyring)
+  if (!file.exists(file)) {
+    stop("The '", keyring, "' keyring does not exists, create it first!")
+  }
   private$unset_keyring_pass(keyring)
   invisible(self)
 }
