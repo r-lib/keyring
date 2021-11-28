@@ -1,6 +1,8 @@
 
 # keyring (development version)
 
+* `key_set()` can now use a custom prompt (@pnacht, #112).
+
 # keyring 1.2.0
 
 * It is now possible to specify the encoding of secrets on Windows
