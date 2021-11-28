@@ -31,7 +31,7 @@ backend_file <- R6Class(
     get_raw = function(service, username = NULL, keyring = NULL)
       b_file_get_raw(self, private, service, username, keyring),
     set = function(service, username = NULL, keyring = NULL,
-                   prompt = "Password: ")
+                   prompt = NULL)
       b_file_set(self, private, service, username, keyring, prompt),
     set_with_value = function(service, username = NULL, password = NULL,
       keyring = NULL)
@@ -137,15 +137,29 @@ b_file_get <- function(self, private, service, username, keyring) {
   )
 }
 
-b_file_set <- function(self, private, service, username, keyring, prompt) {
-
-  private$keyring_autocreate(keyring)
+b_file_set <- function(self, private, service, username, keyring,
+                       prompt) {
 
   username <- username %||% getOption("keyring_username")
-  if (self$keyring_is_locked(keyring)) self$keyring_unlock(keyring)
+
+  keyring <- keyring %||% private$keyring
+  file <- private$keyring_file(keyring)
+  ex <- file.exists(file)
+
+  # We use a different prompt in this case, to give a heads up
+  prompt <- prompt %||% if (!ex && interactive()) {
+    paste0(
+      "Note: the specified keyring does not exist, you'll have to ",
+      "create it in the next step. Key password: "
+    )
+  } else {
+    "Password: "
+  }
 
   password <- get_pass(prompt)
   if (is.null(password)) stop("Aborted setting keyring key")
+
+  private$keyring_autocreate()
 
   self$set_with_value(service, username, password, keyring)
 
@@ -266,7 +280,11 @@ b_file_keyring_delete <- function(self, private, keyring) {
 }
 
 b_file_keyring_lock <- function(self, private, keyring) {
-  private$keyring_autocreate(keyring)
+  keyring <- keyring %||% private$keyring
+  file <- private$keyring_file(keyring)
+  if (!file.exists(file)) {
+    stop("The '", keyring, "' keyring does not exists, create it first!")
+  }
   private$unset_keyring_pass(keyring)
   invisible(self)
 }
