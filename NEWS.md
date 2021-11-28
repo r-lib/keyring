@@ -1,6 +1,9 @@
 
 # keyring (development version)
 
+* `keyring_create()` and also all backends that support multiple keyrings
+  now allow passing the password when creating a new keyring (#114).
+
 * `key_set()` can now use a custom prompt (@pnacht, #112).
 
 * keyring now handled better the 'Cancel' button when requesting a password
