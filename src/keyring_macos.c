@@ -32,7 +32,10 @@ void keyring_macos_handle_status(const char *func, OSStatus status) {
 
 SecKeychainRef keyring_macos_open_keychain(const char *pathName) {
   SecKeychainRef keychain;
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
   OSStatus status = SecKeychainOpen(pathName, &keychain);
+# pragma GCC diagnostic pop
   keyring_macos_handle_status("cannot open keychain", status);
 
   /* We need to query the status, because SecKeychainOpen succeeds,
@@ -271,7 +274,10 @@ SEXP keyring_macos_create(SEXP keyring, SEXP password) {
 
   SecKeychainRef result = NULL;
 
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
   OSStatus status = SecKeychainCreate(
+# pragma GCC diagnostic pop
     ckeyring,
     /* passwordLength = */ (UInt32) strlen(cpassword),
     (const void*) cpassword,
@@ -286,7 +292,10 @@ SEXP keyring_macos_create(SEXP keyring, SEXP password) {
     &keyrings);
 
   if (status) {
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     SecKeychainDelete(result);
+# pragma GCC diagnostic pop
     if (result != NULL) CFRelease(result);
     keyring_macos_handle_status("cannot create keychain", status);
   }
@@ -306,7 +315,10 @@ SEXP keyring_macos_create(SEXP keyring, SEXP password) {
     newkeyrings);
 
   if (status) {
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     SecKeychainDelete(result);
+# pragma GCC diagnostic pop
     if (result) CFRelease(result);
     if (keyrings) CFRelease(keyrings);
     if (newkeyrings) CFRelease(newkeyrings);
@@ -338,7 +350,10 @@ SEXP keyring_macos_list_keyring() {
       (SecKeychainRef) CFArrayGetValueAtIndex(keyrings, i);
     UInt32 pathLength = MAXPATHLEN;
     char pathName[MAXPATHLEN + 1];
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     status = SecKeychainGetPath(keychain, &pathLength, pathName);
+# pragma GCC diagnostic pop
     pathName[pathLength] = '\0';
     if (status) {
       CFRelease(keyrings);
@@ -388,7 +403,10 @@ SEXP keyring_macos_delete_keyring(SEXP keyring) {
       (SecKeychainRef) CFArrayGetValueAtIndex(keyrings, i);
     UInt32 pathLength = MAXPATHLEN;
     char pathName[MAXPATHLEN + 1];
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     status = SecKeychainGetPath(item, &pathLength, pathName);
+# pragma GCC diagnostic pop
     pathName[pathLength] = '\0';
     if (status) {
       CFRelease(keyrings);
@@ -416,7 +434,10 @@ SEXP keyring_macos_delete_keyring(SEXP keyring) {
 
   /* And now remove the file as well... */
   SecKeychainRef keychain = keyring_macos_open_keychain(ckeyring);
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
   status = SecKeychainDelete(keychain);
+# pragma GCC diagnostic pop
   CFRelease(keychain);
   keyring_macos_handle_status("cannot delete keyring", status);
 
@@ -427,7 +448,10 @@ SEXP keyring_macos_lock_keyring(SEXP keyring) {
   SecKeychainRef keychain =
     isNull(keyring) ? NULL :
     keyring_macos_open_keychain(CHAR(STRING_ELT(keyring, 0)));
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
   OSStatus status = SecKeychainLock(keychain);
+# pragma GCC diagnostic pop
   if (keychain) CFRelease(keychain);
   keyring_macos_handle_status("cannot lock keychain", status);
   return R_NilValue;
@@ -438,11 +462,14 @@ SEXP keyring_macos_unlock_keyring(SEXP keyring, SEXP password) {
   SecKeychainRef keychain =
     isNull(keyring) ? NULL :
     keyring_macos_open_keychain(CHAR(STRING_ELT(keyring, 0)));
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
   OSStatus status = SecKeychainUnlock(
     keychain,
     (UInt32) strlen(cpassword),
      (const void*) cpassword,
     /* usePassword = */ TRUE);
+# pragma GCC diagnostic pop
 
   if (keychain) CFRelease(keychain);
   keyring_macos_handle_status("cannot unlock keychain", status);
