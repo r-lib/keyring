@@ -1,5 +1,5 @@
 
-# keyring (development version)
+# keyring 1.3.0
 
 * `keyring_create()` and also all backends that support multiple keyrings
   now allow passing the password when creating a new keyring (#114).
