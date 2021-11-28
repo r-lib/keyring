@@ -11,7 +11,7 @@ status](https://github.com/r-lib/keyring/workflows/R-CMD-check/badge.svg)](https
 [![CRAN RStudio mirror
 downloads](https://cranlogs.r-pkg.org/badges/keyring)](https://www.r-pkg.org/pkg/keyring)
 [![Coverage
-Status](https://img.shields.io/codecov/c/github/r-lib/keyring/master.svg)](https://codecov.io/github/r-lib/keyring?branch=master)
+Status](https://img.shields.io/codecov/c/github/r-lib/keyring/main.svg)](https://codecov.io/github/r-lib/keyring?branch=main)
 <!-- badges: end -->
 
 Platform independent API to access the operating systems credential
@@ -107,7 +107,7 @@ functions if you want to use a different keyring.
 ## Development documentation
 
 Please see our [writeup of some `keyring`
-internals](https://github.com/r-lib/keyring/blob/master/inst/development-notes.md),
+internals](https://github.com/r-lib/keyring/blob/main/inst/development-notes.md),
 and as always, use the source code.
 
 ## License
