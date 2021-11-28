@@ -35,8 +35,9 @@ backend_macos <- R6Class(
       b_macos_get(self, private, service, username, keyring),
     get_raw = function(service, username = NULL, keyring = NULL)
       b_macos_get_raw(self, private, service, username, keyring),
-    set = function(service, username = NULL, keyring = NULL)
-      b_macos_set(self, private, service, username, keyring),
+    set = function(service, username = NULL, keyring = NULL,
+                   prompt = "Password: ")
+      b_macos_set(self, private, service, username, keyring, prompt),
     set_with_value = function(service, username = NULL, password = NULL,
       keyring = NULL)
       b_macos_set_with_value(self, private, service, username, password,
@@ -105,9 +106,9 @@ b_macos_get_raw <- function(self, private, service, username, keyring) {
   .Call(keyring_macos_get, utf8(keyring), utf8(service), utf8(username))
 }
 
-b_macos_set <- function(self, private, service, username, keyring) {
+b_macos_set <- function(self, private, service, username, keyring, prompt) {
   username <- username %||% getOption("keyring_username")
-  password <- get_pass()
+  password <- get_pass(prompt)
   if (is.null(password)) stop("Aborted setting keyring key")
   b_macos_set_with_value(self, private, service, username, password, keyring)
   invisible(self)
