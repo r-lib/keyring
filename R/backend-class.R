@@ -185,7 +185,7 @@ backend_keyrings <- R6Class(
     list = function(service = NULL, keyring = NULL)
       abstract_method(),
 
-    keyring_create = function(keyring) abstract_method(),
+    keyring_create = function(keyring, password) abstract_method(),
     keyring_list = function() abstract_method(),
     keyring_delete = function(keyring = NULL) abstract_method(),
     keyring_lock = function(keyring = NULL) abstract_method(),

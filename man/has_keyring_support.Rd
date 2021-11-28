@@ -12,7 +12,7 @@
 \usage{
 has_keyring_support()
 
-keyring_create(keyring)
+keyring_create(keyring, password = NULL)
 
 keyring_list()
 
@@ -29,8 +29,8 @@ keyring_is_locked(keyring = NULL)
 For functions other than \code{keyring_create}, it can also be \code{NULL} to
 select the default keyring.}
 
-\item{password}{The password to unlock the keyring. If not specified
-or \code{NULL}, it will be read from the console.}
+\item{password}{The initial password or the password to unlock the
+keyring. If not specified or \code{NULL}, it will be read from the console.}
 }
 \description{
 On most platforms \code{keyring} supports multiple keyrings. This includes

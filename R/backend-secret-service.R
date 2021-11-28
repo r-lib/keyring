@@ -62,8 +62,8 @@ backend_secret_service <- R6Class(
     list = function(service = NULL, keyring = NULL)
       b_ss_list(self, private, service, keyring),
 
-    keyring_create = function(keyring)
-      b_ss_keyring_create(self, private, keyring),
+    keyring_create = function(keyring, password = NULL)
+      b_ss_keyring_create(self, private, keyring, password),
     keyring_list = function()
       b_ss_keyring_list(self, private),
     keyring_delete = function(keyring = NULL)
@@ -159,8 +159,8 @@ b_ss_list <- function(self, private, service, keyring) {
   )
 }
 
-b_ss_keyring_create <- function(self, private, keyring) {
-  password <- get_pass()
+b_ss_keyring_create <- function(self, private, keyring, password) {
+  password <- password %||% get_pass()
   if (is.null(password)) stop("Aborted creating keyring")
   private$keyring_create_direct(keyring, password)
   invisible(self)
