@@ -2,7 +2,7 @@
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
 on:
   push:
-    branches: [main, master, test/new-pak-gha]
+    branches: [main, master, branch-1.3.0]
     tags: ['*']
 
 name: pkgdown
@@ -26,8 +26,8 @@ jobs:
           extra-packages: any::pkgdown
           needs: website
 
-#      - name: Deploy package
-#        run: |
-#          git config --local user.name "$GITHUB_ACTOR"
-#          git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
-#          Rscript -e 'pkgdown::deploy_to_branch(new_process = FALSE)'
+      - name: Deploy package
+        run: |
+          git config --local user.name "$GITHUB_ACTOR"
+          git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
+          Rscript -e 'pkgdown::deploy_to_branch(new_process = FALSE)'
