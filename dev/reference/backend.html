@@ -75,7 +75,7 @@ can be defined as well." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">keyring</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">1.2.0.9000</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">1.3.0.9000</span>
       </span>
     </div>
 
@@ -132,7 +132,7 @@ can be defined as well.</p>
 
     <p>These are the semantics of the various methods:</p><pre><span class='fu'><a href='https://rdrr.io/r/base/get.html'>get</a></span><span class='op'>(</span><span class='va'>service</span>, username <span class='op'>=</span> <span class='cn'>NULL</span>, keyring <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
 <span class='fu'>get_raw</span><span class='op'>(</span><span class='va'>service</span>, username <span class='op'>=</span> <span class='cn'>NULL</span>, keyring <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
-<span class='fu'>set</span><span class='op'>(</span><span class='va'>service</span>, username <span class='op'>=</span> <span class='cn'>NULL</span>, keyring <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
+<span class='fu'>set</span><span class='op'>(</span><span class='va'>service</span>, username <span class='op'>=</span> <span class='cn'>NULL</span>, keyring <span class='op'>=</span> <span class='cn'>NULL</span>, prompt <span class='op'>=</span> <span class='st'>"Password: "</span><span class='op'>)</span>
 <span class='fu'>set_with_value</span><span class='op'>(</span><span class='va'>service</span>, username <span class='op'>=</span> <span class='cn'>NULL</span>, password <span class='op'>=</span> <span class='cn'>NULL</span>,
                keyring <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
 <span class='fu'>set_with_raw_value</span><span class='op'>(</span><span class='va'>service</span>, username <span class='op'>=</span> <span class='cn'>NULL</span>, password <span class='op'>=</span> <span class='cn'>NULL</span>,
@@ -166,6 +166,7 @@ sense if the platform supports multiple keyrings. <code>NULL</code> selects the
 default (and maybe only) keyring.</p></li>
 <li><p><code>password</code> The value of the secret, typically a password, or other
 credential.</p></li>
+<li><p><code>prompt</code> String, the text to be displayed above the textbox.</p></li>
 </ul>
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>

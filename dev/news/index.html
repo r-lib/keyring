@@ -71,7 +71,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">keyring</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">1.2.0.9000</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">1.3.0.9000</span>
       </span>
     </div>
 
@@ -118,6 +118,16 @@
 <h1 class="page-header" data-toc-text="development version">
 <a href="#keyring-development-version" class="anchor"></a>keyring (development version)<small> Unreleased </small>
 </h1>
+</div>
+    <div id="keyring-130" class="section level1">
+<h1 class="page-header" data-toc-text="1.3.0">
+<a href="#keyring-130" class="anchor"></a>keyring 1.3.0<small> 2021-11-29 </small>
+</h1>
+<ul>
+<li><p><code><a href="../reference/has_keyring_support.html">keyring_create()</a></code> and also all backends that support multiple keyrings now allow passing the password when creating a new keyring (<a href='https://github.com/r-lib/keyring/issues/114'>#114</a>).</p></li>
+<li><p><code><a href="../reference/key_get.html">key_set()</a></code> can now use a custom prompt (<a href='https://github.com/pnacht'>@pnacht</a>, <a href='https://github.com/r-lib/keyring/issues/112'>#112</a>).</p></li>
+<li><p>keyring now handled better the ‘Cancel’ button when requesting a password in RStudio, and an error is thrown in this case (<a href='https://github.com/r-lib/keyring/issues/106'>#106</a>).</p></li>
+</ul>
 </div>
     <div id="keyring-120" class="section level1">
 <h1 class="page-header" data-toc-text="1.2.0">

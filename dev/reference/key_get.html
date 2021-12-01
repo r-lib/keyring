@@ -73,7 +73,7 @@ as a secure key-value store." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">keyring</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">1.2.0.9000</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="In-development version">1.3.0.9000</span>
       </span>
     </div>
 
@@ -126,7 +126,7 @@ as a secure key-value store.</p>
 
 <span class='fu'>key_get_raw</span><span class='op'>(</span><span class='va'>service</span>, username <span class='op'>=</span> <span class='cn'>NULL</span>, keyring <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
 
-<span class='fu'>key_set</span><span class='op'>(</span><span class='va'>service</span>, username <span class='op'>=</span> <span class='cn'>NULL</span>, keyring <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
+<span class='fu'>key_set</span><span class='op'>(</span><span class='va'>service</span>, username <span class='op'>=</span> <span class='cn'>NULL</span>, keyring <span class='op'>=</span> <span class='cn'>NULL</span>, prompt <span class='op'>=</span> <span class='st'>"Password: "</span><span class='op'>)</span>
 
 <span class='fu'>key_set_with_value</span><span class='op'>(</span><span class='va'>service</span>, username <span class='op'>=</span> <span class='cn'>NULL</span>, password <span class='op'>=</span> <span class='cn'>NULL</span>, keyring <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span>
 
@@ -158,6 +158,10 @@ is not associated with a username.</p></td>
       <td><p>For systems that support multiple keyrings, specify
 the name of the keyring to use here. If <code>NULL</code>, then the default
 keyring is used. See also <code><a href='has_keyring_support.html'>has_keyring_support()</a></code>.</p></td>
+    </tr>
+    <tr>
+      <th>prompt</th>
+      <td><p>The character string displayed when requesting the secret</p></td>
     </tr>
     <tr>
       <th>password</th>
