@@ -19,6 +19,7 @@ kb <- backend_file$new()
 }
 \seealso{
 Other keyring backends: 
+\code{\link{backend_awssecretsmanager}},
 \code{\link{backend_env}},
 \code{\link{backend_macos}},
 \code{\link{backend_secret_service}},

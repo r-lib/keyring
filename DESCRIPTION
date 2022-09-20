@@ -14,7 +14,7 @@ Description: Platform independent 'API' to access the operating system's
 License: MIT + file LICENSE
 URL: https://r-lib.github.io/keyring/index.html, https://github.com/r-lib/keyring#readme
 BugReports: https://github.com/r-lib/keyring/issues
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.1
 Roxygen: list(markdown = TRUE, r6 = FALSE)
 Imports:
     assertthat,
@@ -31,6 +31,7 @@ Suggests:
     callr,
     covr,
     mockery,
+    paws,
     testthat,
     withr
 Encoding: UTF-8
@@ -40,6 +41,7 @@ Collate:
     'api.R'
     'assertions.R'
     'backend-class.R'
+    'backend-awssecretsmanager.R'
     'backend-env.R'
     'backend-file.R'
     'backend-macos.R'

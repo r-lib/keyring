@@ -13,7 +13,9 @@ inherit from this class and redefine the \code{get}, \code{set}, \code{set_with_
 }
 \details{
 See \link{backend} for the first set of methods. This is the semantics of the
-keyring management methods:\preformatted{keyring_create(keyring)
+keyring management methods:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{keyring_create(keyring)
 keyring_list()
 keyring_delete(keyring = NULL)
 keyring_lock(keyring = NULL)
@@ -21,7 +23,7 @@ keyring_unlock(keyring = NULL, password = NULL)
 keyring_is_locked(keyring = NULL)
 keyring_default()
 keyring_set_default(keyring = NULL)
-}
+}\if{html}{\out{</div>}}
 \itemize{
 \item \code{keyring_create()} creates a new keyring.
 \item \code{keyring_list()} lists all keyrings.
