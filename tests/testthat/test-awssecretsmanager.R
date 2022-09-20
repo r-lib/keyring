@@ -14,6 +14,8 @@
 
 context("AWS Secrets Manager")
 
+#Sys.setenv(R_KEYRING_TEST_USE_AWS=1)
+
 test_that("set, list, get, delete", {
 
   skip_on_cran()
@@ -32,6 +34,9 @@ test_that("set, list, get, delete", {
   password <- random_password()
 
   kb <- backend_awssecretsmanager$new()
+
+  expect_true(kb$is_available())
+
   expect_error(kb$set_with_value(service, username, password))
   expect_silent(kb$set_with_value(service, password = password))
   expect_silent(kb$set_with_value(service2, password = password))

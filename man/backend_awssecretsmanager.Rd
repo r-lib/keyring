@@ -12,16 +12,10 @@ This backend does not support keyrings or user names.  The call to the
 AWS service is authenticated by either the user's ceedentials or the IAM
 user associated with the process, for example in a docker container.
 
-See \link{backend} for the documentation of the individual methods.
-
-\if{html}{\out{<div class="sourceCode">}}\preformatted{is_available = function(report_error = FALSE)
-}\if{html}{\out{</div>}}
-
-Argument:
-\itemize{
-\item \code{report_error} Whether to throw an error if the Secret Service is
-not available.
-}
+Note that the AWS APIs provide enventual consistency, it can take
+a noticeable amount of time, up to five minutes, for updates and deletes
+to propagate and so code that updates, deletes and lists needs to be
+written to tolerate that.
 }
 \examples{
 \dontrun{

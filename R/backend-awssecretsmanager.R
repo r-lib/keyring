@@ -225,6 +225,14 @@ b_aws_list <- function(self, private, service, keyring) {
 }
 
 b_aws_is_available <- function(self, private, report_error) {
+  if(!requireNamespace("paws"))
+  {
+    if(report_error)
+    {
+      signalCondition("Paws library not available.  It is required for AWS access")
+    }
+    return(FALSE)
+  }
   callerID = try(paws::sts()$get_caller_identity())
   if (inherits(callerID, "try-error")) {
     if(report_error)
