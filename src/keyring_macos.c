@@ -332,7 +332,7 @@ SEXP keyring_macos_create(SEXP keyring, SEXP password) {
   return R_NilValue;
 }
 
-SEXP keyring_macos_list_keyring() {
+SEXP keyring_macos_list_keyring(void) {
   CFArrayRef keyrings = NULL;
   OSStatus status =
     SecKeychainCopyDomainSearchList(kSecPreferencesDomainUser, &keyrings);
@@ -520,7 +520,7 @@ SEXP keyring_macos_create(SEXP keyring, SEXP password) {
   return R_NilValue;
 }
 
-SEXP keyring_macos_list_keyring() {
+SEXP keyring_macos_list_keyring(void) {
   error("only works on macOS");
   return R_NilValue;
 }

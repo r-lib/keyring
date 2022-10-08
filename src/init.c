@@ -9,7 +9,7 @@ SEXP keyring_macos_set(SEXP keyring, SEXP service, SEXP username,
 SEXP keyring_macos_delete(SEXP keyring, SEXP service, SEXP username);
 SEXP keyring_macos_list(SEXP keyring, SEXP service);
 SEXP keyring_macos_create(SEXP keyring, SEXP password);
-SEXP keyring_macos_list_keyring();
+SEXP keyring_macos_list_keyring(void);
 SEXP keyring_macos_delete_keyring(SEXP keyring);
 SEXP keyring_macos_lock_keyring(SEXP keyring);
 SEXP keyring_macos_unlock_keyring(SEXP keyring, SEXP password);
@@ -27,7 +27,7 @@ SEXP keyring_secret_service_set(SEXP, SEXP, SEXP, SEXP);
 SEXP keyring_secret_service_delete(SEXP, SEXP, SEXP);
 SEXP keyring_secret_service_list(SEXP, SEXP);
 SEXP keyring_secret_service_create_keyring(SEXP);
-SEXP keyring_secret_service_list_keyring();
+SEXP keyring_secret_service_list_keyring(void);
 SEXP keyring_secret_service_delete_keyring(SEXP);
 SEXP keyring_secret_service_lock_keyring(SEXP);
 SEXP keyring_secret_service_unlock_keyring(SEXP, SEXP);
