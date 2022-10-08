@@ -24,6 +24,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -43,12 +45,6 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="reference/index.html">Reference</a>
 </li>
 <li>
@@ -57,7 +53,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/r-lib/keyring/">
+  <a href="https://github.com/r-lib/keyring/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -74,14 +70,11 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="keyring" class="section level1">
-<div class="page-header"><h1 class="hasAnchor">
-<a href="#keyring" class="anchor"></a>keyring</h1></div>
-<blockquote>
-<p>Access the System Credential Store from R</p>
-</blockquote>
+<div class="section level1">
+<div class="page-header"><h1 id="keyring">keyring<a class="anchor" aria-label="anchor" href="#keyring"></a>
+</h1></div>
+<blockquote><p>Access the System Credential Store from R</p></blockquote>
 <!-- badges: start -->
-<p><a href="https://github.com/r-lib/keyring/actions"><img src="https://github.com/r-lib/keyring/workflows/R-CMD-check/badge.svg" alt="R build status"></a> <a href="https://www.r-pkg.org/pkg/keyring"><img src="https://www.r-pkg.org/badges/version/keyring"></a> <a href="https://www.r-pkg.org/pkg/keyring"><img src="https://cranlogs.r-pkg.org/badges/keyring" alt="CRAN RStudio mirror downloads"></a> <a href="https://codecov.io/github/r-lib/keyring?branch=main"><img src="https://img.shields.io/codecov/c/github/r-lib/keyring/main.svg" alt="Coverage Status"></a> <!-- badges: end --></p>
 <p>Platform independent API to access the operating systems credential store. Currently supports:</p>
 <ul>
 <li>Keychain on macOS (<code>backend_macos</code>),</li>
@@ -91,12 +84,12 @@
 <li>environment variables (<code>backend_env</code>).</li>
 </ul>
 <p>The last two are available on all platforms. Additional storage backends can be added easily.</p>
-<div id="installation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#installation" class="anchor"></a>Installation</h2>
-<div id="linux" class="section level3">
-<h3 class="hasAnchor">
-<a href="#linux" class="anchor"></a>Linux</h3>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
+<div class="section level3">
+<h3 id="linux">Linux<a class="anchor" aria-label="anchor" href="#linux"></a>
+</h3>
 <p>For the Secret Service backend install the <code>libsecret</code> library, at least version 0.16. This is typically the best keyring for a Linux desktop. Install these packages:</p>
 <ul>
 <li>Debian/Ubuntu: <code>libsecret-1-dev</code>
@@ -112,25 +105,25 @@
 </li>
 </ul>
 </div>
-<div id="os-x-and-windows" class="section level3">
-<h3 class="hasAnchor">
-<a href="#os-x-and-windows" class="anchor"></a>OS X and Windows</h3>
+<div class="section level3">
+<h3 id="os-x-and-windows">OS X and Windows<a class="anchor" aria-label="anchor" href="#os-x-and-windows"></a>
+</h3>
 <p>No additional software is needed.</p>
 </div>
-<div id="r-package" class="section level3">
-<h3 class="hasAnchor">
-<a href="#r-package" class="anchor"></a>R package</h3>
+<div class="section level3">
+<h3 id="r-package">R package<a class="anchor" aria-label="anchor" href="#r-package"></a>
+</h3>
 <p>Install the package from CRAN:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"keyring"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"keyring"</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
-<div id="usage" class="section level2">
-<h2 class="hasAnchor">
-<a href="#usage" class="anchor"></a>Usage</h2>
-<div id="query-secret-keys-in-a-keyring" class="section level3">
-<h3 class="hasAnchor">
-<a href="#query-secret-keys-in-a-keyring" class="anchor"></a>Query secret keys in a keyring:</h3>
+<div class="section level2">
+<h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
+</h2>
+<div class="section level3">
+<h3 id="query-secret-keys-in-a-keyring">Query secret keys in a keyring:<a class="anchor" aria-label="anchor" href="#query-secret-keys-in-a-keyring"></a>
+</h3>
 <p>Each keyring can contain one or many secrets (keys). A key is defined by a service name and a password. Once a key is defined, it persists in the keyring store of the operating system. This means the keys persist beyond the termination of and R session. Specifically, you can define a key once, and then read the key value in completely independent R sessions.</p>
 <ul>
 <li>Setting a secret interactively: <code><a href="reference/key_get.html">key_set()</a></code>
@@ -145,9 +138,9 @@
 </li>
 </ul>
 </div>
-<div id="configure-an-os-specific-backend" class="section level3">
-<h3 class="hasAnchor">
-<a href="#configure-an-os-specific-backend" class="anchor"></a>Configure an OS-specific backend:</h3>
+<div class="section level3">
+<h3 id="configure-an-os-specific-backend">Configure an OS-specific backend:<a class="anchor" aria-label="anchor" href="#configure-an-os-specific-backend"></a>
+</h3>
 <ul>
 <li>The default is operating system specific, and is described in manual page of <code><a href="reference/backends.html">default_backend()</a></code>. In most cases you don’t have to configure this.</li>
 <li>MacOS: <code>backend_macos</code>.</li>
@@ -158,22 +151,22 @@
 </ul>
 <p>Should you need to change the default backend, set the <code>R_KEYRING_BACKEND</code> environment variable or the <code>keyring_backend</code> R option to the backend’s name (e.g. <code>env</code>, <code>file</code>, etc.).</p>
 </div>
-<div id="manage-keyrings" class="section level3">
-<h3 class="hasAnchor">
-<a href="#manage-keyrings" class="anchor"></a>Manage keyrings:</h3>
+<div class="section level3">
+<h3 id="manage-keyrings">Manage keyrings:<a class="anchor" aria-label="anchor" href="#manage-keyrings"></a>
+</h3>
 <p>A keyring is a collection of keys that can be treated as a unit. A keyring typically has a name and a password to unlock it. See <code><a href="reference/has_keyring_support.html">keyring_create()</a></code>, <code><a href="reference/has_keyring_support.html">keyring_delete()</a></code>, <code><a href="reference/has_keyring_support.html">keyring_list()</a></code>, <code><a href="reference/has_keyring_support.html">keyring_lock()</a></code>, <code><a href="reference/has_keyring_support.html">keyring_unlock()</a></code>, <code><a href="reference/has_keyring_support.html">keyring_is_locked()</a></code>.</p>
 <p>Note that all platforms have a default keyring, and <code><a href="reference/key_get.html">key_get()</a></code>, etc. will use that automatically. The default keyring is also convenient, because usually the OS unlocks it automatically when you log in, so secrets are available immediately. But note that the file backend does not currently unlock its default keyring.</p>
 <p>You only need to explicitly deal with keyrings and the <code>keyring_*</code> functions if you want to use a different keyring.</p>
 </div>
 </div>
-<div id="development-documentation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#development-documentation" class="anchor"></a>Development documentation</h2>
-<p>Please see our <a href="https://github.com/r-lib/keyring/blob/main/inst/development-notes.md">writeup of some <code>keyring</code> internals</a>, and as always, use the source code.</p>
+<div class="section level2">
+<h2 id="development-documentation">Development documentation<a class="anchor" aria-label="anchor" href="#development-documentation"></a>
+</h2>
+<p>Please see our <a href="https://github.com/r-lib/keyring/blob/main/inst/development-notes.md" class="external-link">writeup of some <code>keyring</code> internals</a>, and as always, use the source code.</p>
 </div>
-<div id="license" class="section level2">
-<h2 class="hasAnchor">
-<a href="#license" class="anchor"></a>License</h2>
+<div class="section level2">
+<h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
+</h2>
 <p>MIT © RStudio</p>
 </div>
 </div>
@@ -181,29 +174,46 @@
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="links">
-<h2>Links</h2>
+<h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li>Download from CRAN at <br><a href="https://cloud.r-project.org/package=keyring">https://​cloud.r-project.org/​package=keyring</a>
-</li>
-<li>Browse source code at <br><a href="https://github.com/r-lib/keyring/">https://​github.com/​r-lib/​keyring/​</a>
-</li>
-<li>Report a bug at <br><a href="https://github.com/r-lib/keyring/issues">https://​github.com/​r-lib/​keyring/​issues</a>
-</li>
+<li><a href="https://cloud.r-project.org/package=keyring" class="external-link">View on CRAN</a></li>
+<li><a href="https://github.com/r-lib/keyring/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/r-lib/keyring/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
+
 <div class="license">
-<h2>License</h2>
+<h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
 <li>
-<a href="https://opensource.org/licenses/mit-license.php">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a>
+<a href="https://opensource.org/licenses/mit-license.php" class="external-link">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a>
 </li>
 </ul>
 </div>
+
+
+<div class="citation">
+<h2 data-toc-skip>Citation</h2>
+<ul class="list-unstyled">
+<li><a href="authors.html#citation">Citing keyring</a></li>
+</ul>
+</div>
+
 <div class="developers">
-<h2>Developers</h2>
+<h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
 <li>Gábor Csárdi <br><small class="roles"> Author, maintainer </small>  </li>
-<li><a href="authors.html">All authors...</a></li>
+<li><a href="authors.html">More about authors...</a></li>
+</ul>
+</div>
+
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/r-lib/keyring/actions" class="external-link"><img src="https://github.com/r-lib/keyring/workflows/R-CMD-check/badge.svg" alt="R build status"></a></li>
+<li><a href="https://www.r-pkg.org/pkg/keyring" class="external-link"><img src="https://www.r-pkg.org/badges/version/keyring"></a></li>
+<li><a href="https://www.r-pkg.org/pkg/keyring" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/keyring" alt="CRAN RStudio mirror downloads"></a></li>
+<li><a href="https://codecov.io/github/r-lib/keyring?branch=main" class="external-link"><img src="https://img.shields.io/codecov/c/github/r-lib/keyring/main.svg" alt="Coverage Status"></a></li>
 </ul>
 </div>
 
@@ -212,11 +222,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Gábor Csárdi.</p>
+  <p></p>
+<p>Developed by Gábor Csárdi.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer>
@@ -224,6 +236,8 @@
 
   
 
+
+  
 
   </body>
 </html>

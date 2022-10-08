@@ -1,8 +1,8 @@
 pandoc: 2.7.3
-pkgdown: 1.6.1
+pkgdown: 2.0.6
 pkgdown_sha: ~
 articles: {}
-last_built: 2021-12-02T14:14Z
+last_built: 2022-10-08T19:04Z
 urls:
   reference: https://r-lib.github.io/keyring/reference
   article: https://r-lib.github.io/keyring/articles
