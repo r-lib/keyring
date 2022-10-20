@@ -1,6 +1,6 @@
 
 /* Avoid warning about empty compilation unit. */
-void keyring_secret_service_dummy() { }
+void keyring_secret_service_dummy(void) { }
 
 #if defined(__linux__) && defined(HAS_LIBSECRET)
 
@@ -12,7 +12,7 @@ void keyring_secret_service_dummy() { }
 #define SECRET_API_SUBJECT_TO_CHANGE 1
 #include <libsecret/secret.h>
 
-const SecretSchema *keyring_secret_service_schema() {
+const SecretSchema *keyring_secret_service_schema(void) {
   static const SecretSchema schema = {
     "com.rstudio.keyring.password", SECRET_SCHEMA_NONE, {
       {  "service", SECRET_SCHEMA_ATTRIBUTE_STRING },
@@ -56,7 +56,7 @@ SEXP keyring_secret_service_is_available(SEXP report_error) {
   return ScalarLogical(1);
 }
 
-SecretCollection* keyring_secret_service_get_collection_default() {
+SecretCollection* keyring_secret_service_get_collection_default(void) {
 
   SecretCollection *collection = NULL;
   GError *err = NULL;
@@ -88,7 +88,7 @@ SecretCollection* keyring_secret_service_get_collection_default() {
   return collection;
 }
 
-GList* keyring_secret_service_list_collections() {
+GList* keyring_secret_service_list_collections(void) {
 
   GError *err = NULL;
   SecretService *secretservice = secret_service_get_sync(
@@ -391,7 +391,7 @@ SEXP keyring_secret_service_create_keyring(SEXP keyring) {
   return R_NilValue;
 }
 
-SEXP keyring_secret_service_list_keyring() {
+SEXP keyring_secret_service_list_keyring(void) {
 
   GList *collections = keyring_secret_service_list_collections();
 
@@ -550,7 +550,7 @@ SEXP keyring_secret_service_create_keyring(SEXP keyring) {
   return R_NilValue;
 }
 
-SEXP keyring_secret_service_list_keyring() {
+SEXP keyring_secret_service_list_keyring(void) {
   error("only works on Linux with Secret Service support");
   return R_NilValue;
 }

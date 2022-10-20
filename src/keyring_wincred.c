@@ -1,6 +1,6 @@
 
 /* Avoid warning about empty compilation unit. */
-void keyring_wincred_dummy() { }
+void keyring_wincred_dummy(void) { }
 
 #ifdef _WIN32
 
