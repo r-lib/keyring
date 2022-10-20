@@ -14,7 +14,7 @@
 
 context("AWS Secrets Manager")
 
-#Sys.setenv(R_KEYRING_TEST_USE_AWS=1)
+Sys.setenv(R_KEYRING_TEST_USE_AWS=1)
 
 test_that("set, list, get, delete", {
 
@@ -76,6 +76,8 @@ test_that("set, list, get, delete", {
 
   expect_error(kb$get(service, username))
 
+  expect_error(kb$list(service, username))
+
   expect_error(kb$delete(service, username))
 
   expect_silent(kb$delete(service))
@@ -97,11 +99,13 @@ test_that("set, get, delete, without username", {
   service <- random_service()
   password <- random_password()
 
-  kb <- backend_env$new()
+  kb <- backend_awssecretsmanager$new()
 
   expect_silent(kb$set_with_value(service, password = password))
 
   expect_equal(kb$get(service), password)
 
-  expect_silent(kb$delete(service))
+  #expect_snapshot(kb$list(),"list")
+
+#  expect_silent(kb$delete(service))
 })

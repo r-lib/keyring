@@ -203,18 +203,32 @@ b_aws_list <- function(self, private, service, keyring) {
     # missing defaults to null in calling routine
   {
     res = private$sservice$list_secrets()
+    secretList = res$SecretList
+    while(length(res$NextToken)>0)
+    {
+      res = private$sservice$list_secrets(NextToken=res$NextToken)
+      secretList = append(secretList, res$SecretList)
+    }
   } else
   {
     res = private$sservice$list_secrets(Filter = list(list(
       Key = "name", Values = c(service)
     )))
+    secretList = res$SecretList
+    while(length(res$NextToken)>0)
+    {
+      res = private$sservice$list_secrets(NextToken=res$NextToken, Filter = list(list(
+        Key = "name", Values = c(service)
+      )))
+      secretList = append(secretList, res$SecretList)
+    }
   }
   nameList = c()
-  if (length(res$SecretList) > 0)
+  if (length(secretList) > 0)
   {
-    for (i in 1:length(res$SecretList))
+    for (i in 1:length(secretList))
     {
-      nameList = c(nameList, res$SecretList[[i]]$Name)
+      nameList = c(nameList, secretList[[i]]$Name)
     }
   }
   df = data.frame(service = nameList,
@@ -237,7 +251,7 @@ b_aws_is_available <- function(self, private, report_error) {
   if (inherits(callerID, "try-error")) {
     if(report_error)
     {
-      signalCondition("No AWS credentials to use for testing or AWS not reachable")
+      signalCondition("No AWS credentials or AWS not reachable")
     }
     return(FALSE)
   }
