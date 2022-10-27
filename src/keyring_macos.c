@@ -41,7 +41,10 @@ SecKeychainRef keyring_macos_open_keychain(const char *pathName) {
   /* We need to query the status, because SecKeychainOpen succeeds,
      even if the keychain file does not exists. (!) */
   SecKeychainStatus keychainStatus = 0;
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
   status = SecKeychainGetStatus(keychain, &keychainStatus);
+# pragma GCC diagnostic pop
   keyring_macos_handle_status("cannot open keychain", status);
 
   return keychain;
@@ -62,12 +65,15 @@ SEXP keyring_macos_get(SEXP keyring, SEXP service, SEXP username) {
     isNull(keyring) ? NULL :
     keyring_macos_open_keychain(CHAR(STRING_ELT(keyring, 0)));
 
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
   OSStatus status = SecKeychainFindGenericPassword(
     keychain,
     (UInt32) strlen(cservice), cservice,
     (UInt32) strlen(cusername), cusername,
     &length, &data,
     /* itemRef = */ NULL);
+# pragma GCC diagnostic pop
 
   if (keychain != NULL) CFRelease(keychain);
 
@@ -75,7 +81,10 @@ SEXP keyring_macos_get(SEXP keyring, SEXP service, SEXP username) {
 
   result = PROTECT(allocVector(RAWSXP, length));
   memcpy(RAW(result), data, length);
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
   SecKeychainItemFreeContent(NULL, data);
+# pragma GCC diagnostic pop
 
   UNPROTECT(1);
   return result;
@@ -96,26 +105,35 @@ SEXP keyring_macos_set(SEXP keyring, SEXP service, SEXP username,
 
   /* Try to find it, and it is exists, update it */
 
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
   OSStatus status = SecKeychainFindGenericPassword(
     keychain,
     (UInt32) strlen(cservice), cservice,
     (UInt32) strlen(cusername), cusername,
     /* passwordLength = */ NULL, /* passwordData = */ NULL,
     &item);
+# pragma GCC diagnostic pop
 
   if (status == errSecItemNotFound) {
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     status = SecKeychainAddGenericPassword(
       keychain,
       (UInt32) strlen(cservice), cservice,
       (UInt32) strlen(cusername), cusername,
       (UInt32) LENGTH(password), RAW(password),
       /* itemRef = */ NULL);
+# pragma GCC diagnostic pop
 
   } else {
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     status = SecKeychainItemModifyAttributesAndData(
       item,
       /* attrList= */ NULL,
       (UInt32) LENGTH(password), RAW(password));
+# pragma GCC diagnostic pop
     CFRelease(item);
   }
 
@@ -137,19 +155,25 @@ SEXP keyring_macos_delete(SEXP keyring, SEXP service, SEXP username) {
     isNull(keyring) ? NULL : keyring_macos_open_keychain(CHAR(STRING_ELT(keyring, 0)));
   SecKeychainItemRef item;
 
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
   OSStatus status = SecKeychainFindGenericPassword(
     keychain,
     (UInt32) strlen(cservice), cservice,
     (UInt32) strlen(cusername), cusername,
     /* *passwordLength = */ NULL, /* *passwordData = */ NULL,
     &item);
+# pragma GCC diagnostic pop
 
   if (status != errSecSuccess) {
     if (keychain != NULL) CFRelease(keychain);
     keyring_macos_error("cannot delete password", status);
   }
 
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
   status = SecKeychainItemDelete(item);
+# pragma GCC diagnostic pop
   if (status != errSecSuccess) {
     if (keychain != NULL) CFRelease(keychain);
     keyring_macos_error("cannot delete password", status);
@@ -171,21 +195,30 @@ static void keyring_macos_list_item(SecKeychainItemRef item, SEXP result,
   SecKeychainAttributeList attrList = { 2, attrs };
 
   /* This should not happen, not a keychain... */
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
   if (SecKeychainItemGetTypeID() != CFGetTypeID(item)) {
     SET_STRING_ELT(VECTOR_ELT(result, 0), idx, mkChar(""));
     SET_STRING_ELT(VECTOR_ELT(result, 1), idx, mkChar(""));
     return;
   }
+# pragma GCC diagnostic pop
 
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
   OSStatus status = SecKeychainItemCopyContent(item, &class, &attrList,
 					       /* length = */ NULL,
 					       /* outData = */ NULL);
+# pragma GCC diagnostic pop
   keyring_macos_handle_status("cannot list passwords", status);
   SET_STRING_ELT(VECTOR_ELT(result, 0), idx,
 		 mkCharLen(attrs[0].data, attrs[0].length));
   SET_STRING_ELT(VECTOR_ELT(result, 1), idx,
 		 mkCharLen(attrs[1].data, attrs[1].length));
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
   SecKeychainItemFreeContent(&attrList, NULL);
+# pragma GCC diagnostic pop
 }
 
 CFArrayRef keyring_macos_list_get(const char *ckeyring,
@@ -287,9 +320,12 @@ SEXP keyring_macos_create(SEXP keyring, SEXP password) {
   keyring_macos_handle_status("cannot create keychain", status);
 
   CFArrayRef keyrings = NULL;
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
   status = SecKeychainCopyDomainSearchList(
     kSecPreferencesDomainUser,
     &keyrings);
+# pragma GCC diagnostic pop
 
   if (status) {
 # pragma GCC diagnostic push
@@ -310,9 +346,12 @@ SEXP keyring_macos_create(SEXP keyring, SEXP password) {
   CFMutableArrayRef newkeyrings =
     CFArrayCreateMutableCopy(NULL, count + 1, keyrings);
   CFArrayAppendValue(newkeyrings, result);
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
   status = SecKeychainSetDomainSearchList(
     kSecPreferencesDomainUser,
     newkeyrings);
+# pragma GCC diagnostic pop
 
   if (status) {
 # pragma GCC diagnostic push
@@ -334,8 +373,11 @@ SEXP keyring_macos_create(SEXP keyring, SEXP password) {
 
 SEXP keyring_macos_list_keyring(void) {
   CFArrayRef keyrings = NULL;
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
   OSStatus status =
     SecKeychainCopyDomainSearchList(kSecPreferencesDomainUser, &keyrings);
+# pragma GCC diagnostic pop
   keyring_macos_handle_status("cannot list keyrings", status);
 
   CFIndex i, num = CFArrayGetCount(keyrings);
@@ -368,7 +410,10 @@ SEXP keyring_macos_list_keyring(void) {
     INTEGER(VECTOR_ELT(result, 1))[i] = (int) numitems;
 
     SecKeychainStatus kstatus;
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     status = SecKeychainGetStatus(keychain, &kstatus);
+# pragma GCC diagnostic pop
     if (status) {
       LOGICAL(VECTOR_ELT(result, 2))[i] = NA_LOGICAL;
     } else {
@@ -390,9 +435,12 @@ SEXP keyring_macos_delete_keyring(SEXP keyring) {
   /* Need to remove it from the search list as well */
 
   CFArrayRef keyrings = NULL;
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
   OSStatus status = SecKeychainCopyDomainSearchList(
     kSecPreferencesDomainUser,
     &keyrings);
+# pragma GCC diagnostic pop
   keyring_macos_handle_status("cannot delete keyring", status);
 
   CFIndex i, count = CFArrayGetCount(keyrings);
@@ -415,9 +463,12 @@ SEXP keyring_macos_delete_keyring(SEXP keyring) {
     }
     if (!strcmp(pathName, ckeyring)) {
       CFArrayRemoveValueAtIndex(newkeyrings, (CFIndex) i);
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
       status = SecKeychainSetDomainSearchList(
         kSecPreferencesDomainUser,
 	newkeyrings);
+# pragma GCC diagnostic pop
       if (status) {
 	CFRelease(keyrings);
 	CFRelease(newkeyrings);
@@ -482,7 +533,10 @@ SEXP keyring_macos_is_locked_keyring(SEXP keyring) {
     keyring_macos_open_keychain(CHAR(STRING_ELT(keyring, 0)));
 
   SecKeychainStatus kstatus;
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wdeprecated-declarations"
   OSStatus status = SecKeychainGetStatus(keychain, &kstatus);
+# pragma GCC diagnostic pop
   if (status) keyring_macos_error("cannot get lock information", status);
 
   return ScalarLogical(! (kstatus & kSecUnlockStateStatus));
