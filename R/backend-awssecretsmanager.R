@@ -6,7 +6,7 @@
 #' secretsmanager service.
 #'
 #' This backend does not support keyrings or user names.  The call to the
-#' AWS service is authenticated by either the user's ceedentials or the IAM
+#' AWS service is authenticated by either the user's credentials or the IAM
 #' user associated with the process, for example in a docker container.
 #'
 #' Note that the AWS APIs provide enventual consistency, it can take
