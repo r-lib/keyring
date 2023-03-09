@@ -8,8 +8,8 @@ Authors@R:
       person("RStudio", role = "cph"))
 Description: Platform independent 'API' to access the operating system's
     credential store. Currently supports: 'Keychain' on 'macOS', Credential
-    Store on 'Windows', the Secret Service 'API' on 'Linux', and a simple,
-    platform independent store implemented with environment variables.
+    Store on 'Windows', the Secret Service 'API' on 'Linux', and simple,
+    platform independent stores implemented with environment variables or encrypted files.
     Additional storage back-ends can be added easily.
 License: MIT + file LICENSE
 URL: https://r-lib.github.io/keyring/index.html, https://github.com/r-lib/keyring#readme
