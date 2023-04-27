@@ -402,7 +402,7 @@ b_wincred_list <- function(self, private, service, keyring) {
 
 b_wincred_keyring_create <- function(self, private, keyring, password) {
   password <- password %||% get_pass()
-  if (is.null(password)) stop("Aborted craeting keyring")
+  if (is.null(password)) stop("Aborted creating keyring")
   private$keyring_create_direct(keyring, password)
   invisible(self)
 }
