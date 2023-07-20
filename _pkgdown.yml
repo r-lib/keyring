@@ -1,5 +1,6 @@
 url: https://r-lib.github.io/keyring
-
+template:
+  bootstrap: 5
 destination: docs
 
 development:
