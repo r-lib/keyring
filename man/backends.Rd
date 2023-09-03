@@ -59,5 +59,5 @@ See \link[base:Startup]{base::Startup} for information about using \code{.Renvir
 }
 \seealso{
 \link{backend_env}, \link{backend_file}, \link{backend_macos},
-\link{backend_secret_service}, \link{backend_wincred}
+\link{backend_secret_service}, \link{backend_wincred}, \link{backend_awssecretsmanager}
 }

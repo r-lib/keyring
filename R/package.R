@@ -5,7 +5,8 @@
 #' implementations. Currently supported:
 #' * Keychain on macOS,
 #' * Credential Store on Windows,
-#' * the Secret Service API on Linux, and
+#' * the Secret Service API on Linux
+#' * the AWS Secrets Manager, and
 #' * environment variables on other platforms.
 #'
 #' @section Configuring an OS-specific backend:
@@ -15,8 +16,10 @@
 #' - MacOS: [backend_macos]
 #' - Linux: [backend_secret_service]
 #' - Windows: [backend_wincred]
-#' - Or store the secrets in environment variables on other operating
+#' - Store the secrets in environment variables on other operating
 #'   systems: [backend_env]
+#' - Or in the AWS secrets Manager:
+#'   [backend_awssecretsmanager]
 #'
 #' @section Query secret keys in a keyring:
 #'

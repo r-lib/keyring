@@ -10,7 +10,9 @@ methods. Implementing the \code{list} method is optional. Additional methods
 can be defined as well.
 }
 \details{
-These are the semantics of the various methods:\preformatted{get(service, username = NULL, keyring = NULL)
+These are the semantics of the various methods:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{get(service, username = NULL, keyring = NULL)
 get_raw(service, username = NULL, keyring = NULL)
 set(service, username = NULL, keyring = NULL, prompt = "Password: ")
 set_with_value(service, username = NULL, password = NULL,
@@ -19,7 +21,7 @@ set_with_raw_value(service, username = NULL, password = NULL,
                keyring = NULL)
 delete(service, username = NULL, keyring = NULL)
 list(service = NULL, keyring = NULL)
-}
+}\if{html}{\out{</div>}}
 
 What these functions do:
 \itemize{

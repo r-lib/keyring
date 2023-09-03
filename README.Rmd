@@ -28,6 +28,7 @@ credential store. Currently supports:
 * Keychain on macOS (`backend_macos`),
 * Credential Store on Windows (`backend_wincred`),
 * the Secret Service API on Linux (`backend_secret_service`),
+* AWS Secrets Manager (`backend_awssecretsmanager`),
 * encrypted files (`backend_file`), and
 * environment variables (`backend_env`).
 
@@ -54,6 +55,15 @@ This backend works best on Linux servers. Install these packages:
 ### OS X and Windows
 
 No additional software is needed.
+
+### AWS Secrets Manager
+
+The paws package must be installed from CRAN to access the AWS services 
+along with the AWS CLI and credentials.   
+
+```{r eval = FALSE}
+install.packages("paws")
+```
 
 ### R package
 
