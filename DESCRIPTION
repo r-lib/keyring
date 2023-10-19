@@ -49,3 +49,4 @@ Collate:
     'package.R'
     'pass.R'
     'utils.R'
+Config/Needs/website: tidyverse/tidytemplate
