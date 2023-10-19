@@ -1,4 +1,4 @@
-url: https://r-lib.github.io/keyring
+url: https://keyring.r-lib.org
 template:
   bootstrap: 5
   package: tidytemplate
