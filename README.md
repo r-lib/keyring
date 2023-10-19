@@ -39,9 +39,9 @@ Install the package from CRAN:
 pak::pak("keyring")
 ```
 
-We recommend using pak to install keyring as it will ensure that all
-Linux system requirements (e.g. `libsecret-devel`, `openssl-devel`) are
-automatically installed.
+We recommend using pak to install keyring as it will ensure that Linux
+system requirements are automatically installed (e.g. Ubuntu requires
+`libsecret-1-dev`, `libssl-dev`, and `libsodium-dev`).
 
 ## Usage
 
@@ -58,25 +58,21 @@ key_get("secret-name")
 
 Each secret is associated with a keyring. By default, keyring will use
 the OS keyring (see `default_backend()` for details), which is
-automatically unlocked you log in. That means while the secret is stored
-securely, it can be accessed by other processes.
+automatically unlocked when you log in. That means while the secret is
+stored securely, it can be accessed by other processes.
 
 If you want greater security you can create a custom keyring that you
-manually lock and unlock. That will require you to enter your system
+manually lock and unlock. That will require you to enter a custom
 password every time you want to access your secret.
 
 ``` r
 keyring_create("mypackage")
-key_set("MY_SECRET", keyring = "mypackage")
-key_get("MY_SECRET", keyring = "mypackage")
+key_set("secret-name", keyring = "mypackage")
+key_get("secret-name", keyring = "mypackage")
 ```
 
-Note that accessing the key unlocks the keyring, so if you’re being
-really careful, make sure to lock it again afterwards.
-
-``` r
-keyring_lock("httr")
-```
+Accessing the key unlocks the keyring, so if you’re being really
+careful, you might want to lock it again with `keyring_lock()`.
 
 ## Development documentation
 
