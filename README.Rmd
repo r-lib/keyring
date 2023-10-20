@@ -20,8 +20,8 @@ knitr::opts_chunk$set(
 <!-- badges: end -->
 
 keyring provides a way to securely manage secrets using your operating system's credential store.
-Once a secret is defined, it persists in the keyring across multiple R sessions.
-keyring is an alternative to using env vars that's a bit more secure because your secret is never stored in plain text, meaning that you can (e.g.) never accidentally upload it to GitHub.
+Once a secret is defined, it persists in a "keyring" across multiple R sessions.
+keyring is an alternative to using environment variables that's a bit more secure because your secret is never stored in plain text, meaning that you can for instance never accidentally upload it to GitHub.
 For more security, you can also store secrets in a custom keyring that always requires a password to unlock.
 
 keyring currently supports:
@@ -44,7 +44,7 @@ Install the package from CRAN:
 pak::pak("keyring")
 ```
 
-We recommend using pak to install keyring as it will ensure that Linux system requirements are automatically installed (e.g. Ubuntu requires `libsecret-1-dev`, `libssl-dev`, and `libsodium-dev`).
+We recommend using pak to install keyring as it will ensure that Linux system requirements are automatically installed (for instance Ubuntu requires `libsecret-1-dev`, `libssl-dev`, and `libsodium-dev`).
 
 ## Usage
 
@@ -54,7 +54,7 @@ The simplest usage only requires `key_set()` and `key_get()`:
 #| eval: false
 
 # Interactively save a secret. This avoids typing the value of the secret
-# into the console as this will be recorded in your `.Rhistory`
+# into the console as this could be recorded in your `.Rhistory`
 key_set("secret-name")
 
 # Later retrieve that secret
@@ -62,7 +62,7 @@ key_get("secret-name")
 ```
 
 Each secret is associated with a keyring.
-By default, keyring will use the OS keyring (see `default_backend()` for details), which is automatically unlocked when you log in.
+By default, keyring will use the OS keyring (see `default_backend()` for details), which is automatically unlocked when you log into your computer account.
 That means while the secret is stored securely, it can be accessed by other processes.
 
 If you want greater security you can create a custom keyring that you manually lock and unlock.
@@ -84,7 +84,7 @@ That means if you want to use `key_get("mysecret")` you need to do two things:
 
 -   Add a [new action secret](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions#creating-secrets-for-a-repository) to your repository.
 
--   Make the secret available in your workflow `.yml`, e.g.
+-   Make the secret available in your workflow `.yml`, for instance
 
     ``` yaml
         env:
