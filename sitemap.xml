@@ -1,66 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://r-lib.github.io/keyring/404.html</loc>
+    <loc>https://keyring.r-lib.org/404.html</loc>
   </url>
   <url>
-    <loc>https://r-lib.github.io/keyring/LICENSE-text.html</loc>
+    <loc>https://keyring.r-lib.org/LICENSE-text.html</loc>
   </url>
   <url>
-    <loc>https://r-lib.github.io/keyring/authors.html</loc>
+    <loc>https://keyring.r-lib.org/authors.html</loc>
   </url>
   <url>
-    <loc>https://r-lib.github.io/keyring/index.html</loc>
+    <loc>https://keyring.r-lib.org/index.html</loc>
   </url>
   <url>
-    <loc>https://r-lib.github.io/keyring/news/index.html</loc>
+    <loc>https://keyring.r-lib.org/news/index.html</loc>
   </url>
   <url>
-    <loc>https://r-lib.github.io/keyring/reference/b_wincred_decode.html</loc>
+    <loc>https://keyring.r-lib.org/reference/b_wincred_decode.html</loc>
   </url>
   <url>
-    <loc>https://r-lib.github.io/keyring/reference/b_wincred_decode_auto.html</loc>
+    <loc>https://keyring.r-lib.org/reference/b_wincred_decode_auto.html</loc>
   </url>
   <url>
-    <loc>https://r-lib.github.io/keyring/reference/b_wincred_get.html</loc>
+    <loc>https://keyring.r-lib.org/reference/b_wincred_get.html</loc>
   </url>
   <url>
-    <loc>https://r-lib.github.io/keyring/reference/b_wincred_set_with_raw_value.html</loc>
+    <loc>https://keyring.r-lib.org/reference/b_wincred_set_with_raw_value.html</loc>
   </url>
   <url>
-    <loc>https://r-lib.github.io/keyring/reference/backend.html</loc>
+    <loc>https://keyring.r-lib.org/reference/backend.html</loc>
   </url>
   <url>
-    <loc>https://r-lib.github.io/keyring/reference/backend_env.html</loc>
+    <loc>https://keyring.r-lib.org/reference/backend_env.html</loc>
   </url>
   <url>
-    <loc>https://r-lib.github.io/keyring/reference/backend_file.html</loc>
+    <loc>https://keyring.r-lib.org/reference/backend_file.html</loc>
   </url>
   <url>
-    <loc>https://r-lib.github.io/keyring/reference/backend_keyrings.html</loc>
+    <loc>https://keyring.r-lib.org/reference/backend_keyrings.html</loc>
   </url>
   <url>
-    <loc>https://r-lib.github.io/keyring/reference/backend_macos.html</loc>
+    <loc>https://keyring.r-lib.org/reference/backend_macos.html</loc>
   </url>
   <url>
-    <loc>https://r-lib.github.io/keyring/reference/backend_secret_service.html</loc>
+    <loc>https://keyring.r-lib.org/reference/backend_secret_service.html</loc>
   </url>
   <url>
-    <loc>https://r-lib.github.io/keyring/reference/backend_wincred.html</loc>
+    <loc>https://keyring.r-lib.org/reference/backend_wincred.html</loc>
   </url>
   <url>
-    <loc>https://r-lib.github.io/keyring/reference/backends.html</loc>
+    <loc>https://keyring.r-lib.org/reference/backends.html</loc>
   </url>
   <url>
-    <loc>https://r-lib.github.io/keyring/reference/has_keyring_support.html</loc>
+    <loc>https://keyring.r-lib.org/reference/has_keyring_support.html</loc>
   </url>
   <url>
-    <loc>https://r-lib.github.io/keyring/reference/index.html</loc>
+    <loc>https://keyring.r-lib.org/reference/index.html</loc>
   </url>
   <url>
-    <loc>https://r-lib.github.io/keyring/reference/key_get.html</loc>
+    <loc>https://keyring.r-lib.org/reference/key_get.html</loc>
   </url>
   <url>
-    <loc>https://r-lib.github.io/keyring/reference/keyring-package.html</loc>
+    <loc>https://keyring.r-lib.org/reference/keyring-package.html</loc>
   </url>
 </urlset>
