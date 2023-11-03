@@ -5,7 +5,8 @@ Authors@R:
     c(person(given = "Gábor", family = "Csárdi", role = c("aut", "cre"),
              email = "csardi.gabor@gmail.com"),
       person(given = "Alec", family = "Wong", role = "ctb"),
-      person("RStudio", role = "cph"))
+      person("Posit Software, PBC", role = c("cph", "fnd"))
+      )
 Description: Platform independent 'API' to access the operating system's
     credential store. Currently supports: 'Keychain' on 'macOS', Credential
     Store on 'Windows', the Secret Service 'API' on 'Linux', and simple,

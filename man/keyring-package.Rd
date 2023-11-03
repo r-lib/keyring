@@ -83,7 +83,7 @@ Useful links:
 Other contributors:
 \itemize{
   \item Alec Wong [contributor]
-  \item RStudio [copyright holder]
+  \item Posit Software, PBC [copyright holder, funder]
 }
 
 }
