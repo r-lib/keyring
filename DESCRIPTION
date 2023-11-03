@@ -12,7 +12,7 @@ Description: Platform independent 'API' to access the operating system's
     platform independent stores implemented with environment variables or encrypted files.
     Additional storage back-ends can be added easily.
 License: MIT + file LICENSE
-URL: https://r-lib.github.io/keyring/index.html, https://github.com/r-lib/keyring#readme
+URL: https://keyring.r-lib.org/, https://github.com/r-lib/keyring#readme
 BugReports: https://github.com/r-lib/keyring/issues
 RoxygenNote: 7.1.2
 Roxygen: list(markdown = TRUE, r6 = FALSE)
