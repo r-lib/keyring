@@ -1,6 +1,3 @@
-
-context("Windows credential store")
-
 test_that("low level API", {
   skip_if_not_win()
   skip_on_cran()

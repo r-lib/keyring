@@ -1,5 +1,3 @@
-context("Testing encoding retrieval function")
-
 test_that("No option/env var set returns auto", {
   skip_if_not_win()
   withr::local_options(keyring.encoding_windows = NULL)

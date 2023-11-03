@@ -1,6 +1,3 @@
-
-context("macOS keyring")
-
 test_that("specify keyring explicitly", {
   skip_if_not_macos()
   skip_on_cran()

@@ -1,6 +1,3 @@
-
-context("Common API")
-
 withr::local_options(
   keyring_warn_for_env_fallback = FALSE,
   keyring_file_dir = file.path(tempdir(), "keyrings")

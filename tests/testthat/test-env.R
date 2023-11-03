@@ -1,6 +1,3 @@
-
-context("env keyring")
-
 test_that("set, get, delete", {
 
   service <- random_service()

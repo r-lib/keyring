@@ -31,7 +31,7 @@ Suggests:
     callr,
     covr,
     mockery,
-    testthat,
+    testthat (>= 3.0.0),
     withr
 Encoding: UTF-8
 SystemRequirements: Optional: libsecret on Linux (libsecret-1-dev on
@@ -51,3 +51,4 @@ Collate:
     'pass.R'
     'utils.R'
 Config/Needs/website: tidyverse/tidytemplate
+Config/testthat/edition: 3
