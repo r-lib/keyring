@@ -44,6 +44,12 @@ We recommend using pak to install keyring as it will ensure that Linux
 system requirements are automatically installed (for instance Ubuntu
 requires `libsecret-1-dev`, `libssl-dev`, and `libsodium-dev`).
 
+To install the development version from GitHub, use:
+
+``` r
+pak::pak("r-lib/keyring")
+```
+
 ## Usage
 
 The simplest usage only requires `key_set()` and `key_get()`:
