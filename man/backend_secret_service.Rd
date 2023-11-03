@@ -14,8 +14,10 @@ This backend supports multiple keyrings.
 See \link{backend} for the documentation of the individual methods.
 The \code{is_available()} method checks is a Secret Service daemon is
 running on the system, by trying to connect to it. It returns a logical
-scalar, or throws an error, depending on its argument:\preformatted{is_available = function(report_error = FALSE)
-}
+scalar, or throws an error, depending on its argument:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{is_available = function(report_error = FALSE)
+}\if{html}{\out{</div>}}
 
 Argument:
 \itemize{
