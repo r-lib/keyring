@@ -61,16 +61,16 @@ can be defined as well.</p>
 
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>These are the semantics of the various methods:</p><div class="sourceCode"><pre><code><span><span class="fu"><a href="https://rdrr.io/r/base/get.html" class="external-link">get</a></span><span class="op">(</span><span class="va">service</span>, username <span class="op">=</span> <span class="cn">NULL</span>, keyring <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
-<span><span class="fu">get_raw</span><span class="op">(</span><span class="va">service</span>, username <span class="op">=</span> <span class="cn">NULL</span>, keyring <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
-<span><span class="fu">set</span><span class="op">(</span><span class="va">service</span>, username <span class="op">=</span> <span class="cn">NULL</span>, keyring <span class="op">=</span> <span class="cn">NULL</span>, prompt <span class="op">=</span> <span class="st">"Password: "</span><span class="op">)</span></span>
-<span><span class="fu">set_with_value</span><span class="op">(</span><span class="va">service</span>, username <span class="op">=</span> <span class="cn">NULL</span>, password <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>               keyring <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
-<span><span class="fu">set_with_raw_value</span><span class="op">(</span><span class="va">service</span>, username <span class="op">=</span> <span class="cn">NULL</span>, password <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>               keyring <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
-<span><span class="fu">delete</span><span class="op">(</span><span class="va">service</span>, username <span class="op">=</span> <span class="cn">NULL</span>, keyring <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>service <span class="op">=</span> <span class="cn">NULL</span>, keyring <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
-
+    <p>These are the semantics of the various methods:</p>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get</span>(service, <span class="at">username =</span> <span class="cn">NULL</span>, <span class="at">keyring =</span> <span class="cn">NULL</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">get_raw</span>(service, <span class="at">username =</span> <span class="cn">NULL</span>, <span class="at">keyring =</span> <span class="cn">NULL</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set</span>(service, <span class="at">username =</span> <span class="cn">NULL</span>, <span class="at">keyring =</span> <span class="cn">NULL</span>, <span class="at">prompt =</span> <span class="st">"Password: "</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set_with_value</span>(service, <span class="at">username =</span> <span class="cn">NULL</span>, <span class="at">password =</span> <span class="cn">NULL</span>,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>               <span class="at">keyring =</span> <span class="cn">NULL</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">set_with_raw_value</span>(service, <span class="at">username =</span> <span class="cn">NULL</span>, <span class="at">password =</span> <span class="cn">NULL</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>               <span class="at">keyring =</span> <span class="cn">NULL</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">delete</span>(service, <span class="at">username =</span> <span class="cn">NULL</span>, <span class="at">keyring =</span> <span class="cn">NULL</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">list</span>(<span class="at">service =</span> <span class="cn">NULL</span>, <span class="at">keyring =</span> <span class="cn">NULL</span>)</span></code></pre><p></p></div>
 <p>What these functions do:</p><ul><li><p><code><a href="https://rdrr.io/r/base/get.html" class="external-link">get()</a></code> queries the secret in a keyring item.</p></li>
 <li><p><code>get_raw()</code> is similar to <code><a href="https://rdrr.io/r/base/get.html" class="external-link">get()</a></code>, but returns the result as a raw
 vector.</p></li>

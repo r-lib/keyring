@@ -68,15 +68,15 @@ inherit from this class and redefine the <code>get</code>, <code>set</code>, <co
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>See <a href="backend.html">backend</a> for the first set of methods. This is the semantics of the
-keyring management methods:</p><div class="sourceCode"><pre><code><span><span class="fu"><a href="../reference/has_keyring_support.html">keyring_create</a></span><span class="op">(</span><span class="va">keyring</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/has_keyring_support.html">keyring_list</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/has_keyring_support.html">keyring_delete</a></span><span class="op">(</span>keyring <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/has_keyring_support.html">keyring_lock</a></span><span class="op">(</span>keyring <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/has_keyring_support.html">keyring_unlock</a></span><span class="op">(</span>keyring <span class="op">=</span> <span class="cn">NULL</span>, password <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/has_keyring_support.html">keyring_is_locked</a></span><span class="op">(</span>keyring <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
-<span><span class="fu">keyring_default</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu">keyring_set_default</span><span class="op">(</span>keyring <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
-<ul><li><p><code><a href="has_keyring_support.html">keyring_create()</a></code> creates a new keyring.</p></li>
+keyring management methods:</p>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">keyring_create</span>(keyring)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">keyring_list</span>()</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">keyring_delete</span>(<span class="at">keyring =</span> <span class="cn">NULL</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">keyring_lock</span>(<span class="at">keyring =</span> <span class="cn">NULL</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">keyring_unlock</span>(<span class="at">keyring =</span> <span class="cn">NULL</span>, <span class="at">password =</span> <span class="cn">NULL</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">keyring_is_locked</span>(<span class="at">keyring =</span> <span class="cn">NULL</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">keyring_default</span>()</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">keyring_set_default</span>(<span class="at">keyring =</span> <span class="cn">NULL</span>)</span></code></pre><p></p></div><ul><li><p><code><a href="has_keyring_support.html">keyring_create()</a></code> creates a new keyring.</p></li>
 <li><p><code><a href="has_keyring_support.html">keyring_list()</a></code> lists all keyrings.</p></li>
 <li><p><code><a href="has_keyring_support.html">keyring_delete()</a></code> deletes a keyring. It is a good idea to protect
 the default keyring, and/or a non-empty keyring with a password or
