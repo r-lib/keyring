@@ -1,5 +1,7 @@
 # keyring (development version)
 
+* keyring uses safer `*printf()` format strings (Secret Service backend).
+
 # keyring 1.3.1
 
 * No user visible changes.
