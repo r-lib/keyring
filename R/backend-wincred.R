@@ -226,7 +226,6 @@ b_wincred_init <- function(self, private, keyring) {
 
 #' Get a key from a Wincred keyring
 #'
-#' @param backend Backend object.
 #' @param service Service name. Must not be empty.
 #' @param username Username. Might be empty.
 #'

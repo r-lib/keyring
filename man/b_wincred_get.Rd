@@ -22,8 +22,6 @@ b_wincred_get(self, private, service, username, keyring)
 Additionally, users may specify an encoding to use when converting the
 password from a byte-string, for compatibility with other software such as
 python's keyring package. This is done via an option, or an environment variable.}
-
-\item{backend}{Backend object.}
 }
 \description{
 Get a key from a Wincred keyring
