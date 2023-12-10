@@ -185,7 +185,7 @@ GList* keyring_secret_service_get_item(SEXP keyring, SEXP service,
   if (collection) g_object_unref(collection);
   if (attributes) g_hash_table_unref(attributes);
   keyring_secret_service_handle_status("get", TRUE, err);
-  if (errormsg) error(errormsg);
+  if (errormsg) error("%s", errormsg);
 
   return secretlist;
 }
@@ -348,7 +348,7 @@ SEXP keyring_secret_service_list(SEXP keyring, SEXP service) {
   if (secretlist) g_list_free(secretlist);
   if (attributes) g_hash_table_unref(attributes);
   keyring_secret_service_handle_status("list", TRUE, err);
-  if (errormsg) error(errormsg);
+  if (errormsg) error("%s", errormsg);
 
   return result;
 }
