@@ -50,22 +50,22 @@ test_that("mixing options and env vars", {
 })
 
 test_that("auto windows", {
-  mockery::stub(default_backend_auto, "Sys.info", c(sysname = "Windows"))
+  local_mocked_bindings(Sys.info = function(...) c(sysname = "Windows"))
   expect_equal(default_backend_auto(), backend_wincred)
 })
 
 test_that("auto macos", {
-  mockery::stub(default_backend_auto, "Sys.info", c(sysname = "Darwin"))
+  local_mocked_bindings(Sys.info = function(...) c(sysname = "Darwin"))
   expect_equal(default_backend_auto(), backend_macos)
 })
 
 test_that("auto linux", {
-  skip_if_not_linux()  
+  skip_if_not_linux()
   kb <- default_backend()
   expect_true(kb$name == "env" || kb$name == "secret service" || kb$name == "file")
 })
 
 test_that("auto other", {
-  mockery::stub(default_backend_auto, "Sys.info", c(sysname = "Solaris"))
+  local_mocked_bindings(Sys.info = function(...) c(sysname = "Solaris"))
   expect_equal(suppressWarnings(default_backend_auto()), backend_file)
 })

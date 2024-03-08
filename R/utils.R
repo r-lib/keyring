@@ -80,3 +80,6 @@ is_interactive <- function() {
     interactive()
   }
 }
+
+# https://testthat.r-lib.org/reference/local_mocked_bindings.html#base-functions
+Sys.info <- NULL
