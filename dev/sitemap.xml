@@ -1,69 +1,25 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>https://keyring.r-lib.org/dev/CODE_OF_CONDUCT.html</loc>
-  </url>
-  <url>
-    <loc>https://keyring.r-lib.org/dev/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>https://keyring.r-lib.org/dev/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>https://keyring.r-lib.org/dev/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://keyring.r-lib.org/dev/index.html</loc>
-  </url>
-  <url>
-    <loc>https://keyring.r-lib.org/dev/news/index.html</loc>
-  </url>
-  <url>
-    <loc>https://keyring.r-lib.org/dev/reference/b_wincred_decode.html</loc>
-  </url>
-  <url>
-    <loc>https://keyring.r-lib.org/dev/reference/b_wincred_decode_auto.html</loc>
-  </url>
-  <url>
-    <loc>https://keyring.r-lib.org/dev/reference/b_wincred_get.html</loc>
-  </url>
-  <url>
-    <loc>https://keyring.r-lib.org/dev/reference/b_wincred_set_with_raw_value.html</loc>
-  </url>
-  <url>
-    <loc>https://keyring.r-lib.org/dev/reference/backend.html</loc>
-  </url>
-  <url>
-    <loc>https://keyring.r-lib.org/dev/reference/backend_env.html</loc>
-  </url>
-  <url>
-    <loc>https://keyring.r-lib.org/dev/reference/backend_file.html</loc>
-  </url>
-  <url>
-    <loc>https://keyring.r-lib.org/dev/reference/backend_keyrings.html</loc>
-  </url>
-  <url>
-    <loc>https://keyring.r-lib.org/dev/reference/backend_macos.html</loc>
-  </url>
-  <url>
-    <loc>https://keyring.r-lib.org/dev/reference/backend_secret_service.html</loc>
-  </url>
-  <url>
-    <loc>https://keyring.r-lib.org/dev/reference/backend_wincred.html</loc>
-  </url>
-  <url>
-    <loc>https://keyring.r-lib.org/dev/reference/backends.html</loc>
-  </url>
-  <url>
-    <loc>https://keyring.r-lib.org/dev/reference/has_keyring_support.html</loc>
-  </url>
-  <url>
-    <loc>https://keyring.r-lib.org/dev/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://keyring.r-lib.org/dev/reference/key_get.html</loc>
-  </url>
-  <url>
-    <loc>https://keyring.r-lib.org/dev/reference/keyring-package.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://keyring.r-lib.org/dev/CODE_OF_CONDUCT.html</loc></url>
+<url><loc>https://keyring.r-lib.org/dev/LICENSE-text.html</loc></url>
+<url><loc>https://keyring.r-lib.org/dev/LICENSE.html</loc></url>
+<url><loc>https://keyring.r-lib.org/dev/authors.html</loc></url>
+<url><loc>https://keyring.r-lib.org/dev/index.html</loc></url>
+<url><loc>https://keyring.r-lib.org/dev/news/index.html</loc></url>
+<url><loc>https://keyring.r-lib.org/dev/reference/b_wincred_decode.html</loc></url>
+<url><loc>https://keyring.r-lib.org/dev/reference/b_wincred_decode_auto.html</loc></url>
+<url><loc>https://keyring.r-lib.org/dev/reference/b_wincred_get.html</loc></url>
+<url><loc>https://keyring.r-lib.org/dev/reference/b_wincred_set_with_raw_value.html</loc></url>
+<url><loc>https://keyring.r-lib.org/dev/reference/backend.html</loc></url>
+<url><loc>https://keyring.r-lib.org/dev/reference/backend_env.html</loc></url>
+<url><loc>https://keyring.r-lib.org/dev/reference/backend_file.html</loc></url>
+<url><loc>https://keyring.r-lib.org/dev/reference/backend_keyrings.html</loc></url>
+<url><loc>https://keyring.r-lib.org/dev/reference/backend_macos.html</loc></url>
+<url><loc>https://keyring.r-lib.org/dev/reference/backend_secret_service.html</loc></url>
+<url><loc>https://keyring.r-lib.org/dev/reference/backend_wincred.html</loc></url>
+<url><loc>https://keyring.r-lib.org/dev/reference/backends.html</loc></url>
+<url><loc>https://keyring.r-lib.org/dev/reference/has_keyring_support.html</loc></url>
+<url><loc>https://keyring.r-lib.org/dev/reference/index.html</loc></url>
+<url><loc>https://keyring.r-lib.org/dev/reference/key_get.html</loc></url>
+<url><loc>https://keyring.r-lib.org/dev/reference/keyring-package.html</loc></url>
 </urlset>
+
