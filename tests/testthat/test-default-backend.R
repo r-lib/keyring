@@ -50,18 +50,12 @@ test_that("mixing options and env vars", {
 })
 
 test_that("auto windows", {
-  local_mocked_bindings(
-    Sys.info = function() c(sysname = "Windows"),
-    .package = "base"
-  )
+  local_mocked_bindings(Sys.info = function() c(sysname = "Windows"))
   expect_equal(default_backend_auto(), backend_wincred)
 })
 
 test_that("auto macos", {
-  local_mocked_bindings(
-    Sys.info = function() c(sysname = "Darwin"),
-    .package = "base"
-  )
+  local_mocked_bindings(Sys.info = function() c(sysname = "Darwin"))
   expect_equal(default_backend_auto(), backend_macos)
 })
 
@@ -72,9 +66,6 @@ test_that("auto linux", {
 })
 
 test_that("auto other", {
-  local_mocked_bindings(
-    Sys.info = function() c(sysname = "Solaris"),
-    .package = "base"
-  )
+  local_mocked_bindings(Sys.info = function() c(sysname = "Solaris"))
   expect_equal(suppressWarnings(default_backend_auto()), backend_file)
 })
