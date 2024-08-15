@@ -51,6 +51,7 @@ Collate:
     'backend-wincred.R'
     'default_backend.R'
     'keyring-package.R'
+    'mocks.R'
     'package.R'
     'pass.R'
     'utils.R'
