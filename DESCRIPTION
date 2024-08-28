@@ -31,7 +31,6 @@ Imports:
 Suggests:
     callr,
     covr,
-    mockery,
     testthat (>= 3.0.0),
     withr
 Config/Needs/website: tidyverse/tidytemplate
@@ -52,6 +51,7 @@ Collate:
     'backend-wincred.R'
     'default_backend.R'
     'keyring-package.R'
+    'mocks.R'
     'package.R'
     'pass.R'
     'utils.R'
