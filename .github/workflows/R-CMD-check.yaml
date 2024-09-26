@@ -24,6 +24,7 @@ jobs:
       fail-fast: false
       matrix:
         config:
+          - {os: macos-15,       r: 'release'}
           - {os: macos-latest,   r: 'release'}
 
           - {os: windows-latest, r: 'release'}
