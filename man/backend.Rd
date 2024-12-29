@@ -21,6 +21,7 @@ set_with_raw_value(service, username = NULL, password = NULL,
                keyring = NULL)
 delete(service, username = NULL, keyring = NULL)
 list(service = NULL, keyring = NULL)
+list_raw(service = NULL, keyring = NULL)
 }\if{html}{\out{</div>}}
 
 What these functions do:
@@ -36,6 +37,7 @@ value.
 byte sequence of a raw vector.
 \item \code{delete()} remotes a keyring item.
 \item \code{list()} lists keyring items.
+\item \code{list_raw()} lists keyring items, also as raw vectors.
 }
 
 The arguments:

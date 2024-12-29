@@ -8,6 +8,7 @@
 \alias{key_set_with_raw_value}
 \alias{key_delete}
 \alias{key_list}
+\alias{key_list_raw}
 \title{Operations on keys}
 \usage{
 key_get(service, username = NULL, keyring = NULL)
@@ -28,6 +29,8 @@ key_set_with_raw_value(
 key_delete(service, username = NULL, keyring = NULL)
 
 key_list(service = NULL, keyring = NULL)
+
+key_list_raw(service = NULL, keyring = NULL)
 }
 \arguments{
 \item{service}{Service name, a character scalar.}
@@ -50,7 +53,16 @@ in non-interactive mode.}
 confidential information that was stored in the key.
 
 \code{key_list} returns a list of keys, i.e. service names and usernames,
-in a data frame.
+in a data frame with column names \code{service} and \code{username}. If a
+service or user name contains a zero byte, which is not allowed in an
+R string, that entry is shown as \code{NA} and a warning (of class
+\code{keyring_warn_zero_byte_keys}) is thrown.  You can use the
+\code{key_list_raw()} function to query these keys.
+
+\code{key_list_raw} is similar to \code{key_list} but returns service and
+usernames as raw vectors. This is useful if some service or user
+names) contain zero bytes. All column names: \code{service}, \code{username},
+\code{service_raw}, \code{username_raw}.
 }
 \description{
 These functions manipulate keys in a keyring. You can think of a keyring
@@ -79,6 +91,10 @@ vector.
 
 \code{key_list} lists all keys of a keyring, or the keys for a certain
 service (if \code{service} is not \code{NULL}).
+
+\code{key_list_raw()} is like \code{key_list()} but also returns the keys as raw
+values. This is useful if your keys have bytes that cannot appear
+in R strings, e.g. a zero byte.
 \subsection{Encodings}{
 
 On Windows, if required, an encoding can be specified using either

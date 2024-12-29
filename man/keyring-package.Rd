@@ -2,7 +2,6 @@
 % Please edit documentation in R/keyring-package.R, R/package.R
 \docType{package}
 \name{keyring-package}
-\alias{keyring}
 \alias{keyring-package}
 \title{keyring: Access the System Credential Store from R}
 \description{
@@ -39,12 +38,12 @@ keyring store of the operating system. This means the keys persist beyond
 the termination of and R session. Specifically, you can define a key
 once, and then read the key value in completely independent R sessions.
 \itemize{
-\item Setting a secret interactively: \code{\link[=key_set]{key_set()}}
+\item Setting a secret interactively: \code{\link[=key_set]{key_set()}}.
 \item Setting a secret from a script, i.e. non-interactively:
-\code{\link[=key_set_with_value]{key_set_with_value()}}
-\item Reading a secret: \code{\link[=key_get]{key_get()}}
-\item Listing secrets: \code{\link[=key_list]{key_list()}}
-\item Deleting a secret: \code{\link[=key_delete]{key_delete()}}
+\code{\link[=key_set_with_value]{key_set_with_value()}}.
+\item Reading a secret: \code{\link[=key_get]{key_get()}}, \code{\link[=key_get_raw]{key_get_raw()}}.
+\item Listing secrets: \code{\link[=key_list]{key_list()}}, \code{\link[=key_list_raw]{key_list_raw()}}.
+\item Deleting a secret: \code{\link[=key_delete]{key_delete()}}.
 }
 }
 
