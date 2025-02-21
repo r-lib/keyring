@@ -15,11 +15,10 @@ Description: Platform independent 'API' to access the operating system's
 License: MIT + file LICENSE
 URL: https://keyring.r-lib.org/, https://github.com/r-lib/keyring
 BugReports: https://github.com/r-lib/keyring/issues
-Depends: 
+Depends:
     R (>= 3.6)
 Imports:
     askpass,
-    assertthat,
     filelock,
     openssl,
     R6,
@@ -40,7 +39,9 @@ Roxygen: list(markdown = TRUE, r6 = FALSE)
 RoxygenNote: 7.2.3
 SystemRequirements: Optional: libsecret on Linux (libsecret-1-dev on
     Debian/Ubuntu, libsecret-devel on Fedora/CentOS)
-Collate: 
+Collate:
+    'aaa-import-standalone-rstudio-detect.R'
+    'aaassertthat.R'
     'api.R'
     'assertions.R'
     'backend-class.R'
@@ -54,4 +55,5 @@ Collate:
     'mocks.R'
     'package.R'
     'pass.R'
+    'standalone-errors.R'
     'utils.R'
