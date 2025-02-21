@@ -175,7 +175,7 @@ test_that("helper functions work", {
 
   expect_identical(b_file_split_string(secret), secret)
   expect_true(
-    assertthat::is.string(
+    is_string(
       split_key <- b_file_split_string(long_secret)
     )
   )
