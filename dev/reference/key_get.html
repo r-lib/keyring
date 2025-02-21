@@ -59,7 +59,9 @@ as a secure key-value store.</p>
 <span></span>
 <span><span class="fu">key_delete</span><span class="op">(</span><span class="va">service</span>, username <span class="op">=</span> <span class="cn">NULL</span>, keyring <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">key_list</span><span class="op">(</span>service <span class="op">=</span> <span class="cn">NULL</span>, keyring <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">key_list</span><span class="op">(</span>service <span class="op">=</span> <span class="cn">NULL</span>, keyring <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">key_list_raw</span><span class="op">(</span>service <span class="op">=</span> <span class="cn">NULL</span>, keyring <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -96,7 +98,15 @@ in non-interactive mode.</p></dd>
     <p><code>key_get</code> returns a character scalar, the password or other
 confidential information that was stored in the key.</p>
 <p><code>key_list</code> returns a list of keys, i.e. service names and usernames,
-in a data frame.</p>
+in a data frame with column names <code>service</code> and <code>username</code>. If a
+service or user name contains a zero byte, which is not allowed in an
+R string, that entry is shown as <code>NA</code> and a warning (of class
+<code>keyring_warn_zero_byte_keys</code>) is thrown.  You can use the
+<code>key_list_raw()</code> function to query these keys.</p>
+<p><code>key_list_raw</code> is similar to <code>key_list</code> but returns service and
+usernames as raw vectors. This is useful if some service or user
+names) contain zero bytes. All column names: <code>service</code>, <code>username</code>,
+<code>service_raw</code>, <code>username_raw</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -115,7 +125,10 @@ a key in the keyring.</p>
 vector.</p>
 <p><code>key_delete</code> deletes a key.</p>
 <p><code>key_list</code> lists all keys of a keyring, or the keys for a certain
-service (if <code>service</code> is not <code>NULL</code>).</p><div class="section">
+service (if <code>service</code> is not <code>NULL</code>).</p>
+<p><code>key_list_raw()</code> is like <code>key_list()</code> but also returns the keys as raw
+values. This is useful if your keys have bytes that cannot appear
+in R strings, e.g. a zero byte.</p><div class="section">
 <h3 id="encodings">Encodings<a class="anchor" aria-label="anchor" href="#encodings"></a></h3>
 
 

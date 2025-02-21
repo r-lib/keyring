@@ -58,7 +58,8 @@ can be defined as well.</p>
 <span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="fu">set_with_raw_value</span>(service, <span class="at">username =</span> <span class="cn">NULL</span>, <span class="at">password =</span> <span class="cn">NULL</span>,</span>
 <span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>               <span class="at">keyring =</span> <span class="cn">NULL</span>)</span>
 <span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="fu">delete</span>(service, <span class="at">username =</span> <span class="cn">NULL</span>, <span class="at">keyring =</span> <span class="cn">NULL</span>)</span>
-<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="fu">list</span>(<span class="at">service =</span> <span class="cn">NULL</span>, <span class="at">keyring =</span> <span class="cn">NULL</span>)</span></code></pre><p></p></div>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="fu">list</span>(<span class="at">service =</span> <span class="cn">NULL</span>, <span class="at">keyring =</span> <span class="cn">NULL</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="fu">list_raw</span>(<span class="at">service =</span> <span class="cn">NULL</span>, <span class="at">keyring =</span> <span class="cn">NULL</span>)</span></code></pre><p></p></div>
 <p>What these functions do:</p><ul><li><p><code><a href="https://rdrr.io/r/base/get.html" class="external-link">get()</a></code> queries the secret in a keyring item.</p></li>
 <li><p><code>get_raw()</code> is similar to <code><a href="https://rdrr.io/r/base/get.html" class="external-link">get()</a></code>, but returns the result as a raw
 vector.</p></li>
@@ -70,6 +71,7 @@ value.</p></li>
 byte sequence of a raw vector.</p></li>
 <li><p><code>delete()</code> remotes a keyring item.</p></li>
 <li><p><code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code> lists keyring items.</p></li>
+<li><p><code>list_raw()</code> lists keyring items, also as raw vectors.</p></li>
 </ul><p>The arguments:</p><ul><li><p><code>service</code> String, the name of a service. This is used to find the
 secret later.</p></li>
 <li><p><code>username</code> String, the username associated with a secret. It can be
