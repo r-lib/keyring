@@ -23,7 +23,7 @@ test_that("creating keychains", {
 
   keyring <- random_keyring()
   kb <- backend_macos$new()
-  
+
   ## To avoid an interactive password
   kb$.__enclos_env__$private$keyring_create_direct(keyring, "secret123!")
 
@@ -154,4 +154,60 @@ test_that("lock/unlock keyrings", {
   expect_false(list$locked[match(keyring, list$keyring)])
 
   expect_silent(kb$keyring_delete(keyring = keyring))
+})
+
+test_that("zero bytes in keys", {
+  # warning for zero bytes
+  ffun <- function(...) {
+    list(
+      c("foo", NA_character_),
+      c("bar", "baz"),
+      list(charToRaw("foo"), as.raw(c(3,2,1,0))),
+      list(charToRaw("bar"), charToRaw("baz"))
+    )
+  }
+  fake(b_macos_list, ".Call", ffun)
+  fake(b_macos_list_raw, ".Call", ffun)
+
+  expect_snapshot({
+    b_macos_list(NULL, list(keyring_file = function(...) NULL))
+    b_macos_list_raw(NULL, list(keyring_file = function(...) NULL))
+  })
+
+  # ---------------------
+
+  ffun <- function(...) {
+    list(
+      c("foo", NA_character_),
+      c("bar", NA_character_),
+      list(charToRaw("foo"), as.raw(c(3,2,1,0))),
+      list(charToRaw("bar"), as.raw(c(1,2,0,1,2)))
+    )
+  }
+  fake(b_macos_list, ".Call", ffun)
+  fake(b_macos_list_raw, ".Call", ffun)
+
+  expect_snapshot({
+    b_macos_list(NULL, list(keyring_file = function(...) NULL))
+    b_macos_list_raw(NULL, list(keyring_file = function(...) NULL))
+  })
+
+  # ---------------------
+
+  ffun <- function(...) {
+    list(
+      c("foo", "baz"),
+      c("bar", NA_character_),
+      list(charToRaw("foo"), charToRaw("baz")),
+      list(charToRaw("bar"), as.raw(c(3,2,1,0)))
+    )
+  }
+  fake(b_macos_list, ".Call", ffun)
+  fake(b_macos_list_raw, ".Call", ffun)
+
+  expect_snapshot({
+    b_macos_list(NULL, list(keyring_file = function(...) NULL))
+    b_macos_list_raw(NULL, list(keyring_file = function(...) NULL))
+  })
+
 })
