@@ -111,27 +111,9 @@ it will be read in interactively.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="backends.html">default_backend</a></span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;keyring backend: ‘file’&gt;</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Store secrets in encrypted files.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> system</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $get                  query a key from the keyring</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $set                  set a key in the keyring (interactive)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $set_with_value       set a key in the keyring</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $delete               delete a key</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $list                 list keys in a keyring</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $list_raw             list keys in a keyring as raw vectors</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $has_keyring_support  TRUE if multiple keyrings are supported</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $keyring_create       create new keyring</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $keyring_list         list all keyrings</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $keyring_delete       delete a keyring</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $keyring_lock         lock a keyring</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $keyring_unlock       unlock a keyring</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $keyring_is_locked    check if a keyring is locked</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $keyring_default      query the default keyring</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $keyring_set_default  set the default keyring</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in tryCatch({    kb &lt;- backend_file$new()    kb$list()    TRUE}, function(err) FALSE):</span> condition handlers must be specified with a condition class</span>
 <span class="r-in"><span><span class="fu">has_keyring_support</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in tryCatch({    kb &lt;- backend_file$new()    kb$list()    TRUE}, function(err) FALSE):</span> condition handlers must be specified with a condition class</span>
 <span class="r-in"><span><span class="va"><a href="backend_env.html">backend_env</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="fu">has_keyring_support</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
 <span class="r-in"><span></span></span>
