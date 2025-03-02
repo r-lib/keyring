@@ -67,5 +67,5 @@ test_that("auto linux", {
 
 test_that("auto other", {
   local_mocked_bindings(Sys.info = function() c(sysname = "Solaris"))
-  expect_equal(suppressWarnings(default_backend_auto()), backend_file)
+  expect_equal(suppressWarnings(default_backend_auto()), backend_env)
 })
