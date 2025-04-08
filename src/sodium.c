@@ -144,12 +144,13 @@ SEXP rsodium_crypto_secret_encrypt(SEXP message, SEXP key, SEXP nonce) {
 
   R_xlen_t mlen = XLENGTH(message);
   R_xlen_t clen = mlen + crypto_secretbox_MACBYTES;
-  SEXP res = Rf_allocVector(RAWSXP, clen);
+  SEXP res = PROTECT(Rf_allocVector(RAWSXP, clen));
 
   if (crypto_secretbox_easy(RAW(res), RAW(message), mlen, RAW(nonce), RAW(key))) {
     Rf_error("Failed to encrypt");
   }
 
+  UNPROTECT(1);
   return res;
 }
 
@@ -163,12 +164,13 @@ SEXP rsodium_crypto_secret_decrypt(SEXP cipher, SEXP key, SEXP nonce) {
 
   R_xlen_t clen = XLENGTH(cipher);
   R_xlen_t mlen = clen - crypto_secretbox_MACBYTES;
-  SEXP res = Rf_allocVector(RAWSXP, mlen);
+  SEXP res = PROTECT(Rf_allocVector(RAWSXP, mlen));
 
   if (crypto_secretbox_open_easy(RAW(res), RAW(cipher), clen, RAW(nonce), RAW(key))) {
     Rf_error("Failed to decrypt");
   }
 
+  UNPROTECT(1);
   return res;
 }
 
@@ -188,8 +190,11 @@ SEXP rsodium_crypto_generichash(SEXP buf, SEXP size, SEXP key){
     }
   }
 
-  SEXP res = Rf_allocVector(RAWSXP, outlen);
-  if (crypto_generichash(RAW(res), outlen, RAW(buf), XLENGTH(buf), keyval, keysize))
+  SEXP res = PROTECT(Rf_allocVector(RAWSXP, outlen));
+  if (crypto_generichash(RAW(res), outlen, RAW(buf), XLENGTH(buf), keyval, keysize)) {
     Rf_error("Failed to hash");
+  }
+
+  UNPROTECT(1);
   return res;
 }
