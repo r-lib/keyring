@@ -392,3 +392,10 @@ struct randombytes_implementation randombytes_sysrandom_implementation = {
     SODIUM_C99(.buf =) randombytes_sysrandom_buf,
     SODIUM_C99(.close =) randombytes_sysrandom_close
 };
+
+void
+randombytes_buf(void * const buf, const size_t size)
+{
+    randombytes_sysrandom_stir();
+    randombytes_sysrandom_buf(buf, size);
+}

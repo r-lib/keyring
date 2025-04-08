@@ -55,5 +55,6 @@ Collate:
     'mocks.R'
     'package.R'
     'pass.R'
+    'sodium.R'
     'standalone-errors.R'
     'utils.R'

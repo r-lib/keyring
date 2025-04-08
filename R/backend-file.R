@@ -394,7 +394,7 @@ b__file_keyring_create_direct <- function(self, private, keyring, password, prom
   with_lock(file_name,
     private$keyring_write_file(
       keyring,
-      nonce = sodium::random(24L),
+      nonce = sodium_random(24L),
       items = list(),
       key = key
     )
@@ -430,7 +430,7 @@ b__file_keyring_read_file <- function(self, private, keyring) {
   )
 
   list(
-    nonce = sodium::hex2bin(yml[["keyring_info"]][["nonce"]]),
+    nonce = sodium_hex2bin(yml[["keyring_info"]][["nonce"]]),
     items = lapply(yml[["items"]], b__file_validate_item),
     check = yml[["keyring_info"]][["integrity_check"]],
     stamp = stamp
@@ -451,7 +451,7 @@ b__file_keyring_write_file <- function(self, private, keyring, nonce, items,
       list(
         keyring_info = list(
           keyring_version = as.character(getNamespaceVersion(.packageName)),
-          nonce = sodium::bin2hex(nonce),
+          nonce = sodium_bin2hex(nonce),
           integrity_check = b_file_secret_encrypt(
             paste(sample(letters, 22L, replace = TRUE), collapse = ""),
             nonce,
@@ -556,13 +556,13 @@ b__file_get_cache <- function(self, private, keyring) {
 b_file_secret_encrypt <- function(secret, nonce, key) {
 
   check_for_libsodium()
-  res <- sodium::data_encrypt(
+  res <- sodium_data_encrypt(
     charToRaw(secret),
     key,
     nonce
   )
 
-  b_file_split_string(sodium::bin2hex(res))
+  b_file_split_string(sodium_bin2hex(res))
 }
 
 b_file_secret_decrypt <- function(secret, nonce, key) {
@@ -570,7 +570,7 @@ b_file_secret_decrypt <- function(secret, nonce, key) {
   check_for_libsodium()
   rawToChar(
     sodium::data_decrypt(
-      sodium::hex2bin(b_file_merge_string(secret)),
+      sodium_hex2bin(b_file_merge_string(secret)),
       key,
       nonce
     )
