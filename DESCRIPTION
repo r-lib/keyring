@@ -37,23 +37,3 @@ Roxygen: list(markdown = TRUE, r6 = FALSE)
 RoxygenNote: 7.3.2
 SystemRequirements: Optional: libsecret on Linux (libsecret-1-dev on
     Debian/Ubuntu, libsecret-devel on Fedora/CentOS)
-Collate:
-    'aaa-import-standalone-rstudio-detect.R'
-    'aaassertthat.R'
-    'api.R'
-    'assertions.R'
-    'backend-class.R'
-    'backend-env.R'
-    'backend-file.R'
-    'backend-macos.R'
-    'backend-secret-service.R'
-    'backend-wincred.R'
-    'default_backend.R'
-    'keyring-package.R'
-    'mocks.R'
-    'package.R'
-    'pass.R'
-    'rappdirs.R'
-    'sodium.R'
-    'standalone-errors.R'
-    'utils.R'
