@@ -33,6 +33,13 @@ SEXP keyring_secret_service_lock_keyring(SEXP);
 SEXP keyring_secret_service_unlock_keyring(SEXP, SEXP);
 SEXP keyring_secret_service_is_locked_keyring(SEXP);
 
+SEXP rsodium_randombytes_buf(SEXP);
+SEXP rsodium_bin2hex(SEXP bin);
+SEXP rsodium_hex2bin(SEXP hex, SEXP ignore);
+SEXP rsodium_crypto_secret_encrypt(SEXP message, SEXP key, SEXP nonce);
+SEXP rsodium_crypto_secret_decrypt(SEXP cipher, SEXP key, SEXP nonce);
+SEXP rsodium_crypto_generichash(SEXP buf, SEXP size, SEXP key);
+
 static const R_CallMethodDef callMethods[]  = {
   { "keyring_macos_get",    (DL_FUNC) &keyring_macos_get,            3 },
   { "keyring_macos_set",    (DL_FUNC) &keyring_macos_set,            4 },
@@ -78,6 +85,19 @@ static const R_CallMethodDef callMethods[]  = {
     (DL_FUNC) &keyring_secret_service_unlock_keyring, 2 },
   { "keyring_secret_service_is_locked_keyring",
     (DL_FUNC) &keyring_secret_service_is_locked_keyring, 1 },
+
+  { "rsodium_randombytes_buf",
+    (DL_FUNC) &rsodium_randombytes_buf, 1 },
+  { "rsodium_bin2hex",
+    (DL_FUNC) &rsodium_bin2hex, 1 },
+  { "rsodium_hex2bin",
+    (DL_FUNC) &rsodium_hex2bin, 2 },
+  { "rsodium_crypto_secret_encrypt",
+    (DL_FUNC) &rsodium_crypto_secret_encrypt, 3 },
+  { "rsodium_crypto_secret_decrypt",
+    (DL_FUNC) &rsodium_crypto_secret_decrypt, 3 },
+  { "rsodium_crypto_generichash",
+    (DL_FUNC) &rsodium_crypto_generichash, 3 },
 
   { NULL, NULL, 0 }
 };
