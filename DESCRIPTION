@@ -22,7 +22,6 @@ Imports:
     filelock,
     openssl,
     R6,
-    rappdirs,
     tools,
     utils,
     yaml
@@ -54,6 +53,7 @@ Collate:
     'mocks.R'
     'package.R'
     'pass.R'
+    'rappdirs.R'
     'sodium.R'
     'standalone-errors.R'
     'utils.R'

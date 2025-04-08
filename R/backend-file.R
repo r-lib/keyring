@@ -404,8 +404,10 @@ b__file_keyring_create_direct <- function(self, private, keyring, password, prom
 
 b__file_keyring_file <- function(self, private, keyring) {
   keyring <- keyring %||% private$keyring
-  keyring_dir <- getOption("keyring_file_dir",
-                           rappdirs::user_config_dir("r-keyring"))
+  keyring_dir <- getOption(
+    "keyring_file_dir",
+    user_config_dir("r-keyring")
+  )
   file.path(keyring_dir, paste0(keyring, ".keyring"))
 }
 
