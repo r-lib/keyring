@@ -17,6 +17,7 @@ void randombytes_buf(void * const buf, const size_t size);
 #define SODIUM_EXPORT
 #define SODIUM_MIN(A, B) ((A) < (B) ? (A) : (B))
 #define SODIUM_SIZE_MAX SODIUM_MIN(UINT64_MAX, SIZE_MAX)
+#define randombytes_BYTES_MAX SODIUM_MIN(SODIUM_SIZE_MAX, 0xffffffffUL)
 #define COMPILER_ASSERT(X) (void) sizeof(char[(X) ? 1 : -1])
 
 #ifndef SODIUM_C99
