@@ -33,6 +33,8 @@ SEXP keyring_secret_service_lock_keyring(SEXP);
 SEXP keyring_secret_service_unlock_keyring(SEXP, SEXP);
 SEXP keyring_secret_service_is_locked_keyring(SEXP);
 
+SEXP sodium_randombytes_buf(SEXP);
+
 static const R_CallMethodDef callMethods[]  = {
   { "keyring_macos_get",    (DL_FUNC) &keyring_macos_get,            3 },
   { "keyring_macos_set",    (DL_FUNC) &keyring_macos_set,            4 },
@@ -78,6 +80,9 @@ static const R_CallMethodDef callMethods[]  = {
     (DL_FUNC) &keyring_secret_service_unlock_keyring, 2 },
   { "keyring_secret_service_is_locked_keyring",
     (DL_FUNC) &keyring_secret_service_is_locked_keyring, 1 },
+
+  { "sodium_randombytes_buf",
+    (DL_FUNC) &sodium_randombytes_buf, 1 },
 
   { NULL, NULL, 0 }
 };
