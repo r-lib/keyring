@@ -373,7 +373,6 @@ b_file_keyring_set_default <- function(self, private, keyring) {
 
 b__file_keyring_create_direct <- function(self, private, keyring, password, prompt) {
 
-  check_for_libsodium()
   keyring <- keyring %||% private$keyring
   prompt <- prompt %||% "Keyring password: "
   file_name <- private$keyring_file(keyring)
@@ -412,7 +411,6 @@ b__file_keyring_file <- function(self, private, keyring) {
 
 b__file_keyring_read_file <- function(self, private, keyring) {
 
-  check_for_libsodium()
   keyring <- keyring %||% private$keyring
   file_name <- private$keyring_file(keyring)
 
@@ -440,7 +438,6 @@ b__file_keyring_read_file <- function(self, private, keyring) {
 b__file_keyring_write_file <- function(self, private, keyring, nonce, items,
   key) {
 
-  check_for_libsodium()
   keyring <- keyring %||% private$keyring
   file_name <- private$keyring_file(keyring)
   nonce <- nonce %||% private$get_cache(keyring)$nonce
@@ -498,11 +495,10 @@ b__file_is_set_keyring_pass <- function(self, private, keyring) {
 
 b__file_set_keyring_pass <- function(self, private, key, keyring) {
 
-  check_for_libsodium()
   key <- key %||% get_pass("Keyring password: ")
   if (is.null(key)) stop("Aborted setting keyring password")
   assert_that(is_string(key))
-  key <- sodium::hash(charToRaw(key))
+  key <- sodium_hash(charToRaw(key))
 
   kr_env <- b_file_keyring_env(private$keyring_file(keyring))
 
@@ -555,7 +551,6 @@ b__file_get_cache <- function(self, private, keyring) {
 
 b_file_secret_encrypt <- function(secret, nonce, key) {
 
-  check_for_libsodium()
   res <- sodium_data_encrypt(
     charToRaw(secret),
     key,
@@ -567,7 +562,6 @@ b_file_secret_encrypt <- function(secret, nonce, key) {
 
 b_file_secret_decrypt <- function(secret, nonce, key) {
 
-  check_for_libsodium()
   rawToChar(
     sodium_data_decrypt(
       sodium_hex2bin(b_file_merge_string(secret)),
@@ -657,43 +651,4 @@ with_lock <- function(file, expr) {
   if (is.null(l)) stop("Cannot lock keyring file")
   on.exit(filelock::unlock(l), add = TRUE)
   expr
-}
-
-check_for_libsodium <- function() {
-  if ("sodium" %in% loadedNamespaces()) return()
-
-  tryCatch(
-    find.package("sodium"),
-    error = function(err) {
-      stop(
-        "The 'file' keyring backend needs the sodium package, ",
-        "please install it"
-      )
-    }
-  )
-
-  tryCatch(
-    loadNamespace("sodium"),
-    error = function(err) {
-      if (Sys.info()[["sysname"]] == "Linux") {
-        stop(
-          call. = FALSE,
-          "Cannot load the sodium package, please make sure that its ",
-          "system libraries are installed.\n",
-          "On Debian and Ubuntu systems you probably need the ",
-          "'libsodium23' package.\n",
-          "On Fedora, CentOS, RedHat and other RPM systems you need the ",
-          "libsodium package. \n",
-          "Error: ", conditionMessage(err)
-        )
-      } else {
-        stop(
-          call. = FALSE,
-          "Cannot load the sodium package, please make sure that its ",
-          "system libraries are installed. \n",
-          "Error: ", conditionMessage(err)
-        )
-      }
-    }
-  )
 }

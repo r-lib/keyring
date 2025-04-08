@@ -42,7 +42,7 @@ pak::pak("keyring")
 
 We recommend using pak to install keyring as it will ensure that Linux
 system requirements are automatically installed (for instance Ubuntu
-requires `libsecret-1-dev`, `libssl-dev`, and `libsodium-dev`).
+requires `libsecret-1-dev` and `libssl-dev`).
 
 To install the development version from GitHub, use:
 

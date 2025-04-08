@@ -23,7 +23,6 @@ Imports:
     openssl,
     R6,
     rappdirs,
-    sodium,
     tools,
     utils,
     yaml

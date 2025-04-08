@@ -38,3 +38,11 @@ sodium_data_decrypt <- function (bin, key, nonce = attr(bin, "nonce")) {
   )
   .Call(rsodium_crypto_secret_decrypt, bin, key, nonce)
 }
+
+sodium_hash <- function (buf, key = NULL, size = 32) {
+  assert_that(
+    is.raw(buf),
+    is.null(key) || is.raw(key)
+  )
+  .Call(rsodium_crypto_generichash, buf, size, key)
+}

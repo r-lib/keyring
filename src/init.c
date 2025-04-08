@@ -38,6 +38,7 @@ SEXP rsodium_bin2hex(SEXP bin);
 SEXP rsodium_hex2bin(SEXP hex, SEXP ignore);
 SEXP rsodium_crypto_secret_encrypt(SEXP message, SEXP key, SEXP nonce);
 SEXP rsodium_crypto_secret_decrypt(SEXP cipher, SEXP key, SEXP nonce);
+SEXP rsodium_crypto_generichash(SEXP buf, SEXP size, SEXP key);
 
 static const R_CallMethodDef callMethods[]  = {
   { "keyring_macos_get",    (DL_FUNC) &keyring_macos_get,            3 },
@@ -95,6 +96,8 @@ static const R_CallMethodDef callMethods[]  = {
     (DL_FUNC) &rsodium_crypto_secret_encrypt, 3 },
   { "rsodium_crypto_secret_decrypt",
     (DL_FUNC) &rsodium_crypto_secret_decrypt, 3 },
+  { "rsodium_crypto_generichash",
+    (DL_FUNC) &rsodium_crypto_generichash, 3 },
 
   { NULL, NULL, 0 }
 };

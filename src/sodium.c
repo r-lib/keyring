@@ -6,6 +6,7 @@
 
 #include "sodium.h"
 #include "crypto_secretbox.h"
+#include "crypto_generichash.h"
 
 char *
 sodium_bin2hex(char *const hex, const size_t hex_maxlen,
@@ -127,7 +128,7 @@ SEXP rsodium_hex2bin(SEXP hex, SEXP ignore) {
     free(bin);
     Rf_error("Overflow error, failed to parse hex.");
   }
-  SEXP res = allocVector(RAWSXP, bin_len);
+  SEXP res = Rf_allocVector(RAWSXP, bin_len);
   memcpy(RAW(res), bin, bin_len);
   free(bin);
   return res;
@@ -168,5 +169,27 @@ SEXP rsodium_crypto_secret_decrypt(SEXP cipher, SEXP key, SEXP nonce) {
     Rf_error("Failed to decrypt");
   }
 
+  return res;
+}
+
+SEXP rsodium_crypto_generichash(SEXP buf, SEXP size, SEXP key){
+  int outlen = Rf_asInteger(size);
+  if (outlen < crypto_generichash_BYTES_MIN || outlen > crypto_generichash_BYTES_MAX) {
+    Rf_error("Invalid output length, must be in between %d and %d", crypto_generichash_BYTES_MIN, crypto_generichash_BYTES_MAX);
+  }
+
+  unsigned char *keyval = NULL;
+  int keysize = 0;
+  if (key != R_NilValue){
+    keysize = LENGTH(key);
+    keyval = RAW(key);
+    if(keysize < crypto_generichash_KEYBYTES_MIN || keysize > crypto_generichash_KEYBYTES_MAX) {
+      Rf_error("Invalid key size, must be between %d and %d bytes", crypto_generichash_KEYBYTES_MIN, crypto_generichash_KEYBYTES_MAX);
+    }
+  }
+
+  SEXP res = Rf_allocVector(RAWSXP, outlen);
+  if (crypto_generichash(RAW(res), outlen, RAW(buf), XLENGTH(buf), keyval, keysize))
+    Rf_error("Failed to hash");
   return res;
 }
