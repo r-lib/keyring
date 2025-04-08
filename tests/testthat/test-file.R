@@ -170,8 +170,8 @@ test_that("helper functions work", {
 
   secret <- random_password()
   long_secret <- random_string(500L)
-  nonce <- sodium::random(24L)
-  password <- sodium::hash(charToRaw(random_password()))
+  nonce <- sodium_random(24L)
+  password <- sodium_hash(charToRaw(random_password()))
 
   expect_identical(b_file_split_string(secret), secret)
   expect_true(
