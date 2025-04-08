@@ -134,10 +134,12 @@ SEXP rsodium_hex2bin(SEXP hex, SEXP ignore) {
 }
 
 SEXP rsodium_crypto_secret_encrypt(SEXP message, SEXP key, SEXP nonce) {
-  if(LENGTH(key) != crypto_secretbox_KEYBYTES)
+  if(LENGTH(key) != crypto_secretbox_KEYBYTES) {
     Rf_error("Invalid key: must be exactly %d bytes", crypto_secretbox_KEYBYTES);
-  if(LENGTH(nonce) != crypto_secretbox_NONCEBYTES)
+  }
+  if(LENGTH(nonce) != crypto_secretbox_NONCEBYTES) {
     Rf_error("Invalid nonce: must be exactly %d bytes", crypto_secretbox_NONCEBYTES);
+  }
 
   R_xlen_t mlen = XLENGTH(message);
   R_xlen_t clen = mlen + crypto_secretbox_MACBYTES;
@@ -145,6 +147,25 @@ SEXP rsodium_crypto_secret_encrypt(SEXP message, SEXP key, SEXP nonce) {
 
   if (crypto_secretbox_easy(RAW(res), RAW(message), mlen, RAW(nonce), RAW(key))) {
     Rf_error("Failed to encrypt");
+  }
+
+  return res;
+}
+
+SEXP rsodium_crypto_secret_decrypt(SEXP cipher, SEXP key, SEXP nonce) {
+  if(LENGTH(key) != crypto_secretbox_KEYBYTES) {
+    Rf_error("Invalid key. Key must be exactly %d bytes", crypto_secretbox_KEYBYTES);
+  }
+  if(LENGTH(nonce) != crypto_secretbox_NONCEBYTES) {
+    Rf_error("Invalid key. Key must be exactly %d bytes", crypto_secretbox_NONCEBYTES);
+  }
+
+  R_xlen_t clen = XLENGTH(cipher);
+  R_xlen_t mlen = clen - crypto_secretbox_MACBYTES;
+  SEXP res = Rf_allocVector(RAWSXP, mlen);
+
+  if (crypto_secretbox_open_easy(RAW(res), RAW(cipher), clen, RAW(nonce), RAW(key))) {
+    Rf_error("Failed to decrypt");
   }
 
   return res;

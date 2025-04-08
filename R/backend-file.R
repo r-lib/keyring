@@ -569,7 +569,7 @@ b_file_secret_decrypt <- function(secret, nonce, key) {
 
   check_for_libsodium()
   rawToChar(
-    sodium::data_decrypt(
+    sodium_data_decrypt(
       sodium_hex2bin(b_file_merge_string(secret)),
       key,
       nonce

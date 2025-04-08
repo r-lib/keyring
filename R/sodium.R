@@ -30,3 +30,11 @@ sodium_data_encrypt <- function (msg, key, nonce = sodium_random(24)) {
   out <- .Call(rsodium_crypto_secret_encrypt, msg, key, nonce)
   structure(out, nonce = nonce)
 }
+
+sodium_data_decrypt <- function (bin, key, nonce = attr(bin, "nonce")) {
+  assert_that(
+    is.raw(bin),
+    is.raw(key)
+  )
+  .Call(rsodium_crypto_secret_decrypt, bin, key, nonce)
+}
