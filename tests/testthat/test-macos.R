@@ -100,28 +100,25 @@ test_that("errors", {
   skip_on_cran()
 
   ## Non-existing keychain
-  expect_error(
-    backend_macos$new(tempfile())$list(),
-    "cannot open keychain"
-  )
+  expect_snapshot(error = TRUE, backend_macos$new(tempfile())$list())
 
   ## Getting non-existing password
-  expect_error(
-    backend_macos$new()$get(random_service(), random_username()),
-    "cannot get password"
+  expect_snapshot(
+    error = TRUE,
+    backend_macos$new()$get(random_service(), random_username())
   )
 
   ## Deleting non-existing password
-  expect_error(
-    backend_macos$new()$delete(random_service(), random_username()),
-    "cannot delete password"
+  expect_snapshot(
+    error = TRUE,
+    backend_macos$new()$delete(random_service(), random_username())
   )
 
   ## Create keychain without access to file
   kb <- backend_macos$new()
-  expect_error(
-    kb$.__enclos_env__$private$keyring_create_direct("/xxx", "secret123!"),
-    "cannot create keychain"
+  expect_snapshot(
+    error = TRUE,
+    kb$.__enclos_env__$private$keyring_create_direct("/xxx", "secret123!")
   )
 })
 

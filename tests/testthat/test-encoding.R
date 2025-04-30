@@ -34,18 +34,14 @@ test_that("Invalid encoding (not in iconvlist) returns error", {
   skip_if_not_win()
   withr::local_options(keyring.encoding_windows = "doesnotexist")
   withr::local_envvar("KEYRING_ENCODING_WINDOWS" = "doesnotexist")
-  expect_error(get_encoding_opt())
+  expect_snapshot(error = TRUE, get_encoding_opt())
 })
 
 test_that("iconv suggestion works as expected", {
   skip_if_not_win()
   withr::local_options(keyring.encoding_windows = "UTF-16LP")
   withr::local_envvar("KEYRING_ENCODING_WINDOWS" = NA_character_)
-  expect_error(
-    get_encoding_opt(),
-    "Encoding not found in iconvlist(). Did you mean UTF-16LE?",
-    fixed = TRUE
-  )
+  expect_snapshot(error = TRUE, get_encoding_opt())
 })
 
 test_that("Option has precedence", {

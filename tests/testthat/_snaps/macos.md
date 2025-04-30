@@ -1,3 +1,35 @@
+# errors
+
+    Code
+      backend_macos$new(tempfile())$list()
+    Condition
+      Error in `b_macos_list()`:
+      ! keyring error (macOS Keychain), cannot open keychain: The specified keychain could not be found.
+
+---
+
+    Code
+      backend_macos$new()$get(random_service(), random_username())
+    Condition
+      Error in `b_macos_get()`:
+      ! keyring error (macOS Keychain), cannot get password: The specified item could not be found in the keychain.
+
+---
+
+    Code
+      backend_macos$new()$delete(random_service(), random_username())
+    Condition
+      Error in `b_macos_delete()`:
+      ! keyring error (macOS Keychain), cannot delete password: The specified item could not be found in the keychain.
+
+---
+
+    Code
+      kb$.__enclos_env__$private$keyring_create_direct("/xxx", "secret123!")
+    Condition
+      Error in `b_macos_keyring_create_direct()`:
+      ! keyring error (macOS Keychain), cannot create keychain: UNIX[Read-only file system]
+
 # zero bytes in keys
 
     Code

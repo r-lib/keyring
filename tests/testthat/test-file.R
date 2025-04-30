@@ -284,9 +284,9 @@ test_that("locking the keyring file", {
 
   withr::with_options(
     list(keyring_file_lock_timeout = 100),
-    expect_error(
-      kb$set_with_value(service_1, username, password),
-      "Cannot lock keyring file"
+    expect_snapshot(
+      error = TRUE,
+      kb$set_with_value(service_1, username, password)
     )
   )
 })
@@ -298,8 +298,10 @@ test_that("keyring does not exist", {
 
   kb <- backend_file$new()
 
-  expect_error(kb$list())
-  expect_error(kb$keyring_is_locked())
-  expect_error(kb$keyring_unlock())
-  expect_error(kb$set_with_value("service", "user", "pass"))
+  expect_snapshot(error = TRUE, {
+    kb$list()
+    kb$keyring_is_locked()
+    kb$keyring_unlock()
+    kb$set_with_value("service", "user", "pass")
+  })
 })
