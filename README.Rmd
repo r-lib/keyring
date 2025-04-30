@@ -2,7 +2,10 @@
 output: github_document
 ---
 
-```{r, setup, echo = FALSE, message = FALSE}
+```{r}
+#| label: setup
+#| echo: false
+#| message: false
 knitr::opts_chunk$set(
   comment = "#>",
   tidy = FALSE,
@@ -39,7 +42,8 @@ It also provides two backends that are available on all platforms:
 
 Install the package from CRAN:
 
-```{r eval = FALSE}
+```{r}
+#| eval: false
 # install.packages("pak")
 pak::pak("keyring")
 ```
@@ -47,7 +51,8 @@ pak::pak("keyring")
 We recommend using pak to install keyring as it will ensure that Linux system requirements are automatically installed (for instance Ubuntu requires `libsecret-1-dev` and `libssl-dev`).
 
 To install the development version from GitHub, use:
-```{r eval = FALSE}
+```{r}
+#| eval: false
 pak::pak("r-lib/keyring")
 ```
 
