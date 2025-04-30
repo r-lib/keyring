@@ -10,8 +10,12 @@ test_that("low level API", {
   target <- b_wincred_target(keyring, service, username)
 
   expect_false(b_wincred_i_exists(target))
-  expect_silent(b_wincred_i_set(target, charToRaw(password),
-                                username, session = TRUE))
+  expect_silent(b_wincred_i_set(
+    target,
+    charToRaw(password),
+    username,
+    session = TRUE
+  ))
   expect_true(b_wincred_i_exists(target))
   expect_equal(rawToChar(b_wincred_i_get(target)), password)
   expect_true(target %in% b_wincred_i_enumerate("*"))
@@ -91,8 +95,12 @@ test_that(": in keyring, service and usernames", {
   target <- b_wincred_target(keyring, service, username)
 
   expect_false(b_wincred_i_exists(target))
-  expect_silent(b_wincred_i_set(target, charToRaw(password),
-                                username, session = TRUE))
+  expect_silent(b_wincred_i_set(
+    target,
+    charToRaw(password),
+    username,
+    session = TRUE
+  ))
   expect_true(b_wincred_i_exists(target))
   expect_equal(rawToChar(b_wincred_i_get(target)), password)
   expect_true(target %in% b_wincred_i_enumerate("*"))

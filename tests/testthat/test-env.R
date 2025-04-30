@@ -1,5 +1,4 @@
 test_that("set, get, delete", {
-
   service <- random_service()
   username <- random_username()
   password <- random_password()
@@ -10,7 +9,7 @@ test_that("set, get, delete", {
   expect_silent(
     kb$set_with_value(service, username, password)
   )
-  
+
   expect_equal(kb$list(service)$username, c(username))
 
   expect_equal(kb$get(service, username), password)
@@ -37,4 +36,3 @@ test_that("set, get, delete, without username", {
   expect_silent(kb$delete(service))
   expect_equal(Sys.getenv(var, "foo"), "foo")
 })
-

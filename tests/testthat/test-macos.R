@@ -73,7 +73,6 @@ test_that("creating keychains 2", {
 })
 
 test_that("keyring file at special location", {
-
   skip_if_not_macos()
   skip_on_cran()
 
@@ -97,33 +96,29 @@ test_that("keyring file at special location", {
 })
 
 test_that("errors", {
-
   skip_if_not_macos()
   skip_on_cran()
 
   ## Non-existing keychain
-  expect_error(
-    backend_macos$new(tempfile())$list(),
-    "cannot open keychain"
-  )
+  expect_snapshot(error = TRUE, backend_macos$new(tempfile())$list())
 
   ## Getting non-existing password
-  expect_error(
-    backend_macos$new()$get(random_service(), random_username()),
-    "cannot get password"
+  expect_snapshot(
+    error = TRUE,
+    backend_macos$new()$get(random_service(), random_username())
   )
 
   ## Deleting non-existing password
-  expect_error(
-    backend_macos$new()$delete(random_service(), random_username()),
-    "cannot delete password"
+  expect_snapshot(
+    error = TRUE,
+    backend_macos$new()$delete(random_service(), random_username())
   )
 
   ## Create keychain without access to file
   kb <- backend_macos$new()
-  expect_error(
-    kb$.__enclos_env__$private$keyring_create_direct("/xxx", "secret123!"),
-    "cannot create keychain"
+  expect_snapshot(
+    error = TRUE,
+    kb$.__enclos_env__$private$keyring_create_direct("/xxx", "secret123!")
   )
 })
 
@@ -162,7 +157,7 @@ test_that("zero bytes in keys", {
     list(
       c("foo", NA_character_),
       c("bar", "baz"),
-      list(charToRaw("foo"), as.raw(c(3,2,1,0))),
+      list(charToRaw("foo"), as.raw(c(3, 2, 1, 0))),
       list(charToRaw("bar"), charToRaw("baz"))
     )
   }
@@ -180,8 +175,8 @@ test_that("zero bytes in keys", {
     list(
       c("foo", NA_character_),
       c("bar", NA_character_),
-      list(charToRaw("foo"), as.raw(c(3,2,1,0))),
-      list(charToRaw("bar"), as.raw(c(1,2,0,1,2)))
+      list(charToRaw("foo"), as.raw(c(3, 2, 1, 0))),
+      list(charToRaw("bar"), as.raw(c(1, 2, 0, 1, 2)))
     )
   }
   fake(b_macos_list, ".Call", ffun)
@@ -199,7 +194,7 @@ test_that("zero bytes in keys", {
       c("foo", "baz"),
       c("bar", NA_character_),
       list(charToRaw("foo"), charToRaw("baz")),
-      list(charToRaw("bar"), as.raw(c(3,2,1,0)))
+      list(charToRaw("bar"), as.raw(c(3, 2, 1, 0)))
     )
   }
   fake(b_macos_list, ".Call", ffun)
@@ -209,5 +204,4 @@ test_that("zero bytes in keys", {
     b_macos_list(NULL, list(keyring_file = function(...) NULL))
     b_macos_list_raw(NULL, list(keyring_file = function(...) NULL))
   })
-
 })

@@ -12,7 +12,7 @@ sodium_bin2hex <- function(bin) {
   .Call(rsodium_bin2hex, bin)
 }
 
-sodium_hex2bin <- function (hex, ignore = ":") {
+sodium_hex2bin <- function(hex, ignore = ":") {
   assert_that(
     is.character(hex),
     length(hex) == 1,
@@ -22,7 +22,7 @@ sodium_hex2bin <- function (hex, ignore = ":") {
   .Call(rsodium_hex2bin, hex, ignore)
 }
 
-sodium_data_encrypt <- function (msg, key, nonce = sodium_random(24)) {
+sodium_data_encrypt <- function(msg, key, nonce = sodium_random(24)) {
   assert_that(
     is.raw(msg),
     is.raw(key)
@@ -31,7 +31,7 @@ sodium_data_encrypt <- function (msg, key, nonce = sodium_random(24)) {
   structure(out, nonce = nonce)
 }
 
-sodium_data_decrypt <- function (bin, key, nonce = attr(bin, "nonce")) {
+sodium_data_decrypt <- function(bin, key, nonce = attr(bin, "nonce")) {
   assert_that(
     is.raw(bin),
     is.raw(key)
@@ -39,7 +39,7 @@ sodium_data_decrypt <- function (bin, key, nonce = attr(bin, "nonce")) {
   .Call(rsodium_crypto_secret_decrypt, bin, key, nonce)
 }
 
-sodium_hash <- function (buf, key = NULL, size = 32) {
+sodium_hash <- function(buf, key = NULL, size = 32) {
   assert_that(
     is.raw(buf),
     is.null(key) || is.raw(key)

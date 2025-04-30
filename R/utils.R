@@ -1,4 +1,3 @@
-
 utf8 <- function(x) {
   if (is.null(x)) return(x)
   iconv(x, "", "UTF-8")
@@ -33,7 +32,7 @@ str_starts_with <- function(x, p) {
 URLencode <- function(URL) {
   good <- c(LETTERS, letters, 0:9, ".", "_", "~", "-")
   x <- strsplit(URL, "")[[1L]]
-  bad <- which(! x %in% good)
+  bad <- which(!x %in% good)
   tr <- function(x) {
     paste0("%", toupper(as.character(charToRaw(x))), collapse = "")
   }
@@ -46,8 +45,10 @@ get_encoding_opt <- function() {
 
   enc <- getOption("keyring.encoding_windows")
   if (!is.null(enc) && !chk(enc)) {
-    stop("Invalid 'keyring.encoding_windows' option, must be an ",
-         "encoding name or 'auto'")
+    stop(
+      "Invalid 'keyring.encoding_windows' option, must be an ",
+      "encoding name or 'auto'"
+    )
   }
 
   enc <- enc %||% Sys.getenv("KEYRING_ENCODING_WINDOWS", "auto")
@@ -69,10 +70,12 @@ is_interactive <- function() {
   if (isTRUE(opt)) {
     TRUE
   } else if (identical(opt, FALSE)) {
-      FALSE
+    FALSE
   } else if (tolower(getOption("knitr.in.progress", "false")) == "true") {
     FALSE
-  } else if (tolower(getOption("rstudio.notebook.executing", "false")) == "true") {
+  } else if (
+    tolower(getOption("rstudio.notebook.executing", "false")) == "true"
+  ) {
     FALSE
   } else if (identical(Sys.getenv("TESTTHAT"), "true")) {
     FALSE
