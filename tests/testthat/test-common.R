@@ -7,16 +7,15 @@ on.exit(unlink(file.path(tempdir(), "keyrings"), recursive = TRUE), add = TRUE)
 # The file backend needs a default keyring currently
 kb <- default_backend()
 if (kb$name == "file") {
-  if (! "system" %in% kb$keyring_list()$keyring) {
+  if (!"system" %in% kb$keyring_list()$keyring) {
     kb$.__enclos_env__$private$keyring_create_direct("system", "master")
   }
   kb$keyring_unlock("system", "master")
 }
 
 test_that("set, get, delete", {
-
   skip_on_cran()
-  
+
   service <- random_service()
   username <- random_username()
   password <- random_password()
@@ -27,9 +26,8 @@ test_that("set, get, delete", {
 })
 
 test_that("set, get, delete without username", {
-
   skip_on_cran()
-  
+
   service <- random_service()
   password <- random_password()
 
@@ -40,9 +38,8 @@ test_that("set, get, delete without username", {
 })
 
 test_that("set can update", {
-
   skip_on_cran()
-  
+
   service <- random_service()
   username <- random_username()
   password <- random_password()
@@ -58,10 +55,10 @@ test_that("set can update", {
 })
 
 test_that("list", {
-
   skip_on_cran()
-  
-  if (default_backend()$name == "env") skip("'env' backend has no 'list' support")
+
+  if (default_backend()$name == "env")
+    skip("'env' backend has no 'list' support")
 
   service <- random_service()
   username <- random_username()

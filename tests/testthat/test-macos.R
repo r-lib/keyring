@@ -73,7 +73,6 @@ test_that("creating keychains 2", {
 })
 
 test_that("keyring file at special location", {
-
   skip_if_not_macos()
   skip_on_cran()
 
@@ -97,7 +96,6 @@ test_that("keyring file at special location", {
 })
 
 test_that("errors", {
-
   skip_if_not_macos()
   skip_on_cran()
 
@@ -162,7 +160,7 @@ test_that("zero bytes in keys", {
     list(
       c("foo", NA_character_),
       c("bar", "baz"),
-      list(charToRaw("foo"), as.raw(c(3,2,1,0))),
+      list(charToRaw("foo"), as.raw(c(3, 2, 1, 0))),
       list(charToRaw("bar"), charToRaw("baz"))
     )
   }
@@ -180,8 +178,8 @@ test_that("zero bytes in keys", {
     list(
       c("foo", NA_character_),
       c("bar", NA_character_),
-      list(charToRaw("foo"), as.raw(c(3,2,1,0))),
-      list(charToRaw("bar"), as.raw(c(1,2,0,1,2)))
+      list(charToRaw("foo"), as.raw(c(3, 2, 1, 0))),
+      list(charToRaw("bar"), as.raw(c(1, 2, 0, 1, 2)))
     )
   }
   fake(b_macos_list, ".Call", ffun)
@@ -199,7 +197,7 @@ test_that("zero bytes in keys", {
       c("foo", "baz"),
       c("bar", NA_character_),
       list(charToRaw("foo"), charToRaw("baz")),
-      list(charToRaw("bar"), as.raw(c(3,2,1,0)))
+      list(charToRaw("bar"), as.raw(c(3, 2, 1, 0)))
     )
   }
   fake(b_macos_list, ".Call", ffun)
@@ -209,5 +207,4 @@ test_that("zero bytes in keys", {
     b_macos_list(NULL, list(keyring_file = function(...) NULL))
     b_macos_list_raw(NULL, list(keyring_file = function(...) NULL))
   })
-
 })

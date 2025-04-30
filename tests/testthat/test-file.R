@@ -1,5 +1,4 @@
 test_that("specify keyring explicitly", {
-
   dir.create(tmp <- tempfile())
   on.exit(unlink(tmp, recursive = TRUE))
   withr::local_options(list(keyring_file_dir = tmp))
@@ -16,7 +15,7 @@ test_that("specify keyring explicitly", {
   expect_false(kb$keyring_is_locked(keyring))
   kb$keyring_lock(keyring)
   expect_true(kb$keyring_is_locked(keyring))
-  expect_silent(kb$keyring_unlock(keyring,  password = "secret123!"))
+  expect_silent(kb$keyring_unlock(keyring, password = "secret123!"))
   expect_false(kb$keyring_is_locked(keyring))
 
   ## Missing
@@ -51,7 +50,6 @@ test_that("specify keyring explicitly", {
 })
 
 test_that("key consistency check", {
-
   username <- random_username()
   password <- random_password()
   keyring <- random_keyring()
@@ -68,12 +66,16 @@ test_that("key consistency check", {
   expect_silent(kb$keyring_unlock(password = keyring_pwd_1))
   expect_silent(kb$set_with_value(random_service(), username, password))
 
-  expect_error(kb$keyring_unlock(password = keyring_pwd_2),
-               "cannot unlock keyring")
+  expect_error(
+    kb$keyring_unlock(password = keyring_pwd_2),
+    "cannot unlock keyring"
+  )
 
   expect_silent(kb$keyring_lock())
-  expect_error(kb$keyring_unlock(password = keyring_pwd_2),
-               "cannot unlock keyring")
+  expect_error(
+    kb$keyring_unlock(password = keyring_pwd_2),
+    "cannot unlock keyring"
+  )
 
   kb$.__enclos_env__$private$set_keyring_pass(keyring_pwd_2)
   expect_true(kb$keyring_is_locked())
@@ -83,7 +85,6 @@ test_that("key consistency check", {
 })
 
 test_that("use non-default keyring", {
-
   dir.create(tmp <- tempfile())
   on.exit(unlink(tmp, recursive = TRUE), add = TRUE)
   withr::local_options(list(keyring_file_dir = tmp))
@@ -123,7 +124,6 @@ test_that("use non-default keyring", {
 })
 
 test_that("list keyring items", {
-
   dir.create(tmp <- tempfile())
   on.exit(unlink(tmp, recursive = TRUE), add = TRUE)
   withr::local_options(list(keyring_file_dir = tmp))
@@ -138,13 +138,21 @@ test_that("list keyring items", {
   kb$keyring_create(keyring, keyring_pwd)
   expect_silent(kb$keyring_unlock(password = keyring_pwd))
 
-  expect_silent(kb$set_with_value(random_service(),
-                                  random_username(),
-                                  random_password()))
-  expect_silent(kb$set_with_value(service, random_username(),
-                                  random_password()))
-  expect_silent(kb$set_with_value(service, random_username(),
-                                  random_password()))
+  expect_silent(kb$set_with_value(
+    random_service(),
+    random_username(),
+    random_password()
+  ))
+  expect_silent(kb$set_with_value(
+    service,
+    random_username(),
+    random_password()
+  ))
+  expect_silent(kb$set_with_value(
+    service,
+    random_username(),
+    random_password()
+  ))
 
   expect_silent(
     all_items <- kb$list()
@@ -167,7 +175,6 @@ test_that("list keyring items", {
 })
 
 test_that("helper functions work", {
-
   secret <- random_password()
   long_secret <- random_string(500L)
   nonce <- sodium_random(24L)
@@ -202,7 +209,6 @@ test_that("helper functions work", {
 })
 
 test_that("keys updated from another session", {
-
   skip_on_cran()
 
   dir.create(tmp <- tempfile())
@@ -222,14 +228,22 @@ test_that("keys updated from another session", {
   kb$keyring_unlock(password = "foobar")
   kb$set_with_value(service_1, username, password)
 
-  ret <- callr::r(function(s, u, p, k, dir) {
-    options(keyring_file_dir = dir)
-    kb <- keyring::backend_file$new(keyring = k)
-    kb$keyring_unlock(password = "foobar")
-    kb$set_with_value(s, u, p)
-    kb$get(s, u) },
-    args = list(s = service_1, u = username2, p = password2, k = keyring,
-                dir = tmp))
+  ret <- callr::r(
+    function(s, u, p, k, dir) {
+      options(keyring_file_dir = dir)
+      kb <- keyring::backend_file$new(keyring = k)
+      kb$keyring_unlock(password = "foobar")
+      kb$set_with_value(s, u, p)
+      kb$get(s, u)
+    },
+    args = list(
+      s = service_1,
+      u = username2,
+      p = password2,
+      k = keyring,
+      dir = tmp
+    )
+  )
 
   expect_equal(ret, password2)
 
@@ -239,7 +253,6 @@ test_that("keys updated from another session", {
 })
 
 test_that("locking the keyring file", {
-
   skip_on_cran()
 
   dir.create(tmp <- tempfile())
@@ -257,10 +270,12 @@ test_that("locking the keyring file", {
 
   lockfile <- paste0(kb$.__enclos_env__$private$keyring_file(), ".lck")
 
-  rb <- callr::r_bg(function(lf) {
-    l <- filelock::lock(lf)
-    cat("done\n");
-    Sys.sleep(3) },
+  rb <- callr::r_bg(
+    function(lf) {
+      l <- filelock::lock(lf)
+      cat("done\n")
+      Sys.sleep(3)
+    },
     args = list(lf = lockfile),
     stdout = "|"
   )
@@ -271,12 +286,12 @@ test_that("locking the keyring file", {
     list(keyring_file_lock_timeout = 100),
     expect_error(
       kb$set_with_value(service_1, username, password),
-      "Cannot lock keyring file")
+      "Cannot lock keyring file"
+    )
   )
 })
 
 test_that("keyring does not exist", {
-
   dir.create(tmp <- tempfile())
   on.exit(unlink(tmp, recursive = TRUE))
   withr::local_options(list(keyring_file_dir = tmp))

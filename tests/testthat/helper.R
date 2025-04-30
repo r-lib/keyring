@@ -1,4 +1,3 @@
-
 skip_if_not_macos <- function() {
   sysname <- tolower(Sys.info()[["sysname"]])
   if (sysname != "darwin") skip("Not macOS")
@@ -22,8 +21,7 @@ skip_if_not_secret_service <- function() {
   invisible(TRUE)
 }
 
-random_string <- function(length = 10, use_letters = TRUE,
-                          use_numbers = TRUE) {
+random_string <- function(length = 10, use_letters = TRUE, use_numbers = TRUE) {
   pool <- c(
     if (use_letters) c(letters, LETTERS),
     if (use_numbers) 0:9
