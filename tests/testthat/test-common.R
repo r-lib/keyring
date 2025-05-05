@@ -77,3 +77,17 @@ test_that("list", {
 
   expect_silent(key_delete(service, username))
 })
+
+test_that("key exists", {
+  skip_on_cran()
+
+  service <- random_service()
+  password <- random_password()
+
+  key_set_with_value(service, password = password)
+
+  expect_true(key_exist(service = service))
+  key_delete(service)
+  expect_false(key_exist(service = service))
+
+})
