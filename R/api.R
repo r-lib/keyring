@@ -30,6 +30,8 @@
 #' values. This is useful if your keys have bytes that cannot appear
 #' in R strings, e.g. a zero byte.
 #'
+#' `key_exist()` returns TRUE if a key exist, FALSE otherwise.
+#'
 #' ## Encodings
 #'
 #' On Windows, if required, an encoding can be specified using either
@@ -201,6 +203,14 @@ key_list <- function(service = NULL, keyring = NULL) {
 key_list_raw <- function(service = NULL, keyring = NULL) {
   assert_that(is_non_empty_string_or_null(service))
   default_backend()$list_raw(service, keyring = keyring)
+}
+
+#' @export
+#' @rdname key_get
+
+key_exist <- function(service){
+  assert_that(is_non_empty_string(service))
+  service %in% key_list()$service
 }
 
 #' Operations on keyrings

@@ -9,6 +9,7 @@
 \alias{key_delete}
 \alias{key_list}
 \alias{key_list_raw}
+\alias{key_exist}
 \title{Operations on keys}
 \usage{
 key_get(service, username = NULL, keyring = NULL)
@@ -31,6 +32,8 @@ key_delete(service, username = NULL, keyring = NULL)
 key_list(service = NULL, keyring = NULL)
 
 key_list_raw(service = NULL, keyring = NULL)
+
+key_exist(service)
 }
 \arguments{
 \item{service}{Service name, a character scalar.}
@@ -95,6 +98,8 @@ service (if \code{service} is not \code{NULL}).
 \code{key_list_raw()} is like \code{key_list()} but also returns the keys as raw
 values. This is useful if your keys have bytes that cannot appear
 in R strings, e.g. a zero byte.
+
+\code{key_exist()} returns TRUE if a key exist, FALSE otherwise.
 \subsection{Encodings}{
 
 On Windows, if required, an encoding can be specified using either
