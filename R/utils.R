@@ -83,3 +83,17 @@ is_interactive <- function() {
     interactive()
   }
 }
+
+base64_decode <- function(x) {
+  if (is.character(x)) {
+    x <- charToRaw(paste(gsub("\\s+", "", x), collapse = ""))
+  }
+  .Call(keyring_base64_decode, x)
+}
+
+base64_encode <- function(x) {
+  if (is.character(x)) {
+    x <- charToRaw(paste(x, collapse = ""))
+  }
+  rawToChar(.Call(keyring_base64_encode, x))
+}

@@ -93,7 +93,7 @@ b_wincred_write_keyring_credential <- function(target, data) {
 #' @importFrom utils head tail
 
 b_wincred_get_encrypted_aes <- function(str) {
-  r <- openssl::base64_decode(str)
+  r <- base64_decode(str)
   structure(tail(r, -16), iv = head(r, 16))
 }
 
@@ -110,7 +110,7 @@ b_wincred_get_encrypted_aes <- function(str) {
 b_wincred_unlock_keyring_internal <- function(keyring, password = NULL) {
   target_lock <- b_wincred_target_lock(keyring)
   if (b_wincred_i_exists(target_lock)) {
-    openssl::base64_decode(rawToChar(b_wincred_i_get(target_lock)))
+    base64_decode(rawToChar(b_wincred_i_get(target_lock)))
   } else {
     target_keyring <- b_wincred_target_keyring(keyring)
     keyring_data <- b_wincred_parse_keyring_credential(target_keyring)
@@ -127,11 +127,11 @@ b_wincred_unlock_keyring_internal <- function(keyring, password = NULL) {
     verify <- b_wincred_get_encrypted_aes(keyring_data$Verify)
     tryCatch(
       openssl::aes_cbc_decrypt(verify, key = aes),
-      error = function(e) stop("Invalid password, cannot unlock keyring")
+      error = function(e) { browser(); stop("Invalid password, cannot unlock keyring") }
     )
     b_wincred_i_set(
       target_lock,
-      charToRaw(openssl::base64_encode(aes)),
+      charToRaw(base64_encode(aes)),
       session = TRUE
     )
     aes
@@ -420,7 +420,7 @@ b_wincred_set_with_raw_value <- function(
   target_keyring <- b_wincred_target_keyring(keyring)
   aes <- b_wincred_unlock_keyring_internal(keyring)
   enc <- openssl::aes_cbc_encrypt(password, key = aes)
-  password <- charToRaw(openssl::base64_encode(c(attr(enc, "iv"), enc)))
+  password <- charToRaw(base64_encode(c(attr(enc, "iv"), enc)))
   b_wincred_i_set(target, password = password, username = username)
   invisible(self)
 }
@@ -473,10 +473,10 @@ b_wincred_keyring_create_direct <- function(self, private, keyring, password) {
   if (b_wincred_i_exists(target_keyring)) {
     stop("keyring ", sQuote(keyring), " already exists")
   }
-  salt <- openssl::base64_encode(openssl::rand_bytes(32))
+  salt <- base64_encode(openssl::rand_bytes(32))
   aes <- openssl::sha256(charToRaw(password), key = salt)
   verify <- openssl::aes_cbc_encrypt(openssl::rand_bytes(15), key = aes)
-  verify <- openssl::base64_encode(c(attr(verify, "iv"), verify))
+  verify <- base64_encode(c(attr(verify, "iv"), verify))
   dcf <- list(
     Version = b_wincred_protocol_version,
     Verify = verify,
