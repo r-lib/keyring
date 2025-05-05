@@ -473,9 +473,9 @@ b_wincred_keyring_create_direct <- function(self, private, keyring, password) {
   if (b_wincred_i_exists(target_keyring)) {
     stop("keyring ", sQuote(keyring), " already exists")
   }
-  salt <- base64_encode(openssl::rand_bytes(32))
+  salt <- base64_encode(rand_bytes(32))
   aes <- sha256(charToRaw(password), key = salt)
-  verify <- openssl::aes_cbc_encrypt(openssl::rand_bytes(15), key = aes)
+  verify <- openssl::aes_cbc_encrypt(rand_bytes(15), key = aes)
   verify <- base64_encode(c(attr(verify, "iv"), verify))
   dcf <- list(
     Version = b_wincred_protocol_version,

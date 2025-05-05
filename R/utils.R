@@ -124,3 +124,7 @@ sha256 <- function(x, key = NULL) {
     .Call(keyring_sha256, x, TRUE)
   }
 }
+
+rand_bytes <- function(n = 1) {
+  sodium_random(n)
+}
