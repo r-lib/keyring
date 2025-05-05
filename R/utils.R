@@ -97,3 +97,30 @@ base64_encode <- function(x) {
   }
   rawToChar(.Call(keyring_base64_encode, x))
 }
+
+sha256 <- function(x, key = NULL) {
+  if (is.character(key)) {
+    key <- base64_decode(key)
+  }
+  stopifnot(is.null(key) || is.raw(key))
+  if (!is.null(key)) {
+    block_size <- 64L
+    if (length(key) > block_size) {
+      key <- .Call(keyring_sha256, key, TRUE)
+    } else if (length(key) < block_size) {
+      key <- c(key, rep(raw(1), block_size - length(key)))
+    }
+
+    opad <- as.raw(bitwXor(as.integer(key), as.integer(0x5c)))
+    ipad <- as.raw(bitwXor(as.integer(key), as.integer(0x36)))
+
+    .Call(
+      keyring_sha256,
+      c(opad, .Call(keyring_sha256, c(ipad, x), TRUE)),
+      TRUE
+    )
+
+  } else {
+    .Call(keyring_sha256, x, TRUE)
+  }
+}

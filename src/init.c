@@ -42,6 +42,7 @@ SEXP rsodium_crypto_generichash(SEXP buf, SEXP size, SEXP key);
 
 SEXP keyring_base64_decode(SEXP array);
 SEXP keyring_base64_encode(SEXP array);
+SEXP keyring_sha256(SEXP x, SEXP raw);
 
 SEXP win_path_(SEXP _folder);
 
@@ -108,6 +109,8 @@ static const R_CallMethodDef callMethods[]  = {
     (DL_FUNC) keyring_base64_decode, 1 },
   { "keyring_base64_encode",
     (DL_FUNC) keyring_base64_encode, 1 },
+  { "keyring_sha256",
+    (DL_FUNC) keyring_sha256, 2 },
 
   { "win_path_", (DL_FUNC) win_path_, 1 },
 

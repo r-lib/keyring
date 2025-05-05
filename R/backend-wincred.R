@@ -123,7 +123,7 @@ b_wincred_unlock_keyring_internal <- function(keyring, password = NULL) {
       password <- get_pass()
       if (is.null(password)) stop("Aborted unlocking keyring")
     }
-    aes <- openssl::sha256(charToRaw(password), key = keyring_data$Salt)
+    aes <- sha256(charToRaw(password), key = keyring_data$Salt)
     verify <- b_wincred_get_encrypted_aes(keyring_data$Verify)
     tryCatch(
       openssl::aes_cbc_decrypt(verify, key = aes),
@@ -474,7 +474,7 @@ b_wincred_keyring_create_direct <- function(self, private, keyring, password) {
     stop("keyring ", sQuote(keyring), " already exists")
   }
   salt <- base64_encode(openssl::rand_bytes(32))
-  aes <- openssl::sha256(charToRaw(password), key = salt)
+  aes <- sha256(charToRaw(password), key = salt)
   verify <- openssl::aes_cbc_encrypt(openssl::rand_bytes(15), key = aes)
   verify <- base64_encode(c(attr(verify, "iv"), verify))
   dcf <- list(
