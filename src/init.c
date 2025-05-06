@@ -40,6 +40,12 @@ SEXP rsodium_crypto_secret_encrypt(SEXP message, SEXP key, SEXP nonce);
 SEXP rsodium_crypto_secret_decrypt(SEXP cipher, SEXP key, SEXP nonce);
 SEXP rsodium_crypto_generichash(SEXP buf, SEXP size, SEXP key);
 
+SEXP keyring_aes_cbc_decrypt(SEXP msg, SEXP key, SEXP iv);
+SEXP keyring_aes_cbc_encrypt(SEXP msg, SEXP key, SEXP iv);
+SEXP keyring_base64_decode(SEXP array);
+SEXP keyring_base64_encode(SEXP array);
+SEXP keyring_sha256(SEXP x, SEXP raw);
+
 SEXP win_path_(SEXP _folder);
 
 static const R_CallMethodDef callMethods[]  = {
@@ -100,6 +106,17 @@ static const R_CallMethodDef callMethods[]  = {
     (DL_FUNC) &rsodium_crypto_secret_decrypt, 3 },
   { "rsodium_crypto_generichash",
     (DL_FUNC) &rsodium_crypto_generichash, 3 },
+
+  { "keyring_aes_cbc_decrypt",
+    (DL_FUNC) keyring_aes_cbc_decrypt, 3 },
+  { "keyring_aes_cbc_encrypt",
+    (DL_FUNC) keyring_aes_cbc_encrypt, 3 },
+  { "keyring_base64_decode",
+    (DL_FUNC) keyring_base64_decode, 1 },
+  { "keyring_base64_encode",
+    (DL_FUNC) keyring_base64_encode, 1 },
+  { "keyring_sha256",
+    (DL_FUNC) keyring_sha256, 2 },
 
   { "win_path_", (DL_FUNC) win_path_, 1 },
 

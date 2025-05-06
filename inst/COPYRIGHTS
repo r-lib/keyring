@@ -1,0 +1,67 @@
+# libsodium files
+
+ - `src/blake2.h`
+ - `src/blake2b-compress-ref.c`
+ - `src/blake2b-ref.c`
+ - `src/core_hsalsa20_ref2.c`
+ - `src/core_salsa_ref.c`
+ - `src/crypto_core_hsalsa20.h`
+ - `src/crypto_core_salsa20.h`
+ - `src/crypto_core_salsa2012.h`
+ - `src/crypto_core_salsa208.h`
+ - `src/crypto_generichash.c`
+ - `src/crypto_generichash.h`
+ - `src/crypto_generichash_blake2b.h`
+ - `src/crypto_onetimeauth.h`
+ - `src/crypto_onetimeauth_poly1305.h`
+ - `src/crypto_secretbox.h`
+ - `src/crypto_secretbox_easy.c`
+ - `src/crypto_secretbox_xsalsa20poly1305.h`
+ - `src/crypto_stream_salsa20.h`
+ - `src/crypto_stream_xsalsa20.h`
+ - `src/crypto_verify_16.h`
+ - `src/crypto_verify_32.h`
+ - `src/crypto_verify_64.h`
+ - `src/endianness.h`
+ - `src/generichash_blake2b.c`
+ - `src/onetimeauth_poly1305.c`
+ - `src/onetimeauth_poly1305.h`
+ - `src/poly1305_donna.c`
+ - `src/poly1305_donna.h`
+ - `src/poly1305_donna32.h`
+ - `src/poly1305_donna64.h`
+ - `src/randombytes_sysrandom.c`
+ - `src/salsa20_ref.c`
+ - `src/salsa20_ref.h`
+ - `src/sodium-utils.c`
+ - `src/sodium.c`
+ - `src/sodium.h`
+ - `src/stream_salsa20.c`
+ - `src/stream_salsa20.h`
+ - `src/verify.c`
+
+(c) libsodium authors
+https://github.com/jedisct1/libsodium/graphs/contributors
+
+# mbedtls files
+
+- `src/aes.c`
+- `src/aesce.c`
+- `src/aesni.c`
+- `src/padlock.c`
+- `src/aesce.h`
+- `src/aesni.h`
+- `src/alignment.h`
+- `src/common.h`
+- `src/ctr.h`
+- `src/padlock.h`
+- `src/platform_util.c`
+- `src/mbedtls/*`
+- `src/psa/*`
+
+(c) mbedtls authors
+https://github.com/Mbed-TLS/mbedtls/graphs/contributors
+
+# Other files
+
+(c) keyring authors

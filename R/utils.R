@@ -83,3 +83,74 @@ is_interactive <- function() {
     interactive()
   }
 }
+
+base64_decode <- function(x) {
+  if (is.character(x)) {
+    x <- charToRaw(paste(gsub("\\s+", "", x), collapse = ""))
+  }
+  .Call(keyring_base64_decode, x)
+}
+
+base64_encode <- function(x) {
+  if (is.character(x)) {
+    x <- charToRaw(paste(x, collapse = ""))
+  }
+  rawToChar(.Call(keyring_base64_encode, x))
+}
+
+sha256 <- function(x, key = NULL) {
+  if (is.character(key)) {
+    key <- base64_decode(key)
+  }
+  stopifnot(is.null(key) || is.raw(key))
+  if (!is.null(key)) {
+    block_size <- 64L
+    if (length(key) > block_size) {
+      key <- .Call(keyring_sha256, key, TRUE)
+    } else if (length(key) < block_size) {
+      key <- c(key, rep(raw(1), block_size - length(key)))
+    }
+
+    opad <- as.raw(bitwXor(as.integer(key), as.integer(0x5c)))
+    ipad <- as.raw(bitwXor(as.integer(key), as.integer(0x36)))
+
+    .Call(
+      keyring_sha256,
+      c(opad, .Call(keyring_sha256, c(ipad, x), TRUE)),
+      TRUE
+    )
+  } else {
+    .Call(keyring_sha256, x, TRUE)
+  }
+}
+
+rand_bytes <- function(n = 1) {
+  sodium_random(n)
+}
+
+aes_cbc_encrypt <- function(data, key, iv = rand_bytes(16)) {
+  data <- path_or_raw(data)
+  if (!is.raw(data)) {
+    stop("The 'data' must path to a file or raw vector")
+  }
+  out <- .Call(keyring_aes_cbc_encrypt, data, key, iv)
+  structure(out, iv = iv)
+}
+
+aes_cbc_decrypt <- function(data, key, iv = attr(data, "iv")) {
+  data <- path_or_raw(data)
+  if (!is.raw(data)) {
+    stop("The 'data' must path to a file or raw vector")
+  }
+  .Call(keyring_aes_cbc_decrypt, data, key, iv)
+}
+
+path_or_raw <- function(x) {
+  if (is.raw(x)) return(x)
+  if (is.character(x) && length(x) == 1) {
+    path <- normalizePath(x, mustWork = TRUE)
+    bin <- readBin(path, raw(), file.info(path)$size)
+    return(bin)
+  }
+  stop("`data` must be raw data vector or path to file on disk.")
+}
