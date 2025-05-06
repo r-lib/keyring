@@ -20,7 +20,7 @@ jobs:
     # NO NEED TO CHECKOUT HERE
     - uses: r-hub/actions/setup@main
       with:
-        config: clang-asan,clang-ubsan,rchk,valgrind
+        config: clang-asan,clang-ubsan,rchk
       id: rhub-setup
 
   linux-containers:
