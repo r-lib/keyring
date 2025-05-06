@@ -4,12 +4,11 @@
 <!-- badges: start -->
 
 [![R-CMD-check](https://github.com/r-lib/keyring/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/r-lib/keyring/actions/workflows/R-CMD-check.yaml)
+[![Codecov test
+coverage](https://codecov.io/gh/r-lib/keyring/graph/badge.svg)](https://app.codecov.io/gh/r-lib/keyring)
 [![](https://www.r-pkg.org/badges/version/keyring)](https://www.r-pkg.org/pkg/keyring)
 [![CRAN RStudio mirror
 downloads](https://cranlogs.r-pkg.org/badges/keyring)](https://www.r-pkg.org/pkg/keyring)
-[![Codecov test
-coverage](https://codecov.io/gh/r-lib/keyring/branch/main/graph/badge.svg)](https://app.codecov.io/gh/r-lib/keyring?branch=main)
-
 <!-- badges: end -->
 
 keyring provides a way to securely manage secrets using your operating
