@@ -37,6 +37,26 @@ test_that("aes_cbc_encrypt, aes_cbc_decrypt", {
   expect_equal(aes_cbc_decrypt(y, key), x)
 
   # wrong key
+  # fix iv, so we don't accidentally get a bad key that actually "works"
+  iv <- as.raw(c(
+    0xe2,
+    0x2d,
+    0x43,
+    0x22,
+    0x86,
+    0x3f,
+    0x02,
+    0x11,
+    0x90,
+    0x98,
+    0xd8,
+    0x97,
+    0x1a,
+    0xb2,
+    0x7b,
+    0x74
+  ))
+  y <- aes_cbc_encrypt(x, key, iv = iv)
   key2 <- sha256(charToRaw("bad"))
   expect_snapshot(error = TRUE, aes_cbc_decrypt(y, key2))
 
