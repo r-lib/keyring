@@ -119,7 +119,6 @@ sha256 <- function(x, key = NULL) {
       c(opad, .Call(keyring_sha256, c(ipad, x), TRUE)),
       TRUE
     )
-
   } else {
     .Call(keyring_sha256, x, TRUE)
   }
@@ -127,4 +126,31 @@ sha256 <- function(x, key = NULL) {
 
 rand_bytes <- function(n = 1) {
   sodium_random(n)
+}
+
+aes_cbc_encrypt <- function(data, key, iv = rand_bytes(16)) {
+  data <- path_or_raw(data)
+  if (!is.raw(data)) {
+    stop("The 'data' must path to a file or raw vector")
+  }
+  out <- .Call(keyring_aes_cbc_encrypt, data, key, iv)
+  structure(out, iv = iv)
+}
+
+aes_cbc_decrypt <- function(data, key, iv = attr(data, "iv")) {
+  data <- path_or_raw(data)
+  if (!is.raw(data)) {
+    stop("The 'data' must path to a file or raw vector")
+  }
+  .Call(keyring_aes_cbc_decrypt, data, key, iv)
+}
+
+path_or_raw <- function(x) {
+  if (is.raw(x)) return(x)
+  if (is.character(x) && length(x) == 1) {
+    path <- normalizePath(x, mustWork = TRUE)
+    bin <- readBin(path, raw(), file.info(path)$size)
+    return(bin)
+  }
+  stop("`data` must be raw data vector or path to file on disk.")
 }

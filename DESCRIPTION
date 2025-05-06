@@ -20,7 +20,6 @@ Depends:
 Imports:
     askpass,
     filelock,
-    openssl,
     R6,
     tools,
     utils,
@@ -28,6 +27,7 @@ Imports:
 Suggests:
     callr,
     covr,
+    openssl,
     testthat (>= 3.0.0),
     withr
 Config/Needs/website: tidyverse/tidytemplate
