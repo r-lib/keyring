@@ -47,6 +47,7 @@ https://github.com/jedisct1/libsodium/graphs/contributors
 
 - `src/aes.c`
 - `src/aesce.c`
+- `src/aesni.c`
 - `src/aesce.h`
 - `src/aesni.h`
 - `src/alignment.h`
