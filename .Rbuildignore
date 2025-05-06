@@ -7,6 +7,8 @@
 ^src/keyring\.so$
 ^src/*\.o$
 ^src/Makevars$
+^src-i386$
+^src-x64$
 ^\.github$
 ^_pkgdown\.yml$
 ^docs$

@@ -77,6 +77,7 @@ BOOLEAN NTAPI RtlGenRandom(PVOID RandomBuffer, ULONG RandomBufferLength);
 # define SSIZE_MAX (SIZE_MAX / 2 - 1)
 #endif
 
+#undef ERROR
 #include <R.h>
 #include <Rinternals.h>
 
