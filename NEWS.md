@@ -1,4 +1,4 @@
-# keyring (development version)
+# keyring 1.4.0
 
 * Now the "file" backend will only be selected as the default backend
   (via `default_backend()`) if the system keyring exists for this backend.
