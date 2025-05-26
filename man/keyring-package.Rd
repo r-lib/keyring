@@ -3,6 +3,7 @@
 \docType{package}
 \name{keyring-package}
 \alias{keyring-package}
+\alias{keyring}
 \title{keyring: Access the System Credential Store from R}
 \description{
 Platform independent 'API' to access the operating system's credential store. Currently supports: 'Keychain' on 'macOS', Credential Store on 'Windows', the Secret Service 'API' on 'Linux', and simple, platform independent stores implemented with environment variables or encrypted files. Additional storage back-ends can be added easily.
@@ -92,7 +93,7 @@ Useful links:
 Other contributors:
 \itemize{
   \item Alec Wong [contributor]
-  \item Posit Software, PBC [copyright holder, funder]
+  \item Posit Software, PBC (\href{https://ror.org/03wc8by49}{ROR}) [copyright holder, funder]
 }
 
 }
