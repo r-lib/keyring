@@ -414,6 +414,14 @@ b_wincred_set_with_raw_value <- function(
 ) {
   keyring <- keyring %||% private$keyring
   target <- b_wincred_target(keyring, service, username)
+
+  # Check for mis-cased target
+  stored <- b_wincred_i_enumerate("*")
+  if ((!target %in% stored) && (tolower(target) %in% tolower(stored))) {
+    # Automatically update case
+    target <- stored[tolower(stored) == tolower(target)]
+  }
+
   if (is.null(keyring)) {
     b_wincred_i_set(target, password, username = username)
     return(invisible(self))
