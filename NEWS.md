@@ -1,5 +1,10 @@
 # keyring (development version)
 
+* Now the the "file" backend will only be selected as the default backend
+  (via `default_backend()`) if the system keyring exists for this backend.
+  If you want to use the "file" backend without a system keyring, then
+  you'll need to select it explicitly. See `?default_backend`.
+
 * keyring now does not depend on the assertthat, openssl, rappdirs and
   sodium packages.
 
