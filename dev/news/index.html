@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">keyring</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.3.2.9001</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.4.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,6 +34,9 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="keyring-development-version">keyring (development version)<a class="anchor" aria-label="anchor" href="#keyring-development-version"></a></h2>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.4.0" id="keyring-140">keyring 1.4.0<a class="anchor" aria-label="anchor" href="#keyring-140"></a></h2><p class="text-muted">CRAN release: 2025-05-26</p>
 <ul><li><p>Now the “file” backend will only be selected as the default backend (via <code><a href="../reference/backends.html">default_backend()</a></code>) if the system keyring exists for this backend. If you want to use the “file” backend without a system keyring, then you’ll need to select it explicitly. See <code><a href="../reference/backends.html">?default_backend</a></code>.</p></li>
 <li><p>keyring now does not depend on the assertthat, openssl, rappdirs and sodium packages.</p></li>
 <li><p>New <code><a href="../reference/key_get.html">key_list_raw()</a></code> method to return keys as raw vectors (<a href="https://github.com/r-lib/keyring/issues/159" class="external-link">#159</a>).</p></li>
