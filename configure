@@ -29,5 +29,5 @@ else
 fi
 
 if [ "$UNAME" = "FreeBSD" ]; then
-    echo "PKG_CPPFLAGS=-DHAVE_SYS_RANDOM_H" >> src/Makevars
+    echo "PKG_CPPFLAGS+=-DHAVE_SYS_RANDOM_H" >> src/Makevars
 fi
