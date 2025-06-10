@@ -1,0 +1,45 @@
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: 'FreeBSD release'
+        required: true
+        type: choice
+        options:
+        - '15.0'
+        - '14.2-pre'
+        - '14.1'
+        - '14.0'
+        - '13.4'
+        - '13.3'
+        - '13.2'
+        - '12.4'
+        default: '14.1'
+
+name: freebsd.yaml
+
+jobs:
+  freebsd:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: r-hub/actions/setup-r-freebsd@main
+        with:
+          release: ${{ github.event.inputs.release || '14.1' }}
+      - uses: r-hub/actions/platform-info@v1
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          pak-version: none
+          install-pandoc: false
+          install-quarto: false
+          extra-packages: any::rcmdcheck
+          needs: check
+
+      - uses: r-lib/actions/check-r-package@v2
+        with:
+          upload-snapshots: true
+          build_args: 'c("--no-manual","--compact-vignettes=gs+qpdf")'
