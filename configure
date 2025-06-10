@@ -27,3 +27,7 @@ else
     echo
     echo "This keyring build will not support the libsecret backend."
 fi
+
+if [ "$UNAME" = "FreeBSD" ]; then
+    echo "PKG_CPPFLAGS=-DHAVE_SYS_RANDOM_H" >> src/Makevars
+fi
