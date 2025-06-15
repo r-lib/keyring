@@ -1,4 +1,4 @@
-# keyring (development version)
+# keyring 1.4.1
 
 * keyring now compiles on FreeBSD, OpenBSD, NetSBD and DragonFlyBSD.
 
