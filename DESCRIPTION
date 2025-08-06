@@ -24,7 +24,11 @@ Imports:
     R6,
     tools,
     utils,
-    yaml
+    yaml,
+    httr2,
+    jsonlite,
+    openssl,
+    RcppTOML,
 Suggests:
     callr,
     covr,
