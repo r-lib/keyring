@@ -134,5 +134,6 @@ known_backends <- list(
   "macos" = backend_macos,
   "secret_service" = backend_secret_service,
   "env" = backend_env,
-  "file" = backend_file
+  "file" = backend_file,
+  "ppm" = backend_ppm
 )

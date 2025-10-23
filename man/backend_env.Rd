@@ -38,6 +38,7 @@ env$delete("r-keyring-test", username = "donaldduck")
 Other keyring backends: 
 \code{\link{backend_file}},
 \code{\link{backend_macos}},
+\code{\link{backend_ppm}},
 \code{\link{backend_secret_service}},
 \code{\link{backend_wincred}}
 }
