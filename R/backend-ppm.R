@@ -171,8 +171,13 @@ backend_ppm <- R6::R6Class("backend_ppm",
       challenge <- new_pkce_challenge(verifier)
 
       # 1. Initiate Device Auth
-      init_url <- paste0(self$ppm_url, "/__api__/device?code_challenge_method=S256&code_challenge=", challenge)
+      init_url <- paste0(self$ppm_url, "/__api__/device")
+      payload <- list(
+        code_challenge_method = "S256",
+        code_challenge = challenge
+      )
       init_resp_body <- request(init_url) |>
+        req_body_form(!!!payload) |>
         req_perform() |>
         resp_body_json()
 
@@ -188,9 +193,9 @@ backend_ppm <- R6::R6Class("backend_ppm",
       try(utils::browseURL(display_uri), silent = TRUE)
 
       # 2. Poll for token
-      init_resp_body$code_verifier <- verifier
       token_resp_body <- private$.complete_device_auth(
-        init_resp_body,
+        init_resp_body$device_code,
+        verifier,
         init_resp_body$interval %||% 5,
         init_resp_body$expires_in %||% 300
       )
@@ -203,13 +208,17 @@ backend_ppm <- R6::R6Class("backend_ppm",
     },
 
     # Polls the token endpoint until the user authenticates
-    .complete_device_auth = function(device_auth_response, interval, expires_in) {
+    .complete_device_auth = function(device_code, verifier, interval, expires_in) {
       url <- paste0(self$ppm_url, "/__api__/device_access")
       start_time <- Sys.time()
+      payload <- list(
+        device_code = device_code,
+        code_verifier = verifier
+      )
 
       while (as.numeric(Sys.time() - start_time) < expires_in) {
         resp <- request(url) |>
-          req_body_json(device_auth_response) |>
+          req_body_form(!!!payload) |>
           req_error(is_error = \(resp) FALSE) |> # Handle errors manually
           req_perform()
 

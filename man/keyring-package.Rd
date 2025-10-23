@@ -93,7 +93,7 @@ Useful links:
 Other contributors:
 \itemize{
   \item Alec Wong [contributor]
-  \item Posit Software, PBC (03wc8by49) [copyright holder, funder]
+  \item Posit Software, PBC (\href{https://ror.org/03wc8by49}{ROR}) [copyright holder, funder]
 }
 
 }
