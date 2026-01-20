@@ -24,7 +24,9 @@
 #' `key_delete` deletes a key.
 #'
 #' `key_list` lists all keys of a keyring, or the keys for a certain
-#' service (if `service` is not `NULL`).
+#' service (if `service` is not `NULL`). Note that `key_list` cannot
+#' access keys that are created by another software. To access such
+#' keys see the `{oskeyring}` package instead.
 #'
 #' `key_list_raw()` is like `key_list()` but also returns the keys as raw
 #' values. This is useful if your keys have bytes that cannot appear
