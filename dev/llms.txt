@@ -1,0 +1,155 @@
+# keyring
+
+keyring provides a way to securely manage secrets using your operating
+system’s credential store. Once a secret is defined, it persists in a
+“keyring” across multiple R sessions. keyring is an alternative to using
+environment variables that’s a bit more secure because your secret is
+never stored in plain text, meaning that you can for instance never
+accidentally upload it to GitHub. For more security, you can also store
+secrets in a custom keyring that always requires a password to unlock.
+
+keyring currently supports:
+
+- The macOS Keychain (`backend_macos`).
+- The Windows Credential Store (`backend_wincred`).
+- The Linux Secret Service API (`backend_secret_service`).
+
+It also provides two backends that are available on all platforms:
+
+- Encrypted files (`backend_file`)
+- Environment variables (`backend_env`).
+
+## Installation
+
+Install the package from CRAN:
+
+``` r
+
+# install.packages("pak")
+pak::pak("keyring")
+```
+
+We recommend using pak to install keyring as it will ensure that Linux
+system requirements are automatically installed (for instance Ubuntu
+requires `libsecret-1-dev` and `libssl-dev`).
+
+To install the development version from GitHub, use:
+
+``` r
+
+pak::pak("r-lib/keyring")
+```
+
+## Usage
+
+The simplest usage only requires
+[`key_set()`](https://keyring.r-lib.org/dev/reference/key_get.md) and
+[`key_get()`](https://keyring.r-lib.org/dev/reference/key_get.md):
+
+``` r
+
+# Interactively save a secret. This avoids typing the value of the secret
+# into the console as this could be recorded in your `.Rhistory`
+key_set("secret-name")
+
+# Later retrieve that secret
+key_get("secret-name")
+```
+
+Each secret is associated with a keyring. By default, keyring will use
+the OS keyring (see
+[`default_backend()`](https://keyring.r-lib.org/dev/reference/backends.md)
+for details), which is automatically unlocked when you log into your
+computer account. That means while the secret is stored securely, it can
+be accessed by other processes.
+
+If you want greater security you can create a custom keyring that you
+manually lock and unlock. That will require you to enter a custom
+password every time you want to access your secret.
+
+``` r
+
+keyring_create("mypackage")
+key_set("secret-name", keyring = "mypackage")
+key_get("secret-name", keyring = "mypackage")
+```
+
+Accessing the key unlocks the keyring, so if you’re being really
+careful, you might want to lock it after you’ve retrieved the value with
+[`keyring_lock()`](https://keyring.r-lib.org/dev/reference/has_keyring_support.md).
+
+### GitHub
+
+When you use keyring on GitHub, it will fall back to the environment
+variable backend. That means if you want to use `key_get("mysecret")`
+you need to do two things:
+
+- Add a [new action
+  secret](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions#creating-secrets-for-a-repository)
+  to your repository.
+
+- Make the secret available in your workflow `.yml`, for instance
+
+  ``` yaml
+      env:
+        GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+        R_KEEP_PKG_SOURCE: yes
+        MY_SECRET: ${{ secrets.my_secret }}
+  ```
+
+The envvar backend doesn’t support custom keyrings, so if you’re using
+one locally you’ll need to use the default keyring on GitHub.
+
+## Development documentation
+
+Please see our [writeup of some `keyring`
+internals](https://github.com/r-lib/keyring/blob/main/inst/development-notes.md),
+and as always, use the source code.
+
+# Package index
+
+## Common API
+
+- [`keyring-package`](https://keyring.r-lib.org/dev/reference/keyring-package.md)
+  [`keyring`](https://keyring.r-lib.org/dev/reference/keyring-package.md)
+  : keyring: Access the System Credential Store from R
+- [`key_get()`](https://keyring.r-lib.org/dev/reference/key_get.md)
+  [`key_get_raw()`](https://keyring.r-lib.org/dev/reference/key_get.md)
+  [`key_set()`](https://keyring.r-lib.org/dev/reference/key_get.md)
+  [`key_set_with_value()`](https://keyring.r-lib.org/dev/reference/key_get.md)
+  [`key_set_with_raw_value()`](https://keyring.r-lib.org/dev/reference/key_get.md)
+  [`key_delete()`](https://keyring.r-lib.org/dev/reference/key_get.md)
+  [`key_list()`](https://keyring.r-lib.org/dev/reference/key_get.md)
+  [`key_list_raw()`](https://keyring.r-lib.org/dev/reference/key_get.md)
+  : Operations on keys
+- [`has_keyring_support()`](https://keyring.r-lib.org/dev/reference/has_keyring_support.md)
+  [`keyring_create()`](https://keyring.r-lib.org/dev/reference/has_keyring_support.md)
+  [`keyring_list()`](https://keyring.r-lib.org/dev/reference/has_keyring_support.md)
+  [`keyring_delete()`](https://keyring.r-lib.org/dev/reference/has_keyring_support.md)
+  [`keyring_lock()`](https://keyring.r-lib.org/dev/reference/has_keyring_support.md)
+  [`keyring_unlock()`](https://keyring.r-lib.org/dev/reference/has_keyring_support.md)
+  [`keyring_is_locked()`](https://keyring.r-lib.org/dev/reference/has_keyring_support.md)
+  : Operations on keyrings
+
+## Backends
+
+- [`default_backend()`](https://keyring.r-lib.org/dev/reference/backends.md)
+  : Select the default backend and default keyring
+- [`backend_wincred`](https://keyring.r-lib.org/dev/reference/backend_wincred.md)
+  : Windows Credential Store keyring backend
+- [`backend_macos`](https://keyring.r-lib.org/dev/reference/backend_macos.md)
+  : macOS Keychain keyring backend
+- [`backend_secret_service`](https://keyring.r-lib.org/dev/reference/backend_secret_service.md)
+  : Linux Secret Service keyring backend
+- [`backend_file`](https://keyring.r-lib.org/dev/reference/backend_file.md)
+  : Encrypted file keyring backend
+- [`backend_env`](https://keyring.r-lib.org/dev/reference/backend_env.md)
+  : Environment variable keyring backend
+
+## Implementing new backends
+
+- [`backend`](https://keyring.r-lib.org/dev/reference/backend.md) :
+  Abstract class of a minimal keyring backend
+- [`backend_keyrings`](https://keyring.r-lib.org/dev/reference/backend_keyrings.md)
+  : Abstract class of a backend that supports multiple keyrings
+
