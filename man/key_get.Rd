@@ -90,7 +90,9 @@ vector.
 \code{key_delete} deletes a key.
 
 \code{key_list} lists all keys of a keyring, or the keys for a certain
-service (if \code{service} is not \code{NULL}).
+service (if \code{service} is not \code{NULL}). Note that \code{key_list} cannot
+access keys that are created by another software. To access such
+keys see the \code{{oskeyring}} package instead.
 
 \code{key_list_raw()} is like \code{key_list()} but also returns the keys as raw
 values. This is useful if your keys have bytes that cannot appear
